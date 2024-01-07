@@ -11,18 +11,6 @@ from sybil.parsers.rest import (
     PythonCodeBlockParser as ReSTPythonCodeBlockParser,
 )
 
-# pytest_collect_file = Sybil(
-#     parsers=[
-#         MarkdownDocTestParser(),
-#         MarkdownPythonCodeBlockParser(),
-#         MarkdownSkipParser(),
-#         # ReSTDocTestParser(),
-#         ReSTPythonCodeBlockParser(),
-#     ],
-#     patterns=["*.md", "pep.rst"],
-#     excludes=["pep.rst"],
-# ).pytest()
-
 markdown_examples = Sybil(
     parsers=[
         MarkdownDocTestParser(),
@@ -38,7 +26,7 @@ rest_examples = Sybil(
         ReSTPythonCodeBlockParser(),
     ],
     patterns=["*.rst"],
+    exclude="pep.rst"
 )
-
 
 pytest_collect_file = (markdown_examples + rest_examples).pytest()

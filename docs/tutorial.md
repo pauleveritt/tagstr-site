@@ -1,29 +1,30 @@
-Tutorial
-========
+# Tutorial
 
 Imagine: A fictional company has a standard way to do greetings. For this, it
 created a tag function to properly format greetings  according to its standards.
 
-Simple Tag Function
-===================
+## Simple Tag Function
 
 We start with a tag function ``greet`` that's used as a prefix:
 
-.. literalinclude:: ../src/tagstr_site/greeting.py
-    :start-at: def greet
-    :end-at: return f
+```{literalinclude} ../src/tagstr_site/greeting.py
+---
+start-at: def greet
+end-at: return f
+---
+```
 
 If it looks like the ``f-`` in f-strings -- correct! You can then use this tag
 function as a "tag" on a string:
 
-.. invisible-code-block: python
+<!--- invisible-code-block: python
+from tagstr_site.greeting import greet
+-->
 
-    from tagstr_site.greeting import greet
-
-.. doctest::
-
-    >>> print(greet"Hello")
-    HELLO!
+```{code-block} python
+>>> print(greet"Hello")
+HELLO!
+```
 
 In the ``greet`` function -- a *tag* function -- we see the first step into
 tag strings. You're given an ``*args`` sequence for all the parts in the
@@ -33,36 +34,37 @@ being tagged, into datastructures to be easily handled.
 We then see a usage -- a tagged string in ``main`` with ``greet"Hello"``. This
 "tags" the ``Hello`` string with the function ``greet``.
 
-Interpolation
-=============
+## Interpolation
 
 That example showed the basics but had no dynamicism in it. f-strings make
 it easy to insert variables and expressions with extra instructions. We
 call these *interpolations*. Let's see a super-simple example:
 
-.. literalinclude:: ../src/tagstr_site/greeting.py
-    :start-at: def greet2
-    :end-at: return f
+```{literalinclude} ../src/tagstr_site/greeting.py
+---
+start-at: def greet2
+end-at: return f
+---
+```
 
 The second argument is the ``{name}`` part, represented as a tuple. The
 tuple's first argument is a callable that evaluates *in the scope* where the
 tag string happened. Calling it yields the value, thus by convention we call
 this ``getvalue``.
 
-.. invisible-code-block: python
-
-    from tagstr_site.greeting import greet2
+<!--- invisible-code-block: python
+from tagstr_site.greeting import greet2
+-->
 
 This time, we'll tag a string that inserts a variable:
 
-.. doctest::
+```{code-block} python
+>>> name = "World"
+>>> print(greet2"Hello {name}")
+Hello WORLD!
+```
 
-    >>> name = "World"
-    >>> print(greet2"Hello {name}")
-    Hello WORLD!
-
-Flexible Args
-=============
+## Flexible Args
 
 Our greeting now expects a string followed by a single interpolation. But
 f-strings can have all kinds of things mixed in, even nested f-strings.
@@ -77,39 +79,41 @@ In fact, let's start adopting the jargon used in this proposal:
 
 Here's the code to generalize args:
 
-.. literalinclude:: ../src/tagstr_site/greeting.py
-    :start-at: def greet3
-    :end-at: return f
+```{literalinclude} ../src/tagstr_site/greeting.py
+---
+start-at: def greet3
+end-at: return f
+---
+```
 
 It uses Python 3.10 structural pattern matching to analyze each segment and
 determine "chunks" and "thunks".
 
-.. invisible-code-block: python
+<!--- invisible-code-block: python
+from tagstr_site.greeting import greet3
+-->
 
-    from tagstr_site.greeting import greet3
+```{code-block} python
+>>> print(greet3"Hello {name} nice to meet you")  # name is still World
+Hello WORLD nice to meet you!
+```
 
-.. doctest::
-
-    >>> print(greet3"Hello {name} nice to meet you")  # name is still World
-    Hello WORLD nice to meet you!
-
-Thunks
-======
+## Thunks
 
 We just said interpolations were represented by "thunks". Let's look at them
 more carefully and see what they have to offer, while adding some typing.
 
 A thunk is a tuple with this shape:
 
-.. literalinclude:: ../src/tagstr_site/__init__.py
-    :start-at: class Thunk
-    :end-at: formatspec
+```{literalinclude} ../src/tagstr_site/../src/tagstr_site/__init__.py
+:start-at: class Thunk
+:end-at: formatspec
+```
 
 Let's add some typing information to our greet function.
 We'll
 
-More
-====
+## More
 
 - Deferred
 - Non-string

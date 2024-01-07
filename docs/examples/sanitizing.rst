@@ -1,3 +1,0 @@
-Sanitizing Text
-===============
-
