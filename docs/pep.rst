@@ -118,7 +118,7 @@ type hints:
 
 .. code-block:: python
 
-    from typing import Chunk, Thunk
+    from tagstr_site import Chunk, Thunk
     def greet(*args: Chunk | Thunk) -> str:
         result = []
         for arg in args:
