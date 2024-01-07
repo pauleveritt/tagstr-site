@@ -17,24 +17,44 @@ for more detail.
 
 ## Example
 
-In this tiny example, a `greet` function is defined and used to tag strings:
+In this tiny example, a `greet` function is defined and used to "tag" strings:
 
-```{literalinclude} ../src/tagstr_site/greeting.py
----
-start-at: def greet
-end-at: return f
----
+```python
+def greet(*args):
+    """Uppercase and add exclamation."""
+    salutation = args[0].upper()
+    return f"{salutation}!"
 ```
-
-<!--- invisible-code-block: python
-from tagstr_site.greeting import greet
---->
 
 With a string that obeys f-string semantics, we can then "tag" it:
 
 ```{code-block} python
 >>> print(greet"Hello")
 HELLO!
+```
+
+Tag strings are usually much richer and process the arguments Python assembles when calling:
+
+<!--- invisible-code-block: python
+from tagstr_site import Thunk
+-->
+
+```{code-block} python
+def greet(*args: str | Thunk) -> str:
+    """More about the thunk."""
+    result = []
+    for arg in args:
+        match arg:
+            case str():
+                result.append(arg)
+            case getvalue, raw, conversion, formatspec:
+                gv = f"gv: {getvalue()}"
+                r = f"r: {raw}"
+                c = f"c: {conversion}"
+                f = f"f: {formatspec}"
+                result.append(", ".join([gv, r, c, f]))
+
+    return f"{''.join(result)}!"
 ```
 
 ```{toctree}
