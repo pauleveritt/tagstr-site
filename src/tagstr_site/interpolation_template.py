@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import Any
 
-from taglib import decode_raw, Thunk
+from tagstr_site import Thunk
+from tagstr_site.taglib import decode_raw
 
 
 @dataclass
@@ -17,7 +18,7 @@ class InterpolationTemplate:
         # When formatted, render to a string, and use string formatting
         return format(self.render(), format_specifier)
 
-    def render(self, *, render_template=''.join, render_field=format):
+    def render(self, *, render_template="".join, render_field=format):
         iter_fields = enumerate(self.parsed_template)
         values = self.field_values
         specifiers = self.format_specifiers
@@ -35,7 +36,7 @@ class InterpolationTemplate:
 def i(*args: str | Thunk) -> InterpolationTemplate:
     raw_template = []
     parsed_template = []
-    last_str_arg = ''
+    last_str_arg = ""
     field_values = []
     format_specifiers = []
     for arg, raw_arg in zip(decode_raw(*args), args):
@@ -45,19 +46,21 @@ def i(*args: str | Thunk) -> InterpolationTemplate:
                 last_str_arg = arg
             case getvalue, raw, conv, formatspec:
                 value = getvalue()
-                raw_template.append(f"{{{raw}{'!' + conv if conv else ''}{':' + formatspec if formatspec else ''}}}")
+                raw_template.append(
+                    f"{{{raw}{'!' + conv if conv else ''}{':' + formatspec if formatspec else ''}}}"
+                )
                 parsed_template.append((last_str_arg, raw))
                 field_values.append(value)
-                format_specifiers.append('' if formatspec is None else formatspec)
-                last_str_arg = ''
+                format_specifiers.append("" if formatspec is None else formatspec)
+                last_str_arg = ""
     if last_str_arg:
         parsed_template.append((last_str_arg, None))
 
     return InterpolationTemplate(
-        ''.join(raw_template),
+        "".join(raw_template),
         tuple(parsed_template),
         tuple(field_values),
-        tuple(format_specifiers)
+        tuple(format_specifiers),
     )
 
 
@@ -67,34 +70,41 @@ def demo():
     def reprformat(template):
         def render_field(value, specifier):
             return format(repr(value), specifier)
+
         return template.render(render_field=render_field)
 
     names = ["Alice", "Bob"]
+
     def expressions():
         return 6 * 7
 
-    t1 = i"Substitute {names} and {expressions()} at runtime"
+    t1 = i
+    "Substitute {names} and {expressions()} at runtime"
     print(t1)
     print(t1.render())
     print(reprformat(t1))
 
     response = MagicMock()
-    t2 = i"<html><body>{response.body}</body></html>"
+    t2 = i
+    "<html><body>{response.body}</body></html>"
     print(t2)
     print(t2.render())
 
     detailed = "some detail"
     debugging = "some debugging"
     info = "some info"
-    t3 = i"Message with {detailed!r:^20} {debugging!a} {info!s}"
+    t3 = i
+    "Message with {detailed!r:^20} {debugging!a} {info!s}"
     print(t3)
     print(t3.render())
 
-    bar=10
+    bar = 10
+
     def foo(data):
         return data + 20
 
-    t4 = i'input={bar}, output={foo(bar)}'
+    t4 = i
+    "input={bar}, output={foo(bar)}"
     print(t4)
     print(t4.render())
 
@@ -103,5 +113,5 @@ def demo():
     # outside the scope of what I'm demoing today
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     demo()

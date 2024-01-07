@@ -8,7 +8,7 @@
 import re as re_module
 import string
 
-from taglib import Thunk
+from tagstr_site import Thunk
 
 
 def re(*args: str | Thunk) -> re_module.Pattern:

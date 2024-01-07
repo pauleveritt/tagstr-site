@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from typing import *
 from dataclasses import dataclass
 from html import escape
 from html.parser import HTMLParser
 
-from taglib import decode_raw, Thunk
+from tagstr_site.taglib import decode_raw
+from tagstr_site import Thunk
 
 AttrsDict = dict[str, str]
 BodyList = list["str | HTMLNode"]

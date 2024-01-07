@@ -1,6 +1,6 @@
 import shlex
 
-from taglib import Thunk
+from tagstr_site import Thunk
 
 
 # Minimal marker class to distinguish two classes of strings:
@@ -40,8 +40,7 @@ def demo():
     for name in ['.', 'foo', 'foo; cat some/credential/data', 47, {'some': 'data'}]:
         print(sh'ls -ls {name}')
         print(sh'ls -ls $({sh"echo {name}"})')
-        print(subprocess.run(sh'ls -ls {name} | (echo "First 5 results from ls:"; head -5)', shell=True, capture_output=True))
+        print(subprocess.run(sh'ls -ls {name} | (echo "First 5 results from ls:"; head -5)', shell = True, capture_output = True))
 
-
-if __name__ == '__main__':
-    demo()
+    if __name__ == '__main__':
+        demo()

@@ -2,7 +2,8 @@ import pprint
 import re
 import textwrap
 
-from taglib import Thunk, decode_raw
+from tagstr_site import Thunk
+from tagstr_site.taglib import decode_raw
 
 
 class PythonCode(str):
@@ -61,11 +62,11 @@ def useit():
     args = ['x', 'y', 'z']
     results = {'a': 2, 'b': 3, 'c': 5, 'd': 7, 'e': 11}
     print(code"""
-        def f({args:params}):
-            return \\
-                {results:pretty}
-    """)
+            def f({args:params}):
+                return \\
+                    {results:pretty}
+        """)
 
 
-if __name__ == '__main__':
-    useit()
+    if __name__ == '__main__':
+        useit()

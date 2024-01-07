@@ -7,7 +7,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
-from taglib import Thunk
+from tagstr_site.taglib import Thunk
 
 
 # NOTE: other dialects have different rules, for example Postgres

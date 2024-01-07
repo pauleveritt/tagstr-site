@@ -1,9 +1,8 @@
-from base64 import decode
 import dis  # useful for showing the scope analysis
 from types import FunctionType
-from typing import *
 
-from taglib import decode_raw, Thunk
+from tagstr_site import Thunk
+from tagstr_site.taglib import decode_raw
 
 
 def param_list(names):

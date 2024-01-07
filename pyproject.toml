@@ -7,7 +7,14 @@ name = "tagstr_site"
 version = "0.0.1"
 description = "Collection of tag string demos, docs, and contributions."
 requires-python = ">=3.12"
-dependencies = ["pytest", "sphinx", "sphinx-book-theme", "lutra", "pytest-sphinx", "sphinx-autobuild", "sybil"]
+dependencies = [
+    "pytest~=7.4.3",
+    "sphinx",
+    "sphinx-book-theme",
+    "pytest-sphinx",
+    "sphinx-autobuild",
+    "sybil",
+]
 
 [tool.pytest.ini_options]
 addopts = "-ra -q --doctest-modules --ignore-glob='**/_build/**'"

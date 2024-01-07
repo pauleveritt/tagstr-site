@@ -28,7 +28,7 @@ In this tiny example, a ``greet`` function is defined and used to tag strings:
 
 .. testsetup::
 
-    from tagstr.greeting import greet
+    from tagstr_site.greeting import greet
 
 With a string that obeys f-string semantics, we can then "tag" it:
 

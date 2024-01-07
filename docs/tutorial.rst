@@ -16,9 +16,9 @@ We start with a tag function ``greet`` that's used as a prefix:
 If it looks like the ``f-`` in f-strings -- correct! You can then use this tag
 function as a "tag" on a string:
 
-.. testsetup::
+.. invisible-code-block: python
 
-    from tagstr.greeting import greet
+    from tagstr_site.greeting import greet
 
 .. doctest::
 
@@ -49,9 +49,9 @@ tuple's first argument is a callable that evaluates *in the scope* where the
 tag string happened. Calling it yields the value, thus by convention we call
 this ``getvalue``.
 
-.. testsetup::
+.. invisible-code-block: python
 
-    from tagstr.greeting import greet2
+    from tagstr_site.greeting import greet2
 
 This time, we'll tag a string that inserts a variable:
 
@@ -84,9 +84,9 @@ Here's the code to generalize args:
 It uses Python 3.10 structural pattern matching to analyze each segment and
 determine "chunks" and "thunks".
 
-.. testsetup::
+.. invisible-code-block: python
 
-    from tagstr.greeting import greet3
+    from tagstr_site.greeting import greet3
 
 .. doctest::
 

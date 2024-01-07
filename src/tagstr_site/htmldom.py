@@ -7,8 +7,8 @@ from dataclasses import dataclass, field
 from html import escape
 from html.parser import HTMLParser
 
-from taglib import decode_raw, Thunk, format_value
-
+from tagstr_site.taglib import decode_raw, format_value
+from tagstr_site import Thunk
 
 def demo():
     title_level = 1

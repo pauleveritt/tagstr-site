@@ -17,7 +17,7 @@ Getting Started
 
 .. invisible-code-block: python
 
-    from tagstr.fl.fl1 import demo
+    from tagstr_site.fl.fl1 import demo
 
 Let's return to the greeting example from the PEP. As a starting point, it's the common  pattern:
 
@@ -41,7 +41,7 @@ Tag String Class
 
 .. invisible-code-block: python
 
-    from tagstr.fl.fl2 import demo
+    from tagstr_site.fl.fl2 import demo
 
 Our strategy for deferred evaluation: only execute when the result is stringified. In this step, let's convert the tag
 string function to return an instance of a dataclass:
@@ -70,7 +70,7 @@ Deferred Stringifying
 
 .. invisible-code-block: python
 
-    from tagstr.fl.fl3 import demo
+    from tagstr_site.fl.fl3 import demo
 
 What happens if we wait too long before executing the tag scope?
 In this example, the ``str()`` is called outside the loop:
