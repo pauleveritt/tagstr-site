@@ -9,7 +9,7 @@ Simple Tag Function
 
 We start with a tag function ``greet`` that's used as a prefix:
 
-.. literalinclude:: ../src/tagstr/greeting.py
+.. literalinclude:: ../src/tagstr_site/greeting.py
     :start-at: def greet
     :end-at: return f
 
@@ -40,7 +40,7 @@ That example showed the basics but had no dynamicism in it. f-strings make
 it easy to insert variables and expressions with extra instructions. We
 call these *interpolations*. Let's see a super-simple example:
 
-.. literalinclude:: ../src/tagstr/greeting.py
+.. literalinclude:: ../src/tagstr_site/greeting.py
     :start-at: def greet2
     :end-at: return f
 
@@ -77,7 +77,7 @@ In fact, let's start adopting the jargon used in this proposal:
 
 Here's the code to generalize args:
 
-.. literalinclude:: ../src/tagstr/greeting.py
+.. literalinclude:: ../src/tagstr_site/greeting.py
     :start-at: def greet3
     :end-at: return f
 
@@ -101,7 +101,7 @@ more carefully and see what they have to offer, while adding some typing.
 
 A thunk is a tuple with this shape:
 
-.. literalinclude:: ../src/tagstr/__init__.py
+.. literalinclude:: ../src/tagstr_site/__init__.py
     :start-at: class Thunk
     :end-at: formatspec
 

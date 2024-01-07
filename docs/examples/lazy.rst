@@ -21,7 +21,7 @@ Getting Started
 
 Let's return to the greeting example from the PEP. As a starting point, it's the common  pattern:
 
-.. literalinclude:: ../../src/tagstr/fl/fl1.py
+.. literalinclude:: ../../src/tagstr_site/fl/fl1.py
 
 To focus on lazy execution, we've left out all the bits to handle edge cases: ``decode_raw`` and ``format_value`` etc.
 The demo shows us the result of each pass:
@@ -46,14 +46,14 @@ Tag String Class
 Our strategy for deferred evaluation: only execute when the result is stringified. In this step, let's convert the tag
 string function to return an instance of a dataclass:
 
-.. literalinclude:: ../../src/tagstr/fl/fl2.py
+.. literalinclude:: ../../src/tagstr_site/fl/fl2.py
     :start-at: @dataclass
     :end-at: return Lazy
 
 Our ``fl`` function now just returns an instance. No tag string processing is done until ``str(result)`` in
 the ``demo`` function:
 
-.. literalinclude:: ../../src/tagstr/fl/fl2.py
+.. literalinclude:: ../../src/tagstr_site/fl/fl2.py
     :start-at: def demo
     :end-at: return "\n"
     :emphasize-lines: 7
@@ -75,7 +75,7 @@ Deferred Stringifying
 What happens if we wait too long before executing the tag scope?
 In this example, the ``str()`` is called outside the loop:
 
-.. literalinclude:: ../../src/tagstr/fl/fl3.py
+.. literalinclude:: ../../src/tagstr_site/fl/fl3.py
     :start-at: def demo
     :end-at: return "\n"
     :emphasize-lines: 11

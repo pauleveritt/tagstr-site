@@ -22,7 +22,7 @@ Example
 
 In this tiny example, a ``greet`` function is defined and used to tag strings:
 
-.. literalinclude:: ../src/tagstr/greeting.py
+.. literalinclude:: ../src/tagstr_site/greeting.py
     :start-at: def greet
     :end-at: return f
 
