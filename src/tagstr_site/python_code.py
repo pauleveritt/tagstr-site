@@ -2,7 +2,7 @@ import pprint
 import re
 import textwrap
 
-from tagstr_site import Thunk
+from tagstr_site.typing import Decoded, Interpolation
 from tagstr_site.taglib import decode_raw
 
 
@@ -19,7 +19,7 @@ def param_list(names):
 INITIAL_WHITESPACE_RE = re.compile(r'^( +)')
 
 
-def code(*args: str | Thunk) -> PythonCode:
+def code(*args: Decoded | Interpolation) -> PythonCode:
     text = []
     indent_level = None
 

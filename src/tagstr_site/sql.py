@@ -7,7 +7,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
-from tagstr_site.taglib import Thunk
+from tagstr_site.typing import Decoded, Interpolation
 
 
 # NOTE: other dialects have different rules, for example Postgres
@@ -91,7 +91,7 @@ def analyze_sql(parts, bindings=None, param_counts=None) -> tuple[str, dict[str,
     return ''.join(text), bindings
 
 
-def sql(*args: str | Thunk) -> SQL:
+def sql(*args: Decoded | Interpolation) -> SQL:
     """Implements sql tag"""
     parts = []
     for arg in args:

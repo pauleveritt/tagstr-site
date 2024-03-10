@@ -1,6 +1,6 @@
 from typing import Sequence, Callable
 
-from tagstr_site import Thunk
+from tagstr_site.typing import Decoded, Interpolation
 
-TagStringArgs = Sequence[str | Thunk]
+TagStringArgs = Sequence[Decoded | Interpolation]
 TagStringCallable = Callable[[TagStringArgs], str]

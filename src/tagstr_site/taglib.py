@@ -1,9 +1,9 @@
 from typing import Generator
 
-from tagstr_site import Thunk
+from tagstr_site.typing import Decoded, Interpolation
 
 
-def decode_raw(*args: str | Thunk) -> Generator[str | Thunk, None, None]:
+def decode_raw(*args: Decoded | Interpolation) -> Generator[Decoded | Interpolation, None, None]:
     """Convert string to bytes then, applying decoding escapes.
 
     Maintain underlying Unicode codepoints. Uses the same internal code
@@ -16,7 +16,7 @@ def decode_raw(*args: str | Thunk) -> Generator[str | Thunk, None, None]:
             yield arg
 
 
-def format_value(arg: str | Thunk) -> str:
+def format_value(arg: Decoded | Interpolation) -> str:
     match arg:
         case str():
             return arg

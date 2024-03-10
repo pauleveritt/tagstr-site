@@ -1,7 +1,7 @@
 import dis  # useful for showing the scope analysis
 from types import FunctionType
 
-from tagstr_site import Thunk
+from tagstr_site.typing import Decoded, Interpolation
 from tagstr_site.taglib import decode_raw
 
 
@@ -17,15 +17,15 @@ def name_bindings(names, /, indent):
     return f'\n{" " * indent}'.join(code_text)
 
 
-def rewrite_thunk(thunk: Thunk) -> Thunk:
-    """Given a thunk, return a rewritten thunk to return any used names.
+def rewrite_interpolation(interpolation: Interpolation) -> Interpolation:
+    """Given an interpolation, return a rewritten interpolation to return any used names.
     
-    When the thunk's getvalue is evaluated, returns a dict of name to any bound
+    When the interpolation's getvalue is evaluated, returns a dict of name to any bound
     value.
     """
-    getvalue, raw, conv, formatspec = thunk
+    getvalue, raw, conv, formatspec = interpolation
     code = getvalue.__code__
-    print(f'Compiling thunk {hash(getvalue.__code__)}')
+    print(f'Compiling interpolation {hash(getvalue.__code__)}')
     dis.dis(code)
     all_names = code.co_names + code.co_freevars
 
@@ -52,14 +52,14 @@ def outer({param_list(code.co_freevars)}):
     return new_getvalue, wrapped, conv, formatspec
 
 
-def rewritten(*args: str | Thunk):
+def rewritten(*args: Decoded | Interpolation):
     new_args = []
     for arg in decode_raw(*args):
         match arg:
             case str():
                 new_args.append(arg)
             case _:
-                new_args.append(rewrite_thunk(arg))
+                new_args.append(rewrite_interpolation(arg))
     return new_args
 
 
@@ -71,7 +71,7 @@ def nested1():
         c = 5
         def nested3():
             d = 7
-            # new_args is rewritten such that each thunk's getvalue is a new
+            # new_args is rewritten such that each interpolation's getvalue is a new
             # function/code object that returns that the mapping of the
             # variables that are used to their values (namely, for a, b, c, d)
             new_args = rewritten"{d**a + c * c * c * a * b * a + d}"

@@ -19,9 +19,9 @@ class DecodedConcrete(str):
         decoded = raw.encode("utf-8").decode("unicode-escape")
         if decoded == raw:
             decoded = raw
-        chunk = super().__new__(cls, decoded)
-        chunk._raw = raw
-        return chunk
+        _decoded = super().__new__(cls, decoded)
+        _decoded._raw = raw
+        return _decoded
 
     @property
     def raw(self):

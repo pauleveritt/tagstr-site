@@ -1,7 +1,8 @@
 import shlex
 
-from tagstr_site import Thunk
+from tagstr_site.typing import Decoded, Interpolation
 
+DecodedConcrete = str
 
 # Minimal marker class to distinguish two classes of strings:
 # 1. With this marker, this string has already been properly shell quoted and
@@ -13,15 +14,15 @@ class ShellCommand(str):
         return super().__new__(cls, ''.join(command))
 
 
-def sh(*args: str | Thunk) -> ShellCommand:
+def sh(*args: Decoded | Interpolation) -> ShellCommand:
     command = []
     for arg in args:
         match arg:
             # Good unit of teaching. It's either:
-            # - string
+            # - Decoded string
             # - command
             # - something potentially unsafe
-            case str():
+            case DecodedConcrete():
                 command.append(arg)
             case getvalue, _, _, _:
                 match value := getvalue():

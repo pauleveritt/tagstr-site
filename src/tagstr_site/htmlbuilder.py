@@ -7,8 +7,9 @@ from html import escape
 from html.parser import HTMLParser
 
 from tagstr_site.taglib import decode_raw
-from tagstr_site import Thunk
+from tagstr_site.typing import Decoded, Interpolation
 
+DecodedConcrete = str
 AttrsDict = dict[str, str]
 BodyList = list["str | HTMLNode"]
 
@@ -69,11 +70,11 @@ class HTMLBuilder(HTMLParser):
         self.stack[-1].body.append(data)        
 
 # This is the actual 'tag' function: html"<body>blah</body>""
-def html(*args: str | Thunk) -> HTMLNode:
+def html(*args: Decoded | Interpolation) -> HTMLNode:
     builder = HTMLBuilder()
     for arg in decode_raw(*args):
         match arg:
-            case str():
+            case DecodedConcrete():
                 builder.feed(arg)
             case getvalue, raw, conv, spec:
                 value = getvalue()

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
 
-from tagstr_site import Thunk
+from tagstr_site.typing import Decoded, Interpolation
 from tagstr_site.taglib import decode_raw
 
 
@@ -33,7 +33,7 @@ class InterpolationTemplate:
         return render_template(template_parts)
 
 
-def i(*args: str | Thunk) -> InterpolationTemplate:
+def i(*args: Decoded | Interpolation) -> InterpolationTemplate:
     raw_template = []
     parsed_template = []
     last_str_arg = ""

@@ -13,7 +13,8 @@ from html.parser import HTMLParser
 from types import CodeType
 from typing import *
 
-from tagstr_site.taglib import decode_raw, Thunk
+from tagstr_site.taglib import decode_raw
+from tagstr_site.typing import Decoded, Interpolation
 
 
 ENDS_WITH_WHITESPACE_RE = re.compile(r'\s+$')
@@ -82,7 +83,7 @@ class DomCodeGenerator(HTMLParser):
         # The convention used here in the codegen is that the code
         # `args[{i}][0]()` implements the following logic:
         #
-        #    Call getvalue for the thunk at the i-th position in args.
+        #    Call getvalue for the interpolation at the i-th position in args.
         #
         # This interpolation could optionally also process formatspec and
         # conversion, if specified.
@@ -135,9 +136,9 @@ def make_compiled_template(*args: str | CodeType) -> Callable:
 # The "lambda wrapper" function objects will change at each usage of the call
 # site. Let's use the underlying code object instead as part of the key to
 # construct the compiled function so it can be memoized. This approach is
-# correct, since we will call getvalue in the thunk in the interpolation.
+# correct, since we will call getvalue in the interpolation in the interpolation.
 
-def immutable_bits(*args: str | Thunk) -> Tuple(str | CodeType):
+def immutable_bits(*args: Decoded | Interpolation) -> tuple[str | CodeType]:
     bits = []
     for arg in args:
         if isinstance(arg, str):
@@ -151,7 +152,7 @@ def immutable_bits(*args: str | Thunk) -> Tuple(str | CodeType):
 # It needs to be specialized for a specific DOM implementation.
 
 def make_html_tag(f: Callable) -> Callable:
-    def html_tag(*args: str | Thunk) -> Any:
+    def html_tag(*args: Decoded | Interpolation) -> Any:
         compiled = make_compiled_template(*immutable_bits(*args))
         return compiled(f, *args)
     return html_tag

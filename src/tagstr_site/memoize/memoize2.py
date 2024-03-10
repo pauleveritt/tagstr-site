@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from tagstr_site import Thunk
+from tagstr_site.typing import Decoded, Interpolation
 from tagstr_site.memoize import TagStringArgs, TagStringCallable
 
-def immutable_bits(*args: str | Thunk) -> tuple[str | tuple[Any], ...]:
+def immutable_bits(*args: Decoded | Interpolation) -> tuple[str | tuple[Any], ...]:
     bits = []
     for arg in args:
         if isinstance(arg, str):

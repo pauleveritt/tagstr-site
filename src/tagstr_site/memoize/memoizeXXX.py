@@ -11,7 +11,8 @@ from types import CodeType
 from typing import *
 from typing import Any
 
-from tagstr_site.taglib import decode_raw, Thunk
+from tagstr_site.taglib import decode_raw
+from tagstr_site.typing import Decoded, Interpolation
 from tagstr_site.htmltag import DomCodeGenerator
 
 
@@ -30,7 +31,7 @@ def make_compiled_template(*args: str | CodeType) -> Callable:
     return captured['compiled']
 
 
-def immutable_bits(*args: str | Thunk) -> tuple[str | tuple[Any], ...]:
+def immutable_bits(*args: Decoded | Interpolation) -> tuple[str | tuple[Any], ...]:
     bits = []
     for arg in args:
         if isinstance(arg, str):
@@ -49,7 +50,7 @@ def make_html_tag() -> Callable:
             d['children'] = children
         return d
 
-    def html_tag(*args: str | Thunk) -> Any:
+    def html_tag(*args: Decoded | Interpolation) -> Any:
         compiled = make_compiled_template(*immutable_bits(*args))
         return compiled(f, *args)
     return html_tag
@@ -71,11 +72,11 @@ if __name__ == '__main__':
     main()
 
 
-# def memoization_key(*args: str | Thunk) -> tuple[str, ...]:
+# def memoization_key(*args: Decoded | Interpolation) -> tuple[str, ...]:
 #     return tuple(arg for arg in args if isinstance(arg, str))
 #
 #
-# def make_greet_tag(*args: str | Thunk) -> str:
+# def make_greet_tag(*args: Decoded | Interpolation) -> str:
 #     """Use caching of templates in greeting."""
 #     result = []
 #     for arg in args:
@@ -88,12 +89,12 @@ if __name__ == '__main__':
 #     return f"{''.join(result)}!"
 #
 #
-# def greet(*args: str | Thunk) -> str:
+# def greet(*args: Decoded | Interpolation) -> str:
 #     """The actual greet tag, as a cache-oriented wrapper."""
 #     return make_greet_tag(*args)
 
 # @cache
-# def make_compiled_template(*args: str | Thunk) -> Callable:
+# def make_compiled_template(*args: Decoded | Interpolation) -> Callable:
 #     print(f'Making compiled template {hash(args)}...')
 #     builder = DomCodeGenerator()
 #     for i, arg in enumerate(decode_raw(*args)):

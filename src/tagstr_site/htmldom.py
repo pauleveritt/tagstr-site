@@ -8,7 +8,9 @@ from html import escape
 from html.parser import HTMLParser
 
 from tagstr_site.taglib import decode_raw, format_value
-from tagstr_site import Thunk
+from tagstr_site.typing import Decoded, Interpolation
+
+DecodedConcrete = str
 
 def demo():
     title_level = 1
@@ -35,7 +37,7 @@ def demo():
     print(result)
 
 
-def html(*args: str | Thunk) -> str:
+def html(*args: Decoded | Interpolation) -> str:
     parser = HtmlNodeParser()
     for arg in decode_raw(*args):
         parser.feed(arg)
@@ -85,7 +87,7 @@ class HtmlNode:
             match item:
                 case "":
                     pass
-                case str():
+                case DecodedConcrete():
                     item = escape(item, quote=False)
                 case HtmlNode():
                     item = str(item)
@@ -113,9 +115,9 @@ class HtmlNodeParser(HTMLParser):
         self.stack = [self.root]
         self.values: list[Any] = []
 
-    def feed(self, data: str | Thunk) -> None:
+    def feed(self, data: Decoded | Interpolation) -> None:
         match data:
-            case str():
+            case DecodedConcrete():
                 super().feed(escape_placeholder(data))
             case getvalue, _, conv, spec:
                 value = getvalue()
@@ -171,7 +173,7 @@ class HtmlNodeParser(HTMLParser):
             match child:
                 case "":
                     pass
-                case str():
+                case DecodedConcrete():
                     children.append(child)
                 case Sequence():
                     children.extend(child)

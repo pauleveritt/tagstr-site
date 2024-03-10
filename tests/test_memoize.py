@@ -10,9 +10,9 @@ from tagstr_site.memoize.memoize2 import demo2
 #     assert result == these_args
 #
 #
-# def test_make_memoization_key_with_thunk():
-#     thunk = Thunk(lambda x: x, "", None, None)
-#     these_args = ("Hello", thunk, "World")
+# def test_make_memoization_key_with_interpolation():
+#     interpolation = Interpolation(lambda x: x, "", None, None)
+#     these_args = ("Hello", interpolation, "World")
 #     result = memoization_key(*these_args)
 #     assert result == ("Hello", "World")
 #
@@ -36,9 +36,9 @@ from tagstr_site.memoize.memoize2 import demo2
 # #     assert result == these_args
 # #
 # #
-# # def test_make_memoization_key_with_thunk():
-# #     thunk = Thunk(lambda: 9, "", None, None)
-# #     these_args = ("Hello", thunk, "World")
+# # def test_make_memoization_key_with_interpolation():
+# #     interpolation = Interpolation(lambda: 9, "", None, None)
+# #     these_args = ("Hello", interpolation, "World")
 # #     result = memoization_key(*these_args)
 # #     assert result == ("Hello", "World")
 #

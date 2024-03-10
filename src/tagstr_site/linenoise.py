@@ -8,10 +8,10 @@
 import re as re_module
 import string
 
-from tagstr_site import Thunk
+from tagstr_site.typing import Decoded, Interpolation
 
 
-def re(*args: str | Thunk) -> re_module.Pattern:
+def re(*args: Decoded | Interpolation) -> re_module.Pattern:
     pattern = []
     for arg in args:
         match arg:
@@ -28,8 +28,8 @@ def demo():
 
     print(re'a.*z'.search(line))
 
-    chunk = 'efg'
-    print(re'a.*{chunk}'.search(line))
+    decoded = 'efg'
+    print(re'a.*{decoded}'.search(line))
 
 
 if __name__ == '__main__':
