@@ -90,7 +90,7 @@ a value should be inserted:
 
     def greet(*args):
         salutation = args[0].strip()
-        # Second arg is a "thunk" named tuple for the interpolation.
+        # Second arg is an interpolation named tuple.
         getvalue = args[1][0]
         recipient = getvalue().upper()
         return f"{salutation} {recipient}!"
@@ -104,13 +104,13 @@ strings:
 
 - `args[0]` is still the string, this time with a trailing space
 - `args[1]` is an interpolation expression -- the ``{name}`` part
-- Tag strings represent this interpolation part as a *thunk*
-- A thunk is a tuple whose first item is a lambda
+- Tag strings represent this part as an *interpolation* object
+- An interpolation is a tuple whose first item is a lambda
 - Calling this lambda evaluates the expression using the usual lexical scoping
 
-The ``*args`` list is a sequence of "chunks" and "thunks". A chunk is just a
-string. But what is a "thunk"? It's a tuple representing how tag strings
-processed the interpolation into a form useful for your tag function. Thunks
+The ``*args`` list is a sequence of "decoded" and "interpolation" values. A decoded
+is just a string with extra powers. An interpolation a tuple-like value representing
+how tag strings processed the interpolation into a form useful for your tag function. Both
 are fully described below in `Specification`_.
 
 Here is a more generalized version using structural pattern matching and
@@ -118,14 +118,14 @@ type hints:
 
 .. code-block:: python
 
-    from tagstr_site import Chunk, Thunk
-    def greet(*args: Chunk | Thunk) -> str:
+    from tagstr_site.typing import Decoded, Interpolation
+    def greet(*args: Decoded | Interpolation) -> str:
         result = []
         for arg in args:
             match arg:
-                case str():  # A chunk is a string, but can be cooked
+                case str():  # A Decoded value is like a string, but can be cooked
                     result.append(arg.cooked)
-                case getvalue, _, _, _: # A thunk is an interpolation
+                case getvalue, _, _, _: # An Interpolation
                     result.append(getvalue().upper())
 
         return f"{''.join(result)}!"
@@ -134,10 +134,6 @@ type hints:
     greeting = greet"Hello {name} nice to meet you"
     assert greeting == "Hello WORLD nice to meet you!"
 
-TODO:
-- An example that shows conversion and format information
-- Show a lazy implementation
-- Follow ideas in other languages, especially JS
 
 Specification
 =============
@@ -193,57 +189,60 @@ follows from the de-sugaring of:
     trade = 'shrubberies'
     mytag'Did you say "{trade}"?'
 
-to
+to:
 
 .. code-block:: python
 
-    mytag(Chunk(r'Did you say "'), Thunk(lambda: trade, 'trade'), Chunk(r'"?'))
+    mytag(DecodedConcrete(r'Did you say "'), InterpolatonConcrete(lambda: trade, 'trade'), DecodedConcrete(r'"?'))
 
-String Chunks
--------------
+.. note::
 
-In the earlier example, there are two string chunks, ``r'Did you say "'`` and
+    `DecodedConcrete` and `InterpolationConcrete` are just example implementations. If approved, 
+    there will be concrete types in `builtins`.
+
+Decoded Strings
+---------------
+
+In the earlier example, there are two strings: ``r'Did you say "'`` and
 ``r'"?'``.
 
-String chunks are internally stored as the source raw strings. Raw strings
-are used because tag strings are meant to target a variety of DSLs, such as
-the shell and regexes. Such DSLs have their own specific treatment of
+Strings are internally stored as `Decoded` objects with access to raw strings. 
+Raw strings are used because tag strings are meant to target a variety of DSLs, 
+such as the shell and regexes. Such DSLs have their own specific treatment of
 metacharacters, namely the backslash. (This approach follows the usual
 convention of using the r-prefix for regexes in Python itself, given that
 regexes are their own DSL.)
 
 However, often the "cooked" string is what is needed, by decoding the string as
 if it were a standard Python string. Because such decoding might be non-obvious,
-the tag function will be be called with ``Chunk`` for any string chunks.
-``Chunk`` *is-a* ``str``, but has an additional property, ``cooked`` that
-provides this decoding.  The ``Chunk`` type will be available from ``typing``.
-In CPython, ``Chunk`` will be implemented in C, but it has this pure Python
-equivalent:
+the tag function will be be called with ``Decoded`` for any string items.
+``Decoded`` is string-like, but has an additional property, ``raw`` that
+provides this decoding.  The ``Decoded`` protocol will be available from ``typing``.
+In CPython, ``Decoded`` will be implemented in C, but for discussion of this PEP, 
+the following is a compatible implementation:
 
 .. code-block:: python
 
-    class Chunk(str):
-        def __new__(cls, value: str) -> Self:
-            chunk = super().__new__(cls, value)
-            chunk._cooked = None
-            return chunk
-
+    class DecodedConcrete(str):    
+        _raw: str
+    
+        def __new__(cls, raw: str):
+            decoded = raw.encode("utf-8").decode("unicode-escape")
+            if decoded == raw:
+                decoded = raw
+            _decoded = super().__new__(cls, decoded)
+            _decoded._raw = raw
+            return _decoded
+    
         @property
-        def cooked(self) -> str:
-            """Convert string to bytes then, applying decoding escapes.
+        def raw(self):
+            return self._raw
 
-            Maintain underlying Unicode codepoints. Uses the same internal code
-            path as Python's parser to do the actual decode.
-            """
-            if self._cooked is None:
-                self._cooked = self.encode('utf-8').decode('unicode-escape')
-            return self._cooked
+Interpolation
+-------------
 
-Thunk
------
-
-A thunk is the data structure representing the interpolation from the tag
-string. Thunks enable a delayed evaluation model, where the interpolation
+An interpolation is the data structure representing the interpolation from the tag
+string. Interpolations enable a delayed evaluation model, where the interpolation
 expression is computed as needed (if at all); this computation can even be
 memoized by the tag function.
 
@@ -251,17 +250,17 @@ In addition, the original text of the interpolation expression is made
 available to the tag function. This can be useful for debugging or
 metaprogramming.
 
-The type ``Thunk`` will be made available from ``typing``, with
-the following pure-Python semantics:
+The protocol ``Interpolation`` will be made available from ``typing``, with
+the following pure-Python concrete implementation:
 
 .. code-block:: python
 
     from typing import NamedTuple
 
-    class Thunk(NamedTuple):
+    class InterpolationConcrete(NamedTuple):
         getvalue: Callable[[], Any]
         expr: str
-        conv: Literal['a', 'r', 's'] | None = None
+        conv: Literal["a", "r", "s"] | None = None
         formatspec: str | None = None
 
 Given this example interpolation:
@@ -288,19 +287,19 @@ these attributes are as follows:
   evaluated if it contains any expressions before being passed to the tag
   function. Example: ``'some-formatspec'``.
 
-In all cases, the tag function determines how to work with the ``Thunk``
+In all cases, the tag function determines how to work with the ``Interpolation``
 attributes.
 
-In the CPython reference implementation, implementing ``Thunk`` in C would
+In the CPython reference implementation, implementing ``Interpolation`` in C would
 use the equivalent `Struct Sequence Objects
 <https://docs.python.org/3/c-api/tuple.html#struct-sequence-objects>`_ (see
 such code as `os.stat_result
 <https://docs.python.org/3/library/os.html#os.stat_result>`_).
 
-Thunk Expression Evaluation
----------------------------
+Interpolation Expression Evaluation
+--------========-------------------
 
-Expression evaluation for thunks is the same as in :pep:`498`, except that all
+Expression evaluation for interpolations is the same as in :pep:`498`, except that all
 expressions are always implicitly wrapped with a ``lambda``::
 
     The expressions that are extracted from the string are evaluated in the context
@@ -322,15 +321,15 @@ Format Specification
 The format spec is by default ``None`` if it is not specified in the
 tag string's corresponding interpolation.
 
-Because the tag function is completely responsible for processing chunks and
-thunks, there is no required interpretation for the format spec and
-conversion in a thunk. For example, this is a valid usage:
+Because the tag function is completely responsible for processing decodeds and
+interpolations, there is no required interpretation for the format spec and
+conversion in an interpolation. For example, this is a valid usage:
 
 .. code-block:: python
 
     html'<div id={id:int}>{content:HTMLNode|str}</div>'
 
-In this case the formatspec for the second thunk is the string
+In this case the formatspec for the second interpolation is the string
 ``'HTMLNode|str'``; it is up to the ``html`` tag to do something with the
 "format spec" here, if anything.
 
@@ -341,7 +340,7 @@ The tag function has the following signature:
 
 .. code-block:: python
 
-    def mytag(*args: Chunk | Thunk) -> Any:
+    def mytag(*args: Decoded | Interpolation) -> Any:
         ...
 
 This corresponds to the following protocol:
@@ -349,7 +348,7 @@ This corresponds to the following protocol:
 .. code-block:: python
 
     class Tag(Protocol):
-        def __call__(self, *args: Chunk | Thunk) -> Any:
+        def __call__(self, *args: Decoded | Interpolation) -> Any:
             ...
 
 Because of subclassing, the signature for ``mytag`` can of course be widened to
@@ -378,8 +377,8 @@ This is equivalent to:
 Tag Function Names are in the Same Namespace
 --------------------------------------------
 
-Because tag functions are simply callables on a sequence of string chunks and
-thunks, it is possible to write code like the following:
+Because tag functions are simply callables on a sequence of decoded strings and
+interpolations, it is possible to write code like the following:
 
 .. code-block:: python
 
@@ -390,11 +389,11 @@ functions that are named ``f``, but in actual usage they are rarely, if ever,
 mixed up with a f-string. Similar observations can apply to the use of soft
 keywords like ``match`` or ``type``. The same should be true for tag strings.
 
-No Empty String Chunks
-----------------------
+No Empty Decoded String
+-----------------------
 
-Alternation between string chunks and thunks is commonly seen, but it depends on
-the tag string. String chunks will never have a value that is the empty string:
+Alternation between decodeds and interpolations is commonly seen, but it depends
+on the tag string. Decoded strings will never have a value that is the empty string:
 
 .. code-block:: python
 
@@ -404,7 +403,7 @@ the tag string. String chunks will never have a value that is the empty string:
 
 .. code-block:: python
 
-    mytag(Thunk(lambda: a, 'a'), Thunk(lambda: b, 'b'), Thunk(lambda: c, 'c'))
+    mytag(InterpolationConcrete(lambda: a, 'a'), InterpolationConcrete(lambda: b, 'b'), InterpolationConcrete(lambda: c, 'c'))
 
 Likewise:
 
@@ -471,8 +470,8 @@ embedded DSL that supports HTML:
 
 .. code-block:: python
 
-    def html(*args: Chunk | Thunk) -> HTML[HtmlNode]:
-        # process any chunks as cooked strings that are HTML fragments,
+    def html(*args: Decoded | Interpolation) -> HTML[HtmlNode]:
+        # process any decodeds as cooked strings that are HTML fragments,
         # and should be parsed/linted/highlighted accordingly
         ...
 
@@ -484,7 +483,7 @@ Security Implications
 =====================
 
 The security implications of working with interpolations, with respect to
-thunks, are as follows:
+interpolations, are as follows:
 
 1. Scope lookup is the same as f-strings (lexical scope). This model has been
    shown to work well in practice.
@@ -512,11 +511,11 @@ best practice for many tag function implementations:
 
 .. code-block:: python
 
-    def tag(*args: str | Thunk) -> Any:
+    def tag(*args: Decoded | Interpolation) -> Any:
         for arg in args:
             match arg:
                 case str():
-                    ... # handle each string chunk
+                    ... # handle each decoded string
                 case getvalue, expr, conv, formatspec:
                     ... # handle each interpolation
 
@@ -541,7 +540,7 @@ memoize the parse, but only on the strings ``'<li> ''``, ``''>Some todo: ''``,
 
 .. code-block:: python
 
-    def memoization_key(*args: str | Thunk) -> tuple[str, ...]:
+    def memoization_key(*args: Decoded | Interpolation) -> tuple[str, ...]:
         return tuple(arg for arg in args if isinstance(arg, str))
 
 Such tag functions can memoize as follows:
@@ -567,35 +566,6 @@ Reference Implementation
 Rejected Ideas
 ==============
 
-Cooked String Chunks By Default
--------------------------------
-
-This approach of cooked vs raw is somewhat similar to what is done in tagged
-template literals in JavaScript, although its `convention
-<https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#raw_strings>`_
-is that strings are by
-default cooked, with ``raw`` available as an attribute.
-
-However, the decoder for ``unicode-escape``, as of 3.6, returns a
-``DeprecationWarning``, if the `escapes are not valid for a Python literal
-string
-<https://docs.python.org/dev/whatsnew/3.6.html#deprecated-python-behavior>`.
-
-Additionally if the string is not raw, as of 3.12, this becomes a
-``SyntaxWarning`` if it's in Python source text; see `this issue
-<https://github.com/python/cpython/issues/98401>`_.
-
-A simple example to show this would be ``r'\.py'`` vs ``'\.py'``. The first
-usage would often be used with the ``re`` embedded DSL. However, it's not a
-permissible non-raw Python string literal, given that ``\.`` is not a valid
-escape in Python source itself.
-
-Given these caveats, providing a cooked string by default is rejected, to avoid
-emitting unnecessary warnings on every construction of a ``Chunk`` with an
-invalid Python literal string. In addition, it's possible to annotate a tag to
-indicate to an IDE or other tool that the source text should be treated as raw
-or cooked with respect to Python escapes, as was discussed with tool support.
-
 Cached Values For ``getvalue``
 ------------------------------
 
@@ -614,7 +584,7 @@ First, the ``formatspec`` can be arbitrarily nested:
     mytag'{x:{a{b{c}}}}'
 
 In this PEP and corresponding reference implementation, the formatspec
-is eagerly evaluated to set the ``formatspec`` in the thunk, thereby losing the
+is eagerly evaluated to set the ``formatspec`` in the interpolation, thereby losing the
 original expressions.
 
 Secondly, ``mytag'{expr=}'`` is parsed to being the same as
@@ -623,17 +593,17 @@ easier debugging <https://github.com/python/cpython/issues/80998>`_.
 
 While it would be feasible to preserve round-tripping in every usage, this would
 require an extra flag ``equals`` to support, for example, ``{x=}``, and a
-recursive ``Thunk`` definition for ``formatspec``. The following is roughly the
+recursive ``Interpolation`` definition for ``formatspec``. The following is roughly the
 pure Python equivalent of this type, including preserving the sequence
 unpacking (as used in case statements):
 
 .. code-block:: python
 
-    class Thunk(NamedTuple):
+    class InterpolationConcrete(NamedTuple):
         getvalue: Callable[[], Any]
         raw: str
         conv: str | None = None
-        formatspec: str | None | tuple[str | Thunk, ...] = None
+        formatspec: str | None | tuple[Decoded | Interpolation, ...] = None
         equals: bool = False
 
         def __len__(self):
