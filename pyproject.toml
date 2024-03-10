@@ -20,3 +20,7 @@ dependencies = [
 [tool.pytest.ini_options]
 addopts = "-ra -q --doctest-modules --ignore-glob='**/_build/**'"
 testpaths = ["tests", "docs"]
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 20

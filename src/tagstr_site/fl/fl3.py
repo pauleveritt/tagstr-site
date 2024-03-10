@@ -5,17 +5,19 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import *
 
-from tagstr_site import Thunk
+from tagstr_site.typing import Decoded, Interpolation
+
+DecodedConcrete = str
 
 @dataclass
 class LazyFString:
-    args: Sequence[str | Thunk]
+    args: Sequence[Decoded | Interpolation]
 
     def __str__(self) -> str:
         result = []
         for arg in self.args:
             match arg:
-                case str():
+                case DecodedConcrete():
                     result.append(arg)
                 case getvalue, _, _, _:
                     result.append(str(getvalue()))
@@ -23,7 +25,7 @@ class LazyFString:
         return f"{''.join(result)}"
 
 
-def fl(*args: str | Thunk) -> LazyFString:
+def fl(*args: Decoded | Interpolation) -> LazyFString:
     return LazyFString(args)
 
 

@@ -1,14 +1,16 @@
 from __future__ import annotations
 
-from tagstr_site import Chunk, Thunk
+from tagstr_site.typing import Decoded, Interpolation
+
+DecodedConcrete = str
 
 
-def fl(*args: Chunk | Thunk) -> str:
+def fl(*args: Decoded | Interpolation) -> str:
     """Tag string which is largely just an echo."""
     result = []
     for arg in args:
         match arg:
-            case str():
+            case str() | DecodedConcrete():
                 result.append(arg)
             case getvalue, _, _, _:
                 result.append(str(getvalue()))
