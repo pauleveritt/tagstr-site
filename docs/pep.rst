@@ -7,7 +7,7 @@ are an extension to f-strings, with a custom function -- the "tag" -- in place o
 evaluation, domain specific languages (DSLs) for web templating, and more.
 
 Tag strings are similar to `JavaScript tagged templates <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates>`_
-and similar ideas in other languages.
+and related ideas in other languages.
 
 Relationship With Other PEPs
 ============================
@@ -56,6 +56,8 @@ possibility for DSLs and other custom string processing.
 Proposal
 ========
 
+TODO Emphasize the protocols over the implementations
+
 This PEP proposes customizable prefixes for f-strings. These f-strings then
 become a "tag string": an f-string with a "tag function." The tag function is
 a callable which is given a sequence of arguments for the parsed tokens in
@@ -90,7 +92,7 @@ a value should be inserted:
 
     def greet(*args):
         salutation = args[0].strip()
-        # Second arg is an interpolation named tuple.
+        # Second arg is an interpolation (as a named tuple)
         getvalue = args[1][0]
         recipient = getvalue().upper()
         return f"{salutation} {recipient}!"
@@ -113,12 +115,15 @@ is just a string with extra powers. An interpolation a tuple-like value represen
 how tag strings processed the interpolation into a form useful for your tag function. Both
 are fully described below in `Specification`_.
 
+TODO Replace str() below
+
 Here is a more generalized version using structural pattern matching and
 type hints:
 
 .. code-block:: python
 
-    from tagstr_site.typing import Decoded, Interpolation
+    from typing import Decoded, Interpolation  # Get the new protocols
+
     def greet(*args: Decoded | Interpolation) -> str:
         result = []
         for arg in args:
@@ -198,7 +203,7 @@ to:
 .. note::
 
     `DecodedConcrete` and `InterpolationConcrete` are just example implementations. If approved, 
-    there will be concrete types in `builtins`.
+    tag strings will have concrete types in `builtins`.
 
 Decoded Strings
 ---------------
@@ -206,20 +211,21 @@ Decoded Strings
 In the earlier example, there are two strings: ``r'Did you say "'`` and
 ``r'"?'``.
 
-Strings are internally stored as `Decoded` objects with access to raw strings. 
-Raw strings are used because tag strings are meant to target a variety of DSLs, 
-such as the shell and regexes. Such DSLs have their own specific treatment of
-metacharacters, namely the backslash. (This approach follows the usual
-convention of using the r-prefix for regexes in Python itself, given that
-regexes are their own DSL.)
+Strings are internally stored as objects with a ``Decoded`` structure, meaning: conforming to a protocol ``Decoded``.
+
+These objects have access to raw strings. Raw strings are used because tag strings are
+meant to target a variety of DSLs, such as the shell and regexes. Such DSLs have their
+own specific treatment of metacharacters, namely the backslash. This approach follows
+the usual convention of using the r-prefix for regexes in Python itself, given that
+regexes are their own DSL.
 
 However, often the "cooked" string is what is needed, by decoding the string as
-if it were a standard Python string. Because such decoding might be non-obvious,
-the tag function will be be called with ``Decoded`` for any string items.
-``Decoded`` is string-like, but has an additional property, ``raw`` that
-provides this decoding.  The ``Decoded`` protocol will be available from ``typing``.
-In CPython, ``Decoded`` will be implemented in C, but for discussion of this PEP, 
-the following is a compatible implementation:
+if it were a standard Python string. The decoded object's ``__new__`` will store
+the raw string and return the cooked string.
+
+The ``Decoded`` protocol will be available from ``typing``. In CPython, ``Decoded``
+will be implemented in C, but for discussion of this PEP, the following is a compatible
+implementation:
 
 .. code-block:: python
 

@@ -68,9 +68,9 @@ interpolations.
 
 In fact, let's start adopting the jargon used in this proposal:
 
-- *Chunks* are segments that are static strings
-- *Thunks* are the structure representing an interpolation
-- The *args* are thus an arbitrary sequence of chunks and thunks, intermixed
+- *Decodeds* are segments that are static strings
+- *Interpolations* are the structure representing an interpolation
+- The *args* are thus an arbitrary sequence of decodeds and interpolations, intermixed
 
 Here's the code to generalize args:
 
@@ -80,28 +80,28 @@ def greet(*args):
     result = []
     for arg in args:
         match arg:
-            case str():  # This is a chunk...just a string
+            case str():  # Will need a string-like test
                 result.append(arg)
-            case getvalue, _, _, _:  # This is a thunk...an interpolation
+            case getvalue, _, _, _:  # This is an interpolation
                 result.append(getvalue().upper())
 
     return f"{''.join(result)}!"
 ```
 
 It uses Python 3.10 structural pattern matching to analyze each segment and
-determine "chunks" and "thunks".
+determine "decodeds" and "interpolations".
 
 ```{code-block} python
 >>> print(greet"Hello {name} nice to meet you")  # name is still World
 Hello WORLD nice to meet you!
 ```
 
-## Thunks
+## Interpolations
 
-We just said interpolations were represented by "thunks". Let's look at them
+We just said interpolations were represented by a data structure. Let's look at them
 more carefully and see what they have to offer, while adding some typing.
 
-A thunk is a tuple with this shape:
+An interpolation is a tuple with this shape:
 
 ```{literalinclude} ../../src/tagstr_site/__init__.py
 start-at: class Thunk
