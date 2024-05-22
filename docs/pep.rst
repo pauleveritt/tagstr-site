@@ -341,7 +341,7 @@ has the following definition:
         def getvalue(self) -> Any:
             ...
 
-TODO Review the ``getvalue`` change provided by Hood, away from ``Callable``
+TODO Jim Review the ``getvalue`` change above provided by Hood, away from ``Callable``
 
 Given this example interpolation:
 
@@ -497,12 +497,30 @@ Likewise:
 Tool Support
 ============
 
-TODO Mention that this would mean standard Python tooling can provide some value
-    inside the DSL. Also, standard rules apply: scopes, calling semantics, nesting,
-    iteration.
+Python Semantics in Tag Strings
+-------------------------------
+
+Python template languages and other DSLs have semantics quite apart from Python.
+Different scope rules, different calling semantics e.g. for macros, their own
+grammar for loops, and the like.
+
+This means all tools need to write special support for each language. Even then,
+it is usually difficult to find all the possible scopes, for example to autocomplete
+values.
+
+f-strings of course do not have this issue. An f-string is considered part of Python.
+Expressions in curly braces behave as expected and values should resolve based on
+regular scoping rules. Tools such as ``mypy`` can see inside f-string expressions,
+but will likely never look inside a Jinja2 template.
+
+DSLs written with tag strings will inherit much of this value. While we can't expect
+standard tooling to understand the "domain" in the DSL, they can still inspect
+anything expressable in an f-string.
 
 Annotating Tag Functions
 ------------------------
+
+TODO Jim I suggest removing this section.
 
 Tag functions can be annotated in a number of ways, such as to support an IDE or
 a linter for the underlying DSL. For example, both PyCharm and VSCode have specific support
@@ -559,6 +577,9 @@ embedded DSL that supports HTML:
 Backwards Compatibility
 =======================
 
+Like f-strings, usage of tag strings will be a syntactic backwards incompatibility
+with previous versions.
+
 Security Implications
 =====================
 
@@ -579,9 +600,6 @@ Performance Impact
 
 How To Teach This
 =================
-
-TODO Use decorators as an example
-TODO Explain that library authors will give domain-specific stuff that eases teaching
 
 Tag strings have several audiences: consumers of tag functions, authors of tag
 functions, and framework authors who provide interesting machinery for tag
@@ -615,6 +633,11 @@ Finally, framework authors can provide contact points with their lifecycles.
 For example, decorators which tag function authors can use to memoize
 interpolations in the function args.
 
+Each of these points also match the teaching of decorators. In that case,
+a learner consumes something which applies to the code just after it. They
+don't need to know too much about decorator theory to take advantage of the
+utility.
+
 Common Patterns Seen In Writing Tag Functions
 =============================================
 
@@ -637,7 +660,7 @@ best practice for many tag function implementations:
 Recursive Construction
 ----------------------
 
-FIXME Describe the use of a marker class
+TODO Jim Describe the use of a marker class
 
 Memoizing Parses
 -----------------
@@ -670,10 +693,18 @@ Such tag functions can memoize as follows:
 Examples
 ========
 
+TODO Jim I propose we delete this section for now
 - Link to longer examples in the repo
 
 Reference Implementation
 ========================
+
+At the time of this PEP's announcement, a fully-working implementation is
+[available as a branch of 3.12](https://github.com/gvanrossum/cpython/tree/tag-strings-v2).
+
+This branch does not have the final internal implementation, as the PEP discussion
+will likely provide changes. The branch also doesn't provide the ``Decoded`` and
+``Interpolation`` protocols.
 
 Rejected Ideas
 ==============
@@ -760,7 +791,7 @@ separate PEP.
 Acknowledgements
 ================
 
-FIXME include contributors to this repo, including commenters on issues
+TODO Paul include contributors to this repo, including commenters on issues
 
 Copyright
 =========
