@@ -1,10 +1,19 @@
+PEP: 9999
+Title: Tag Strings For Domain-Specific Languages
+Author: Jim Baker <jim.baker@python.org>, Guido van Rossum <guido@python.org>, Paul Everitt <pauleveritt@me.com>
+Status: Draft
+Type: Standards Track
+Content-Type: text/x-rst
+Created: 01-Jun-2024
+Python-Version: 3.13
+
 Abstract
 ========
 
 This PEP introduces tag strings for custom, repeatable string processing. Tag strings
 are an extension to f-strings, with a custom function -- the "tag" -- in place of the
 ``f`` prefix. This function can then provide rich features such as safety checks, lazy
-evaluation, domain specific languages (DSLs) for web templating, and more.
+evaluation, domain-specific languages (DSLs) for web templating, and more.
 
 Tag strings are similar to `JavaScript tagged templates <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates>`_
 and related ideas in other languages.
@@ -95,7 +104,7 @@ Let's start with a tag string which simply returns a static greeting:
 
     assert greet"Hello" == "Hello!"  # Use the custom "tag" on the string
 
-As you can see, `greet` is just a callable, in the place that the ``f``
+As you can see, ``greet`` is just a callable, in the place that the ``f``
 prefix would go. Let's look at the args:
 
 .. code-block:: python
@@ -137,8 +146,8 @@ a value should be inserted:
 The f-string interpolation of ``{name}`` leads to the new machinery in tag
 strings:
 
-- `args[0]` is still the string-like ``'Hello '``, this time with a trailing space
-- `args[1]` is an expression -- the ``{name}`` part
+- ``args[0]`` is still the string-like ``'Hello '``, this time with a trailing space
+- ``args[1]`` is an expression -- the ``{name}`` part
 - Tag strings represent this part as an *interpolation* object
 - An interpolation is a tuple whose first item is a lambda
 - Calling this lambda evaluates the expression in the original scope where the tag string was defined
