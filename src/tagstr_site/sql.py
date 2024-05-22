@@ -7,7 +7,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Any
 
-from tagstr_site.typing import Decoded, Interpolation
+from tagstr_site.tagtyping import Decoded, Interpolation
 
 
 # NOTE: other dialects have different rules, for example Postgres

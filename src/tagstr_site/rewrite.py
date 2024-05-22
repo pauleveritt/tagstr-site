@@ -1,7 +1,7 @@
 import dis  # useful for showing the scope analysis
 from types import FunctionType
 
-from tagstr_site.typing import Decoded, Interpolation
+from tagstr_site.tagtyping import Decoded, Interpolation
 from tagstr_site.taglib import decode_raw
 
 

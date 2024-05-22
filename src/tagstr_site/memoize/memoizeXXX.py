@@ -12,7 +12,7 @@ from typing import *
 from typing import Any
 
 from tagstr_site.taglib import decode_raw
-from tagstr_site.typing import Decoded, Interpolation
+from tagstr_site.tagtyping import Decoded, Interpolation
 from tagstr_site.htmltag import DomCodeGenerator
 
 

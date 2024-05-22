@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any
 
-from tagstr_site.typing import Decoded, Interpolation
+from tagstr_site.tagtyping import Decoded, Interpolation
 from tagstr_site.taglib import decode_raw
 
 

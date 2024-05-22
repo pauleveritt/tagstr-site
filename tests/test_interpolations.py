@@ -1,5 +1,5 @@
 """Test all the combinations of features in interpolations."""
-from tagstr_site.typing import Decoded, Interpolation
+from tagstr_site.tagtyping import Decoded, Interpolation
 
 
 def test_getvalue():

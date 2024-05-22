@@ -2,7 +2,7 @@ import pprint
 import re
 import textwrap
 
-from tagstr_site.typing import Decoded, Interpolation
+from tagstr_site.tagtyping import Decoded, Interpolation
 from tagstr_site.taglib import decode_raw
 
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from tagstr_site.typing import Decoded, Interpolation
+from tagstr_site.tagtyping import Decoded, Interpolation
 from tagstr_site.memoize import TagStringArgs, TagStringCallable
 
 def immutable_bits(*args: Decoded | Interpolation) -> tuple[str | tuple[Any], ...]:

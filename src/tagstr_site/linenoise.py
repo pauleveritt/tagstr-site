@@ -8,7 +8,7 @@
 import re as re_module
 import string
 
-from tagstr_site.typing import Decoded, Interpolation
+from tagstr_site.tagtyping import Decoded, Interpolation
 
 
 def re(*args: Decoded | Interpolation) -> re_module.Pattern:

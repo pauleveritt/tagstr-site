@@ -14,7 +14,7 @@ from types import CodeType
 from typing import *
 
 from tagstr_site.taglib import decode_raw
-from tagstr_site.typing import Decoded, Interpolation
+from tagstr_site.tagtyping import Decoded, Interpolation
 
 
 ENDS_WITH_WHITESPACE_RE = re.compile(r'\s+$')

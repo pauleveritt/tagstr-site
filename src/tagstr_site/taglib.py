@@ -1,6 +1,6 @@
 from typing import Generator
 
-from tagstr_site.typing import Decoded, Interpolation
+from tagstr_site.tagtyping import Decoded, Interpolation
 
 
 def decode_raw(*args: Decoded | Interpolation) -> Generator[Decoded | Interpolation, None, None]:

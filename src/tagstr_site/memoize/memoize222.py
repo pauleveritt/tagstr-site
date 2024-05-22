@@ -1,4 +1,4 @@
-from tagstr_site.typing import Decoded, Interpolation
+from tagstr_site.tagtyping import Decoded, Interpolation
 
 
 def _f(): pass

@@ -7,7 +7,7 @@ from html import escape
 from html.parser import HTMLParser
 
 from tagstr_site.taglib import decode_raw
-from tagstr_site.typing import Decoded, Interpolation
+from tagstr_site.tagtyping import Decoded, Interpolation
 
 DecodedConcrete = str
 AttrsDict = dict[str, str]

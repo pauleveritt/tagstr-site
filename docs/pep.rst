@@ -3,11 +3,32 @@ Abstract
 
 This PEP introduces tag strings for custom, repeatable string processing. Tag strings
 are an extension to f-strings, with a custom function -- the "tag" -- in place of the
-`f` prefix. This function can then provide rich features such as safety checks, lazy
+``f`` prefix. This function can then provide rich features such as safety checks, lazy
 evaluation, domain specific languages (DSLs) for web templating, and more.
 
 Tag strings are similar to `JavaScript tagged templates <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates>`_
 and related ideas in other languages.
+
+Tag functions can be very simple:
+
+.. code-block:: python
+
+    def greet(*args):
+        salutation = args[0].strip()
+        getvalue = args[1][0]
+        recipient = getvalue().upper()
+        return f"{salutation} {recipient}!"
+
+With this, ``greet`` can be used in a way that is familiar to f-strings:
+
+.. code-block:: python
+
+    name = "World"
+    greeting = greet"Hello {name}"
+    assert greeting == "Hello WORLD!"
+
+Below you can find richer examples. As a note, an implementation based on CPython 3.12
+exists, as discussed in this document.
 
 Relationship With Other PEPs
 ============================
@@ -19,7 +40,7 @@ is based off of PEP 701.
 At nearly the same time PEP 498 arrived, :pep:`501` was written to provide
 "i-strings" -- that is, "interpolation template strings". The PEP was
 deferred pending further experience with f-strings. Work on this PEP was
-resumed by a different author in Mar 2023, introducing "t-strings" as template
+resumed by a different author in March 2023, introducing "t-strings" as template
 literal strings, and built atop PEP 701.
 
 The authors of this PEP consider tag strings as a generalization of the
@@ -56,45 +77,57 @@ possibility for DSLs and other custom string processing.
 Proposal
 ========
 
-TODO Emphasize the protocols over the implementations
-
 This PEP proposes customizable prefixes for f-strings. These f-strings then
 become a "tag string": an f-string with a "tag function." The tag function is
 a callable which is given a sequence of arguments for the parsed tokens in
 the string.
 
 Here's a very simple example. Imagine we want a certain kind of string with
-some custom business policies. For example, uppercase the value and add an
-exclamation point:
+some custom business policies: uppercase the value and add an exclamation point.
+
+Let's start with a tag string which simply returns a static greeting:
+
+.. code-block:: python
+
+    def greet():
+        """Give a static greeting."""
+        return "Hello!"
+
+    assert greet"Hello" == "Hello!"  # Use the custom "tag" on the string
+
+As you can see, `greet` is just a callable, in the place that the ``f``
+prefix would go. Let's look at the args:
 
 .. code-block:: python
 
     def greet(*args):
-        """Uppercase and add exclamation"""
+        """Uppercase and add exclamation."""
         salutation = args[0].upper()
         return f"{salutation}!"
 
     greeting = greet"Hello"  # Use the custom "tag" on the string
     assert greeting == "HELLO!"
 
-The beginnings of tag strings appear:
+The tag function is passed a sequence of arguments. Since our tag string is simply
+``"Hello"``, the ``args`` sequence only contains a string-like value of ``'Hello'``.
 
-- ``greet"Hello"`` is an f-string, but with a ``greet`` prefix instead of ``f``
-- This ``greet`` prefix is a callable, in this case, the ``greet`` function
-- The function is passed a sequence of values
-- The first value is just a string
-- ``greet`` performs a simple operation and returns a string
-
-With this in place, let's introduce an interpolation. That is, a place where
+With this in place, let's introduce an *interpolation*. That is, a place where
 a value should be inserted:
 
 .. code-block:: python
 
     def greet(*args):
+        """Handle an interpolation."""
+        # The first arg is the string-like value "Hello " with a space
         salutation = args[0].strip()
-        # Second arg is an interpolation (as a named tuple)
-        getvalue = args[1][0]
-        recipient = getvalue().upper()
+        # The second arg is an "interpolation"
+        interpolation = args[1]
+        # Interpolations are tuples, the first item is a lambda
+        getvalue = interpolation[0]
+        # It gets called in the scope where it was defined, so
+        # the interpolation returns "World"
+        result = getvalue()
+        recipient = result.upper()
         return f"{salutation} {recipient}!"
 
     name = "World"
@@ -104,31 +137,29 @@ a value should be inserted:
 The f-string interpolation of ``{name}`` leads to the new machinery in tag
 strings:
 
-- `args[0]` is still the string, this time with a trailing space
-- `args[1]` is an interpolation expression -- the ``{name}`` part
+- `args[0]` is still the string-like ``'Hello '``, this time with a trailing space
+- `args[1]` is an expression -- the ``{name}`` part
 - Tag strings represent this part as an *interpolation* object
 - An interpolation is a tuple whose first item is a lambda
-- Calling this lambda evaluates the expression using the usual lexical scoping
+- Calling this lambda evaluates the expression in the original scope where the tag string was defined
 
-The ``*args`` list is a sequence of "decoded" and "interpolation" values. A decoded
-is just a string with extra powers. An interpolation a tuple-like value representing
-how tag strings processed the interpolation into a form useful for your tag function. Both
-are fully described below in `Specification`_.
+The ``*args`` list is a sequence of ``Decoded`` and ``Interpolation`` values. A "decoded" object
+is a string-like object with extra powers, as described below. An "interpolation" object is a
+tuple-like value representing how Python processed the interpolation into a form useful for your
+tag function. Both are fully described below in `Specification`_.
 
-TODO Replace str() below
-
-Here is a more generalized version using structural pattern matching and
-type hints:
+Here is a more generalized version using structural pattern matching and type hints:
 
 .. code-block:: python
 
     from typing import Decoded, Interpolation  # Get the new protocols
 
     def greet(*args: Decoded | Interpolation) -> str:
+        """Handle arbitrary args using structural pattern matching."""
         result = []
         for arg in args:
             match arg:
-                case str():  # A Decoded value is like a string, but can be cooked
+                case str():  # A Decoded value is like a string
                     result.append(arg.cooked)
                 case getvalue, _, _, _: # An Interpolation
                     result.append(getvalue().upper())
@@ -139,11 +170,43 @@ type hints:
     greeting = greet"Hello {name} nice to meet you"
     assert greeting == "Hello WORLD nice to meet you!"
 
+Tag strings extract more than just a callable from the ``Interpolation``. They also
+provide Python string formatting info, as well as the original text:
+
+.. code-block:: python
+
+    def greet(*args: Decoded | Interpolation) -> str:
+        """Interpolations can have string formatting specs and conversions."""
+        result = []
+        for arg in args:
+            match arg:
+                case str():
+                    result.append(arg)
+                case getvalue, raw, conversion, format_spec:
+                    gv = f"gv: {getvalue()}"
+                    r = f"r: {raw}"
+                    c = f"c: {conversion}"
+                    f = f"f: {format_spec}"
+                    result.append(", ".join([gv, r, c, f]))
+
+        return f"{''.join(result)}!"
+
+    name = "World"
+    assert greet"Hello {name!r:s}" == "Hello gv: World, r: name, c: r, f: s!"
+
+You can see each ``Interpolation`` parts getting extracted:
+
+- The lambda expression to call and get the value in the scope it was defined
+- The raw string of the interpolation (``name``)
+- The Python "conversion" field (``s``)
+- Any `format specification <https://docs.python.org/3/library/string.html#format-specification-mini-language>`_
+  (``r``)
 
 Specification
 =============
 
-In the rest of this specification, ``mytag`` will be used for an arbitrary tag. Example:
+In the rest of this specification, ``mytag`` will be used for an arbitrary tag.
+For example:
 
 .. code-block:: python
 
@@ -156,7 +219,7 @@ In the rest of this specification, ``mytag`` will be used for an arbitrary tag. 
 Valid Tag Names
 ---------------
 
-The tag name can be any **undotted** name that isn't already an existing valid
+The tag name can be any *undotted* name that isn't already an existing valid
 string or bytes prefix, as seen in the `lexical analysis specification
 <https://docs.python.org/3/reference/lexical_analysis.html#string-and-bytes-literals>`_,
 Therefore these prefixes can't be used as a tag:
@@ -185,8 +248,8 @@ of course tag strings.
 Evaluating Tag Strings
 ----------------------
 
-When the tag string is evaluated, the tag must have a binding, or a `NameError`
-is raised; and it must be a callable, or a `TypeError` is raised. This behavior
+When the tag string is evaluated, the tag must have a binding, or a ``NameError``
+is raised; and it must be a callable, or a ``TypeError`` is raised. This behavior
 follows from the de-sugaring of:
 
 .. code-block:: python
@@ -198,7 +261,7 @@ to:
 
 .. code-block:: python
 
-    mytag(DecodedConcrete(r'Did you say "'), InterpolatonConcrete(lambda: trade, 'trade'), DecodedConcrete(r'"?'))
+    mytag(DecodedConcrete(r'Did you say "'), InterpolationConcrete(lambda: trade, 'trade'), DecodedConcrete(r'"?'))
 
 .. note::
 
@@ -208,10 +271,13 @@ to:
 Decoded Strings
 ---------------
 
-In the earlier example, there are two strings: ``r'Did you say "'`` and
-``r'"?'``.
+In the ``mytag'Did you say "{trade}"?'`` example, there are two strings: ``r'Did you say "'``
+and ``r'"?'``.
 
-Strings are internally stored as objects with a ``Decoded`` structure, meaning: conforming to a protocol ``Decoded``.
+Strings are internally stored as objects with a ``Decoded`` structure, meaning: conforming to
+a protocol ``Decoded``.
+
+TODO Jim Give an example of the kinds of cooked/raw strings we might want to explain the why
 
 These objects have access to raw strings. Raw strings are used because tag strings are
 meant to target a variety of DSLs, such as the shell and regexes. Such DSLs have their
@@ -220,8 +286,8 @@ the usual convention of using the r-prefix for regexes in Python itself, given t
 regexes are their own DSL.
 
 However, often the "cooked" string is what is needed, by decoding the string as
-if it were a standard Python string. The decoded object's ``__new__`` will store
-the raw string and return the cooked string.
+if it were a standard Python string. In the proposed implementation, the decoded object's
+``__new__`` will *store* the raw string and *store and return* the "cooked" string.
 
 The ``Decoded`` protocol will be available from ``typing``. In CPython, ``Decoded``
 will be implemented in C, but for discussion of this PEP, the following is a compatible
@@ -233,10 +299,15 @@ implementation:
         _raw: str
     
         def __new__(cls, raw: str):
+            """Convert string to bytes then, applying decoding escapes."""
             decoded = raw.encode("utf-8").decode("unicode-escape")
+            # For discussion only. The actual implementation can be discussed
+            # during the PEP process.
             if decoded == raw:
                 decoded = raw
             _decoded = super().__new__(cls, decoded)
+            # Maintain underlying Unicode codepoints. Uses the same internal code
+            # path as Python's parser to do the actual decode.
             _decoded._raw = raw
             return _decoded
     
@@ -247,27 +318,30 @@ implementation:
 Interpolation
 -------------
 
-An interpolation is the data structure representing the interpolation from the tag
+An ``Interpolation`` is the data structure representing an expression inside the tag
 string. Interpolations enable a delayed evaluation model, where the interpolation
-expression is computed as needed (if at all); this computation can even be
-memoized by the tag function.
+expression is computed, transformed, memoized, or processed in any way.
 
 In addition, the original text of the interpolation expression is made
 available to the tag function. This can be useful for debugging or
 metaprogramming.
 
-The protocol ``Interpolation`` will be made available from ``typing``, with
-the following pure-Python concrete implementation:
+``Interpolation`` is a ``Protocol`` which will be made available from ``typing``. It
+has the following definition:
 
 .. code-block:: python
 
-    from typing import NamedTuple
+    from typing import Protocol
 
-    class InterpolationConcrete(NamedTuple):
-        getvalue: Callable[[], Any]
+    class Interpolation(Protocol):
         expr: str
         conv: Literal["a", "r", "s"] | None = None
-        formatspec: str | None = None
+        format_spec: str | None = None
+
+        def getvalue(self) -> Any:
+            ...
+
+TODO Review the ``getvalue`` change provided by Hood, away from ``Callable``
 
 Given this example interpolation:
 
@@ -277,11 +351,9 @@ Given this example interpolation:
 
 these attributes are as follows:
 
-* ``getvalue`` is the lambda-wrapped expression for the interpolation. Example:
-  ``lambda: trade``. (Lambda wrapping results in a zero-arg function.)
+* ``getvalue`` is a zero argument closure for the interpolation. In this case, ``lambda: trade``.
 
 * ``expr`` is the *expression text* of the interpolation. Example: ``'trade'``.
-  (The lambda wrapping is implied.)
 
 * ``conv`` is the
   `optional conversion <https://docs.python.org/3/library/string.html#format-string-syntax>`_
@@ -289,11 +361,11 @@ these attributes are as follows:
   and ascii conversions. Note that as with f-strings, no other conversions are supported.
   Example: ``'r'``.
 
-* ``formatspec`` is the optional formatspec string. A formatspec is eagerly
-  evaluated if it contains any expressions before being passed to the tag
+* ``format_spec`` is the optional `format_spec string <https://docs.python.org/3/library/string.html#format-specification-mini-language>`_.
+  A format_spec is eagerly evaluated if it contains any expressions before being passed to the tag
   function. Example: ``'some-formatspec'``.
 
-In all cases, the tag function determines how to work with the ``Interpolation``
+In all cases, the tag function determines what to do with valid ``Interpolation``
 attributes.
 
 In the CPython reference implementation, implementing ``Interpolation`` in C would
@@ -303,7 +375,7 @@ such code as `os.stat_result
 <https://docs.python.org/3/library/os.html#os.stat_result>`_).
 
 Interpolation Expression Evaluation
---------========-------------------
+-----------------------------------
 
 Expression evaluation for interpolations is the same as in :pep:`498`, except that all
 expressions are always implicitly wrapped with a ``lambda``::
@@ -315,27 +387,25 @@ expressions are always implicitly wrapped with a ``lambda``::
 
 This means that the lambda wrapping here uses the usual lexical scoping. As with
 f-strings, there's no need to use ``locals()``, ``globals()``, or frame
-introspection with ``sys._getframe`` to evaluate the interpolation.
-
-The code of the expression text, ``'trade'``, is available, which means there is
-no need to use ``inspect.getsource``, or otherwise parse the source code to get
-this expression text.
+introspection with ``sys._getframe`` to evaluate the interpolation. Stated differently,
+the code of each expression is available and does not have to be looked up with
+``inspect.getsource`` or some other means.
 
 Format Specification
 --------------------
 
-The format spec is by default ``None`` if it is not specified in the
-tag string's corresponding interpolation.
+The format_spec is by default ``None`` if it is not specified in the tag string's
+corresponding interpolation.
 
-Because the tag function is completely responsible for processing decodeds and
-interpolations, there is no required interpretation for the format spec and
-conversion in an interpolation. For example, this is a valid usage:
+Because the tag function is completely responsible for processing ``Decoded``
+and ``Interpolation`` values, there is no required interpretation for the format
+spec and conversion in an interpolation. For example, this is a valid usage:
 
 .. code-block:: python
 
     html'<div id={id:int}>{content:HTMLNode|str}</div>'
 
-In this case the formatspec for the second interpolation is the string
+In this case the format_spec for the second interpolation is the string
 ``'HTMLNode|str'``; it is up to the ``html`` tag to do something with the
 "format spec" here, if anything.
 
@@ -427,6 +497,10 @@ Likewise:
 Tool Support
 ============
 
+TODO Mention that this would mean standard Python tooling can provide some value
+    inside the DSL. Also, standard rules apply: scopes, calling semantics, nesting,
+    iteration.
+
 Annotating Tag Functions
 ------------------------
 
@@ -471,7 +545,7 @@ the tag string examples):
         children: HtmlChildren = field(default_factory=list)
         ...
 
-Then combine together to indicate that the tag function ``html`` works with an
+These combine together to indicate that the tag function ``html`` works with an
 embedded DSL that supports HTML:
 
 .. code-block:: python
@@ -506,6 +580,41 @@ Performance Impact
 How To Teach This
 =================
 
+TODO Use decorators as an example
+TODO Explain that library authors will give domain-specific stuff that eases teaching
+
+Tag strings have several audiences: consumers of tag functions, authors of tag
+functions, and framework authors who provide interesting machinery for tag
+functions.
+
+All three groups can start from an important framing:
+
+- Existing solutions (such as template engines) can do parts of tag strings
+- But tag strings move everything closer to "normal Python"
+
+Consumers can look at tag strings as starting from f-strings:
+
+- They look familiar.
+- Scoping and syntax rules are the same.
+- You just need to import the tag function.
+
+They first thing they need to absorb: unlike f-strings, the string isn't
+immediately evaluated "in-place". Something else (the tag function) happens.
+That's the second thing to teach: the tag functions do something particular.
+Thus the concept of "domain specific languages" (DSL.)
+
+Tag function authors therefore think in terms of making a DSL. They have
+business policies they want to provide in a Python-familiar way. With tag
+functions, Python is going to do much of the pre-processing. This lowers
+the bar for making a DSL.
+
+Tag authors can start with simple uses. Tag strings can then open to larger
+patterns: lazy evaluation, intermediate representations, registries, and more.
+
+Finally, framework authors can provide contact points with their lifecycles.
+For example, decorators which tag function authors can use to memoize
+interpolations in the function args.
+
 Common Patterns Seen In Writing Tag Functions
 =============================================
 
@@ -522,7 +631,7 @@ best practice for many tag function implementations:
             match arg:
                 case str():
                     ... # handle each decoded string
-                case getvalue, expr, conv, formatspec:
+                case getvalue, expr, conv, format_spec:
                     ... # handle each interpolation
 
 Recursive Construction
@@ -557,9 +666,6 @@ Such tag functions can memoize as follows:
 3. If not, parse, keeping tracking of interpolation points.
 4. Apply interpolations to parsed template.
 
-TODO need to actually write this - there's an example of how to do this for
-writing an ``html`` tag in the companion tutorial PEP.
-
 
 Examples
 ========
@@ -575,22 +681,22 @@ Rejected Ideas
 Cached Values For ``getvalue``
 ------------------------------
 
-FIXME
+TODO Jim
 
-Enable Exact Round-Tripping of ``conv`` and ``formatspec``
-----------------------------------------------------------
+Enable Exact Round-Tripping of ``conv`` and ``format_spec``
+-----------------------------------------------------------
 
 There are two limitations with respect to exactly round-tripping to the original
 source text.
 
-First, the ``formatspec`` can be arbitrarily nested:
+First, the ``format_spec`` can be arbitrarily nested:
 
 .. code-block:: python
 
     mytag'{x:{a{b{c}}}}'
 
-In this PEP and corresponding reference implementation, the formatspec
-is eagerly evaluated to set the ``formatspec`` in the interpolation, thereby losing the
+In this PEP and corresponding reference implementation, the format_spec
+is eagerly evaluated to set the ``format_spec`` in the interpolation, thereby losing the
 original expressions.
 
 Secondly, ``mytag'{expr=}'`` is parsed to being the same as
@@ -599,7 +705,7 @@ easier debugging <https://github.com/python/cpython/issues/80998>`_.
 
 While it would be feasible to preserve round-tripping in every usage, this would
 require an extra flag ``equals`` to support, for example, ``{x=}``, and a
-recursive ``Interpolation`` definition for ``formatspec``. The following is roughly the
+recursive ``Interpolation`` definition for ``format_spec``. The following is roughly the
 pure Python equivalent of this type, including preserving the sequence
 unpacking (as used in case statements):
 
@@ -609,14 +715,14 @@ unpacking (as used in case statements):
         getvalue: Callable[[], Any]
         raw: str
         conv: str | None = None
-        formatspec: str | None | tuple[Decoded | Interpolation, ...] = None
+        format_spec: str | None | tuple[Decoded | Interpolation, ...] = None
         equals: bool = False
 
         def __len__(self):
             return 4
 
         def __iter__(self):
-            return iter((self.getvalue, self.raw, self.conv, self.formatspec))
+            return iter((self.getvalue, self.raw, self.conv, self.format_spec))
 
 However, the additional complexity to support exact round-tripping seems
 unnecessary and is thus rejected.
@@ -640,6 +746,16 @@ support the ``+`` operator with ``__add__`` and ``__radd__``.
 Because tag strings target embedded DSLs, this complexity introduces other
 issues, such as determining appropriate separators. This seems unnecessarily
 complicated and is thus rejected.
+
+Arbitrary Conversion Values
+---------------------------
+
+Python allows only ``r``, ``s``, or ``a`` as possible conversion type values.
+Trying to assign a different value results in ``SyntaxError``.
+
+In theory, tag functions could choose to handle other conversion types. But this
+PEP adheres closely to :pep:`701`. Any changes to allowed values should be in a
+separate PEP.
 
 Acknowledgements
 ================
