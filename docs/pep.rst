@@ -1,5 +1,5 @@
 PEP: 9999
-Title: Tag Strings For Domain-Specific Languages
+Title: Tag Strings For Writing Domain-Specific Languages
 Author: Jim Baker <jim.baker@python.org>, Guido van Rossum <guido@python.org>, Paul Everitt <pauleveritt@me.com>
 Status: Draft
 Type: Standards Track
@@ -286,8 +286,6 @@ and ``r'"?'``.
 Strings are internally stored as objects with a ``Decoded`` structure, meaning: conforming to
 a protocol ``Decoded``.
 
-TODO Jim Give an example of the kinds of cooked/raw strings we might want to explain the why
-
 These objects have access to raw strings. Raw strings are used because tag strings are
 meant to target a variety of DSLs, such as the shell and regexes. Such DSLs have their
 own specific treatment of metacharacters, namely the backslash. This approach follows
@@ -349,8 +347,6 @@ has the following definition:
 
         def getvalue(self) -> Any:
             ...
-
-TODO Jim Review the ``getvalue`` change above provided by Hood, away from ``Callable``
 
 Given this example interpolation:
 
@@ -524,64 +520,7 @@ but will likely never look inside a Jinja2 template.
 
 DSLs written with tag strings will inherit much of this value. While we can't expect
 standard tooling to understand the "domain" in the DSL, they can still inspect
-anything expressable in an f-string.
-
-Annotating Tag Functions
-------------------------
-
-TODO Jim I suggest removing this section.
-
-Tag functions can be annotated in a number of ways, such as to support an IDE or
-a linter for the underlying DSL. For example, both PyCharm and VSCode have specific support
-for embedding DSLs:
-
-* PyCharm calls this `language injections
-  <https://www.jetbrains.com/help/pycharm/using-language-injections.html>`_.
-
-* VScode calls this `embedded languages
-  <https://code.visualstudio.com/api/language-extensions/embedded-languages>`_.
-
-GitHub also uses a `registry of known languages
-<https://github.com/github-linguist/linguist/blob/master/lib/linguist/languages.yml>`_,
-as part of its Linguist project, which could be potentially leveraged.
-
- For example, let's define a convention for defining an embedded DSL with
- respect to Linguist. We will use function annotations introduced by :pep:`593`:
-
-.. code-block:: python
-
-    @dataclass
-    class Language:
-        linguist: str  # standard language name/alias known to GitHub's Linguist
-        cooked: bool = True
-
-    type HTML = Annotated[T, 'language': 'HTML', 'registry': 'linguist']
-
-This can then be put together with a DOM class for HTML (this comes from one of
-the tag string examples):
-
-.. code-block:: python
-
-    HtmlChildren = list[str, 'HtmlNode']
-    HtmlAttributes = dict[str, Any]
-
-    @dataclass
-    class HtmlNode:
-        tag: str | Callable[..., HtmlNode] = ''
-        attributes: HtmlAttributes = field(default_factory=dict)
-        children: HtmlChildren = field(default_factory=list)
-        ...
-
-These combine together to indicate that the tag function ``html`` works with an
-embedded DSL that supports HTML:
-
-.. code-block:: python
-
-    def html(*args: Decoded | Interpolation) -> HTML[HtmlNode]:
-        # process any decodeds as cooked strings that are HTML fragments,
-        # and should be parsed/linted/highlighted accordingly
-        ...
-
+anything expressible in an f-string.
 
 Backwards Compatibility
 =======================
@@ -661,49 +600,36 @@ best practice for many tag function implementations:
     def tag(*args: Decoded | Interpolation) -> Any:
         for arg in args:
             match arg:
-                case str():
+                case Decoded():
                     ... # handle each decoded string
                 case getvalue, expr, conv, format_spec:
                     ... # handle each interpolation
+TODO Paul Ensure we can change to case statements based on protocols
 
-Recursive Construction
-----------------------
+Lazy Evaluation
+---------------
 
-TODO Jim Describe the use of a marker class
+TODO Paul
 
-Memoizing Parses
------------------
+Memoizing
+---------
 
-Consider this tag string:
+TODO Paul
 
-.. code-block:: python
+Order of Evaluation
+-------------------
 
-    html'<li {attrs}>Some todo: {todo}</li>''
+Imagine a tag that generates a number of sections in HTML. The tag needs inputs for each
+section. But what if the last input argument takes a while? You can't return the HTML for
+the first section until all the arguments are available.
 
-Regardless of the expressions ``attrs`` and ``todo``, we would expect that the
-static part of the tag string should be parsed the same. So it is possible to
-memoize the parse, but only on the strings ``'<li> ''``, ``''>Some todo: ''``,
-``'</li>''``:
-
-.. code-block:: python
-
-    def memoization_key(*args: Decoded | Interpolation) -> tuple[str, ...]:
-        return tuple(arg for arg in args if isinstance(arg, str))
-
-Such tag functions can memoize as follows:
-
-1. Compute the memoization key.
-2. Check in the cache if there's an existing parsed templated for that
-   memoization key.
-3. If not, parse, keeping tracking of interpolation points.
-4. Apply interpolations to parsed template.
-
+You'd prefer to emit markup as the inputs are available. Some templating tools support
+this approach, as does tag strings.
 
 Examples
 ========
 
-TODO Jim I propose we delete this section for now
-- Link to longer examples in the repo
+TODO Paul Delete this section and link to longer examples in the repo
 
 Reference Implementation
 ========================
@@ -718,10 +644,6 @@ will likely provide changes. The branch also doesn't provide the ``Decoded`` and
 Rejected Ideas
 ==============
 
-Cached Values For ``getvalue``
-------------------------------
-
-TODO Jim
 
 Enable Exact Round-Tripping of ``conv`` and ``format_spec``
 -----------------------------------------------------------
@@ -801,6 +723,7 @@ Acknowledgements
 ================
 
 TODO Paul include contributors to this repo, including commenters on issues
+TODO Ref pyxl
 
 Copyright
 =========
