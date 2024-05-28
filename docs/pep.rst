@@ -168,10 +168,11 @@ Here is a more generalized version using structural pattern matching and type hi
         result = []
         for arg in args:
             match arg:
-                case str():  # A Decoded value is like a string
-                    result.append(arg.cooked)
-                case getvalue, _, _, _: # An Interpolation
-                    result.append(getvalue().upper())
+                case Decoded() as decoded:
+                    result.append(arg)
+                case Interpolation() as interpolation:
+                    value = interpolation.getvalue()
+                    result.append(value.upper())
 
         return f"{''.join(result)}!"
 
@@ -189,9 +190,9 @@ provide Python string formatting info, as well as the original text:
         result = []
         for arg in args:
             match arg:
-                case str():
-                    result.append(arg)
-                case getvalue, raw, conversion, format_spec:
+                case Decoded() as decoded:
+                    result.append(decoded)
+                case getvalue, raw, conversion, format_spec:  # Unpack
                     gv = f"gv: {getvalue()}"
                     r = f"r: {raw}"
                     c = f"c: {conversion}"
@@ -284,10 +285,20 @@ In the ``mytag'Did you say "{trade}"?'`` example, there are two strings: ``r'Did
 and ``r'"?'``.
 
 Strings are internally stored as objects with a ``Decoded`` structure, meaning: conforming to
-a protocol ``Decoded``.
+a protocol ``Decoded``:
 
-These objects have access to raw strings. Raw strings are used because tag strings are
-meant to target a variety of DSLs, such as the shell and regexes. Such DSLs have their
+.. code-block:: python
+
+    @runtime_checkable
+    class Decoded(Protocol):
+        def __str__(self) -> str:
+            ...
+
+        raw: str
+
+
+These ``Decoded`` objects have access to raw strings. Raw strings are used because tag strings
+are meant to target a variety of DSLs, such as the shell and regexes. Such DSLs have their
 own specific treatment of metacharacters, namely the backslash. This approach follows
 the usual convention of using the r-prefix for regexes in Python itself, given that
 regexes are their own DSL.
@@ -296,28 +307,28 @@ However, often the "cooked" string is what is needed, by decoding the string as
 if it were a standard Python string. In the proposed implementation, the decoded object's
 ``__new__`` will *store* the raw string and *store and return* the "cooked" string.
 
+The protocol is marked as ``@runtime_checkable`` to allow structural pattern matching to
+test against the protocol instead of a type. This can incur a small performance penalty.
+Since the ``case`` tests are in user-code tag functions, authors can choose to optimize by
+testing for the implementation type discussed next.
+
 The ``Decoded`` protocol will be available from ``typing``. In CPython, ``Decoded``
 will be implemented in C, but for discussion of this PEP, the following is a compatible
 implementation:
 
 .. code-block:: python
 
-    class DecodedConcrete(str):    
+    class DecodedConcrete(str):
         _raw: str
-    
+
         def __new__(cls, raw: str):
-            """Convert string to bytes then, applying decoding escapes."""
             decoded = raw.encode("utf-8").decode("unicode-escape")
-            # For discussion only. The actual implementation can be discussed
-            # during the PEP process.
             if decoded == raw:
                 decoded = raw
-            _decoded = super().__new__(cls, decoded)
-            # Maintain underlying Unicode codepoints. Uses the same internal code
-            # path as Python's parser to do the actual decode.
-            _decoded._raw = raw
-            return _decoded
-    
+            chunk = super().__new__(cls, decoded)
+            chunk._raw = raw
+            return chunk
+
         @property
         def raw(self):
             return self._raw
@@ -329,24 +340,28 @@ An ``Interpolation`` is the data structure representing an expression inside the
 string. Interpolations enable a delayed evaluation model, where the interpolation
 expression is computed, transformed, memoized, or processed in any way.
 
-In addition, the original text of the interpolation expression is made
-available to the tag function. This can be useful for debugging or
-metaprogramming.
+In addition, the original text of the interpolation expression is made available to the
+tag function. This can be useful for debugging or metaprogramming.
 
 ``Interpolation`` is a ``Protocol`` which will be made available from ``typing``. It
 has the following definition:
 
 .. code-block:: python
 
-    from typing import Protocol
-
+    @runtime_checkable
     class Interpolation(Protocol):
-        expr: str
-        conv: Literal["a", "r", "s"] | None = None
-        format_spec: str | None = None
-
-        def getvalue(self) -> Any:
+        def __len__(self):
             ...
+
+        def __getitem__(self, index: int):
+            ...
+
+        def getvalue(self) -> Callable[[], Any]:
+            ...
+
+        expr: str
+        conv: Literal["a", "r", "s"] | None
+        format_spec: str | None
 
 Given this example interpolation:
 
@@ -377,7 +392,16 @@ In the CPython reference implementation, implementing ``Interpolation`` in C wou
 use the equivalent `Struct Sequence Objects
 <https://docs.python.org/3/c-api/tuple.html#struct-sequence-objects>`_ (see
 such code as `os.stat_result
-<https://docs.python.org/3/library/os.html#os.stat_result>`_).
+<https://docs.python.org/3/library/os.html#os.stat_result>`_). For purposes of this
+PEP, here is an example of a pure Python implementation:
+
+.. code-block:: python
+
+    class InterpolationConcrete(NamedTuple):
+        getvalue: Callable[[], Any]
+        expr: str
+        conv: Literal['a', 'r', 's'] | None = None
+        formatspec: str | None = None
 
 Interpolation Expression Evaluation
 -----------------------------------
@@ -428,7 +452,7 @@ This corresponds to the following protocol:
 
 .. code-block:: python
 
-    class Tag(Protocol):
+    class TagFunction(Protocol):
         def __call__(self, *args: Decoded | Interpolation) -> Any:
             ...
 
@@ -600,21 +624,25 @@ best practice for many tag function implementations:
     def tag(*args: Decoded | Interpolation) -> Any:
         for arg in args:
             match arg:
-                case Decoded():
+                case Decoded() as decoded:
                     ... # handle each decoded string
                 case getvalue, expr, conv, format_spec:
                     ... # handle each interpolation
-TODO Paul Ensure we can change to case statements based on protocols
 
 Lazy Evaluation
 ---------------
 
-TODO Paul
+The example tag functions above each call the interpolation's `getvalue` lambda
+immediately. Python developers have frequently wished that f-strings could be
+deferred, or lazily evaluated. It would be straightforward to write a wrapper that,
+for example, defers calling the lambda until an ``__str__`` was invoked.
 
 Memoizing
 ---------
 
-TODO Paul
+Tag function authors have control of processing the static string parts and
+the dynamic interpolation parts. For higher performance, they can deploy approaches
+for memoizing processing, for example by generating keys.
 
 Order of Evaluation
 -------------------
@@ -625,11 +653,6 @@ the first section until all the arguments are available.
 
 You'd prefer to emit markup as the inputs are available. Some templating tools support
 this approach, as does tag strings.
-
-Examples
-========
-
-TODO Paul Delete this section and link to longer examples in the repo
 
 Reference Implementation
 ========================
@@ -722,8 +745,10 @@ separate PEP.
 Acknowledgements
 ================
 
-TODO Paul include contributors to this repo, including commenters on issues
-TODO Ref pyxl
+Thanks to Ryan Morshead for contributions during development of the ideas leading
+to tag strings. Thanks also to Koudai Aono for infrastructure work on contributing
+materials. Special mention also to Dropbox's `pyxl <https://github.com/dropbox/pyxl>`_
+as tackling similar ideas years ago.
 
 Copyright
 =========

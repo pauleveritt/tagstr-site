@@ -14,7 +14,10 @@ dependencies = [
     "pytest-sphinx",
     "sphinx-autobuild",
     "sybil",
-    "myst-parser"
+    "myst-parser",
+    "jupyterlite-core[all]",
+    "jupyterlite-pyodide-kernel",
+    "ipython"
 ]
 
 [tool.pytest.ini_options]
