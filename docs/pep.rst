@@ -626,7 +626,7 @@ best practice for many tag function implementations:
             match arg:
                 case Decoded() as decoded:
                     ... # handle each decoded string
-                case getvalue, expr, conv, format_spec:
+                case Interpolation() as interpolation:
                     ... # handle each interpolation
 
 Lazy Evaluation
