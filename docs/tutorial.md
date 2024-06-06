@@ -38,9 +38,9 @@ call these *interpolations*. Let's see a super-simple example:
 
 ```python
 def greet(*args):
-    """Handle an interpolation thunk."""
+    """Handle an interpolation."""
     salutation = args[0].strip()
-    # Second arg is a "thunk" tuple for the interpolation.
+    # Second arg is an "interpolation" tuple.
     getvalue = args[1][0]
     recipient = getvalue().upper()
     return f"{salutation} {recipient}!"
@@ -103,20 +103,20 @@ more carefully and see what they have to offer, while adding some typing.
 
 An interpolation is a tuple with this shape:
 
-```{literalinclude} ../../src/tagstr_site/__init__.py
-start-at: class Thunk
+```{literalinclude} ../../src/tagstr_site/tagtyping.py
+start-at: class Interpolation
 end-at: formatspect
 ```
 
 <!--- invisible-code-block: python
-from tagstr_site import Thunk
+from tagstr_site.tagtyping import Decoded, Interpolation
 -->
 
 It will likely be defined in the `typing` module. Once imported, you can use it as a type hint for your tag string's arguments:
 
 ```{code-block} python
-def greet(*args: str | Thunk) -> str:
-    """More about the thunk."""
+def greet(*args: Decoded | Interpolation) -> str:
+    """More about the interpolation."""
     result = []
     for arg in args:
         match arg:
@@ -133,7 +133,6 @@ def greet(*args: str | Thunk) -> str:
 ```
 
 Let's add some typing information to our greet function.
-We'll
 
 ```{code-block} python
 >>> print(greet"Hello {name!r:s}")  # name is still World
