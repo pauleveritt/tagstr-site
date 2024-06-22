@@ -15,7 +15,9 @@ def main() -> MainResult:
     """Main entry point for this example."""
     name = "World"
     result: HtmlNode = html"<div>Hello {name}</div>"
-    return ("div", result.tag), (result.children, ["Hello ", "World"])
+    return ("div", result.tag), ()
+    assert result.tag == "div"
+    assert result.children == ["Hello ", "World"]
 
 
 if __name__ == "__main__":

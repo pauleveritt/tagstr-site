@@ -1,8 +1,16 @@
 """Basic HTML parser."""
-
+from dataclasses import dataclass, field
 from html.parser import HTMLParser
 
-from tagstr_site.examples import HtmlNode, MainResult, Attrs
+from tagstr_site.examples import MainResult, Attrs
+
+
+@dataclass
+class HtmlNode:
+    """A single HTML document object model node"""
+
+    tag: str | None = None
+    children: list[str, "HtmlNode"] = field(default_factory=list)
 
 
 class HtmlBuilder(HTMLParser):
