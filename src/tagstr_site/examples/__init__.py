@@ -1,4 +1,3 @@
-from dataclasses import dataclass, field
 from typing import Any
 
 # A helper for example writing
@@ -7,14 +6,6 @@ MainResult = str | tuple[tuple[str, str | None], tuple[str, Any]]
 PLACEHOLDER = "x$x"
 
 Attrs = list[tuple[str, str | None]]
-
-
-@dataclass
-class HtmlNode:
-    """A single HTML document object model node"""
-
-    tag: str | None = None
-    children: list[str, "HtmlNode"] = field(default_factory=list)
 
 
 def escape_placeholder(string: str) -> str:
@@ -35,13 +26,13 @@ def join_with_values(string: str, values: list[Any]) -> tuple[str, list[Any]]:
 
 
 def interleave_with_values(
-    string: str, values: list[Any]
+        string: str, values: list[Any]
 ) -> tuple[list[Any], list[Any]]:
     if string == PLACEHOLDER:
         return values[:1], values[1:]
 
     *string_parts, last_string_part = string.split(PLACEHOLDER)
-    remaining_values = values[len(string_parts) :]
+    remaining_values = values[len(string_parts):]
 
     interleaved_values = [
         item
@@ -50,4 +41,4 @@ def interleave_with_values(
     ]
     interleaved_values.append(last_string_part)
 
-    return interleaved_values #, remaining_values
+    return interleaved_values  # , remaining_values

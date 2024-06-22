@@ -1,16 +1,22 @@
 """Simple HTML parser with interpolation support."""
-
+from dataclasses import dataclass, field
 from html.parser import HTMLParser
-from typing import Any, Sequence
+from typing import Any
 
 from tagstr_site.examples import (
     MainResult,
-    HtmlNode,
     PLACEHOLDER,
-    join_with_values,
     interleave_with_values,
     Attrs,
 )
+
+
+@dataclass
+class HtmlNode:
+    """A single HTML document object model node"""
+
+    tag: str | None = None
+    children: list[str, "HtmlNode"] = field(default_factory=list)
 
 
 class HtmlBuilder(HTMLParser):

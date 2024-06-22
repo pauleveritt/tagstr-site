@@ -9,7 +9,7 @@ tutorial will bring your markup and logic closer together by taking inspiration 
 [JSX](https://reactjs.org/docs/introducing-jsx.html), a syntax extension to
 JavaScript commonly used in [ReactJS](https://reactjs.org/) projects.
 
-Here's a couple examples of what it you'll be able to do:
+Here are some examples of what you'll be able to do:
 
 ```python
 # Attribute expansion
@@ -32,7 +32,7 @@ representation of the HTML that can be freely manipulated - a Document Object Mo
 (DOM) of sorts for HTML:
 
 ```python
-node: HtmlNode = html
+node: HTML = html
 "<h1/>"
 node.attributes["color"] = "blue"
 node.children.append("Hello, world!")
@@ -74,7 +74,7 @@ Which will render as:
 
 This is simple enough, but Jinja templates can grow rapidly in complexity. For example,
 if you want to dynamically set attributes on the `<li>` elements the Jinja template
-it's far less straightforward:
+it's less straightforward:
 
 ```python
 from jinja2 import Template
@@ -122,10 +122,9 @@ The result of which is:
 </ol>
 ```
 
-One of the problems here is that Jinja is a generic templating tool, so the specific
-needs that come with rendering HTML, like expanding dynamic attributes, aren't supported
-out of the box. More broadly, Jinja templates make it difficult to coordinate business
-and UI logic since markup in the template is kept separate from your logic in Python.
+One of the problems here is that Jinja is a generic templating tool, so the specific needs that come with rendering
+HTML, like expanding dynamic attributes, aren't supported out of the box. More broadly, Jinja templates make it
+difficult to coordinate business and UI logic since markup in the template is kept separate from your logic in Python.
 
 This is a key point, one that makes it hard to provide good tooling. Jinja2 has different scope rules, calling
 semantics, and composition approaches than Python. This means tools like Black, Ruff, and mypy can't really peak inside
@@ -135,8 +134,6 @@ that part of your project.
 
 Before we introduce templating, let's cover the basics of HTML parsing. In the next few steps, we'll keep it very
 simple: for example, no support for attributes.
-
-[Hellllo](xref:python#zipapp-specifying-the-interpreter)
 
 Given that you're going to be parsing HTML, it will be useful to lean on Python's
 built-in :class:`~html.parser.HTMLParser` which can be subclassed to customize its
@@ -164,14 +161,14 @@ Let's start with a class that inherits from the `HTMLParser`:
 
 Our initializer function makes a root node and sets it as the only element in the "stack".
 
-First: what's the `HTMLNode`? Just a simple dataclass to keep track of the pieces of a node we are interested in.
+First: what is `HTMLNode`? Just a simple dataclass to keep track of the pieces of a node we are interested in.
 
-```{literalinclude} ../src/tagstr_site/examples/__init__.py
+```{literalinclude} ../src/tagstr_site/examples/htmlbasic/hb1.py
 :start-at: @dataclass
 :end-at: children: list
 ```
 
-We're not interested for now with attributes.
+Again: for now, we're not interested for now with attributes.
 
 What's the purpose of the stack? As we go down through nested nodes, we need to keep track of the parent element is
 currently being constructed at any point. This will allow you to append newly created child elements and body text to
@@ -218,15 +215,21 @@ add a `result()` method:
 That's it for a very simple HTML parser. It can handle a tree of nodes, but can't handle attributes. It certainly can't
 handle templating. Let's tackle that next.
 
-TODO Link to full example
+TODO Markdown link to full example
 
 ## Handling interpolations
 
 This is pretty neat! Unfortunately though, this isn't quite enough to create an `html`
 tag that can interpolate values because, at this point, the `feed()` method of your
 `HtmlBuilder` only accepts strings. To use this in an `html` tag it will need to
-accept both decoded strings and interpolations. Ultimately you'll want to be able to write the following
-tag function:
+accept both decoded strings and interpolations.
+
+:::{note}
+Tag functions can take a string-like thing and an interpolation. The PEP defines protocols for these: `Decoded` and
+`Interpolation`. The tutorial will use these names, to be specificl
+:::
+
+Ultimately you'll want to be able to write the following tag function:
 
 ```python
 from taglib.tagtyping import Decoded, Interpolation
@@ -239,18 +242,18 @@ def html(*args: Decoded | Thunk) -> HtmlNode:
     return builder.result()
 ```
 
-First and foremost, our `feed` method has to change. We are currently using the base class `feed` method. We need to
-implement our own. Why? Because, as shown in this snippet, `feed` will be handed string-like things but also
-interpolations.
+We are currently using the base class `feed` method. We need to implement our own, as `feed` will be handed both
+`Decoded` and `Interpolation` args.
 
-One approach: pass a "placeholder" string to the parser each time `feed()` is handed an interpolation instead of a
-decoded string. The engine stores this placeholder. Then in the _handler_ methods, when the placeholder is encountered,
+One approach: pass a "placeholder" string to the parser each time `feed()` is handed an `Interpolation` instead of a
+`Decoded`. The engine stores this placeholder. Then in the _handler_ methods, when the placeholder is encountered,
 the handler substitutes the corresponding value.
 
 For example, given the following tag string:
 
 ```python
-html"<div>{greeting}, {name}!</div>"
+html
+"<div>{greeting}, {name}!</div>"
 ```
 
 The `feed()` method would substitute each expression with the placeholder `x$x` so that the _parser_ receives the
@@ -260,15 +263,18 @@ string:
 <div>x$x, x$x!</div>
 ```
 
-```{note}
+With this, the parser can handle the placeholders.
 
-Why `x$x`as placeholder? `HTMLParser`includes a regex pattern for element tags that expects them to begin with a
-letter. To allow element tags themselves to be interpolated (e.g. `div`), the first character of the placeholder must
-meet this requirement. In our case, we just happen to have chosen `x`.
+:::{note}
+
+Why `x$x`as placeholder? `HTMLParser`includes a regex pattern for element tags that expects them to begin with a letter.
+To allow element tags themselves to be interpolated (e.g. `div`), the first character of the placeholder must meet this
+requirement. In our case, we just happen to have chosen `x`.
 
 Also, after "escaping" user provided strings by replacing all `$` characters with `$$`, there is no way for a user to
-feed a string that would result in `x$x`. Thus, we can reliably identify any `x$x` passed to the parser to be placeholders.
-```
+feed a string that would result in `x$x`. Thus, we can reliably identify any `x$x` passed to the parser to be
+placeholders.
+:::
 
 We'll make a small change to the initializer, to let us track values returned by any lambdas:
 
@@ -317,6 +323,12 @@ It does this by:
 Our interpolations now work. We've left a bunch out, in order to focus on the flow and idea. Let's take
 another step forward and add a tag function.
 
+TODO Paul Show an example of recursion working on interpolations
+
+## Serializing to a string
+
+https://gist.github.com/jimbaker/670c31e8834f4634bc6402f482e9f2ec
+
 ## Tag function
 
 We have a class based on `HTMLParser` with a `feed()` method that takes either a decoded or an interpolation. This
@@ -336,7 +348,11 @@ Each tag function argument is sent to `feed()`, then `result()` is called. Let's
 
 ```
 
-## TODO
+## Props
+
+## Interpolated tag names
+
+## Safe inputs, conversion, and format_spec
 
 To escape and unescape strings in this manner it will be useful to have the following utility functions:
 
@@ -345,5 +361,15 @@ To escape and unescape strings in this manner it will be useful to have the foll
 :end-at: return string.replace("$$", "$")
 ```
 
-- Handle `<h{level}>`
-- Attributes
+## Subcomponents
+
+## Compiling templates for re-use
+
+Or tree-walking interpreter.
+
+### TODO
+
+- Use Guido's htmlbuilder.py tree walker version as the more accessible HTML one
+- Caching
+- Streaming
+- Next tutorial: SQL, using SQLglot - https://github.com/tobymao/sqlglot
