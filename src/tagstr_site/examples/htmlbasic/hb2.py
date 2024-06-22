@@ -1,40 +1,42 @@
 """Simple HTML parser with interpolation support."""
+from __future__ import annotations
+
+import re
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
-from typing import Any
+from typing import Generator
 
 from tagstr_site.examples import (
     MainResult,
-    PLACEHOLDER,
-    interleave_with_values,
     Attrs,
 )
+from tagstr_site.tagtyping import Decoded, Interpolation
 
 
 @dataclass
 class HtmlNode:
-    """A single HTML document object model node"""
+    """A single HTML document object model node."""
 
-    tag: str | None = None
-    children: list[str, "HtmlNode"] = field(default_factory=list)
+    tag: str | None
+    attrs: dict[str, object] = field(default_factory=dict)
+    children: list[str | HtmlNode] = field(default_factory=list)
 
 
 class HtmlBuilder(HTMLParser):
     def __init__(self):
         super().__init__()
-        self.root = HtmlNode()
+        self.root = HtmlNode(tag=None)
         self.stack = [self.root]
-        self.values = []
+        self.index = 0
 
-    def feed(self, data: Any) -> None:
+    def feed(self, data: Decoded | Interpolation) -> None:
         match data:
-            case str():
+            case Decoded() as decoded:
                 # Leaving out the escaping of possible $$ in data
-                super().feed(data)
-            case getvalue, _, conv, spec:
-                value = getvalue()
-                self.values.append(value)
-                super().feed(PLACEHOLDER)
+                super().feed(decoded)
+            case Interpolation():
+                super().feed(f'x${self.index}x')
+        self.index += 1
 
     def result(self) -> HtmlNode:
         """Convenience method to close the feed and return root."""
@@ -58,15 +60,34 @@ class HtmlBuilder(HTMLParser):
             raise SyntaxError("Start tag {node.tag!r} does not match end tag {tag!r}")
 
     def handle_data(self, data: str) -> None:
-        """Replace the placeholders with the interpolation values."""
-        interleaved_children = interleave_with_values(data, self.values)
+        self.parent.children.append(data)
 
-        for child in interleaved_children:
-            match child:
-                case str():
-                    self.parent.children.append(child)
-                case list():
-                    self.parent.children.extend(child)
+    def result(self) -> HtmlNode:
+        """Convenience method to close the feed and return root."""
+        self.close()
+        # Don't worry about other cases for now
+        return self.root.children[0]
+
+
+
+
+placeholder_re = re.compile(r'(x\$\d+x)')
+placeholder_index_re = re.compile(r'x\$(?P<index>\d+)x')
+
+
+def split_by_placeholder(s: str, args: list[Decoded | Interpolation]) -> Generator[str | Interpolation]:
+    """During interpolation, find placeholders and split on correct boundaries."""
+    for split in placeholder_re.split(s):
+        # Empty strings can be dropped
+        if split != '':
+            if m := placeholder_index_re.match(split):
+                # Get the index and then grab the interpolation from args at that position
+                index = int(m.group('index'))
+                yield args[index]
+            else:
+                # Later we will ensure this string is unescaped (in case the original string
+                # had a placeholder.)
+                yield split
 
 
 def main() -> MainResult:

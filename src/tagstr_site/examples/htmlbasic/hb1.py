@@ -1,4 +1,5 @@
 """Basic HTML parser."""
+from __future__ import annotations
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
 
@@ -7,20 +8,21 @@ from tagstr_site.examples import MainResult, Attrs
 
 @dataclass
 class HtmlNode:
-    """A single HTML document object model node"""
+    """A single HTML document object model node."""
 
-    tag: str | None = None
-    children: list[str, "HtmlNode"] = field(default_factory=list)
+    tag: str | None
+    attrs: dict[str, object] = field(default_factory=dict)
+    children: list[str | HtmlNode] = field(default_factory=list)
 
 
 class HtmlBuilder(HTMLParser):
     def __init__(self):
         super().__init__()
-        self.root = HtmlNode()
+        self.root = HtmlNode(tag=None)
         self.stack = [self.root]
 
     @property
-    def parent(self):
+    def parent(self) -> HtmlNode:
         """Easy access to the previous node in the stack."""
         return self.stack[-1]
 

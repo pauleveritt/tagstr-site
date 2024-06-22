@@ -161,7 +161,7 @@ Let's start with a class that inherits from the `HTMLParser`:
 
 Our initializer function makes a root node and sets it as the only element in the "stack".
 
-First: what is `HTMLNode`? Just a simple dataclass to keep track of the pieces of a node we are interested in.
+First: what is `HtmlNode`? Just a simple dataclass to keep track of the pieces of a node we are interested in.
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbasic/hb1.py
 :start-at: @dataclass
@@ -235,7 +235,7 @@ Ultimately you'll want to be able to write the following tag function:
 from taglib.tagtyping import Decoded, Interpolation
 
 
-def html(*args: Decoded | Thunk) -> HtmlNode:
+def html(*args: Decoded | Interpolation) -> HtmlNode:
     builder = HtmlBuilder()
     for arg in *args:
         builder.feed(arg)
@@ -252,38 +252,50 @@ the handler substitutes the corresponding value.
 For example, given the following tag string:
 
 ```python
-html
-"<div>{greeting}, {name}!</div>"
+html"<div>{greeting}, {name}!</div>"
 ```
 
-The `feed()` method would substitute each expression with the placeholder `x$x` so that the _parser_ receives the
-string:
+The `feed()` method would substitute the first expression with the placeholder `x$1x` so that the _parser_ receives the
+string.
 
-```html
-<div>x$x, x$x!</div>
+In the example above, `args` will be:
+
+```python
+['<div>', InterpolationConcrete(...), ', ', InterpolationConcrete(...), '!</div>']
 ```
+
+Tag strings supply args positionally, so we track the index in the placeholder, to later do the substitution.
+This is an important and general principle for interpolations in templating and DSLs.
 
 With this, the parser can handle the placeholders.
 
 :::{note}
 
-Why `x$x`as placeholder? `HTMLParser`includes a regex pattern for element tags that expects them to begin with a letter.
+Why `x$Nx`as placeholder? `HTMLParser`includes a regex pattern for element tags that expects them to begin with a letter.
 To allow element tags themselves to be interpolated (e.g. `div`), the first character of the placeholder must meet this
 requirement. In our case, we just happen to have chosen `x`.
 
 Also, after "escaping" user provided strings by replacing all `$` characters with `$$`, there is no way for a user to
-feed a string that would result in `x$x`. Thus, we can reliably identify any `x$x` passed to the parser to be
+feed a string that would result in `x$Nx`. Thus, we can reliably identify any `x$Nx` passed to the parser to be
 placeholders.
 :::
 
-We'll make a small change to the initializer, to let us track values returned by any lambdas:
+We'll make a small change to the initializer, to let us track the index _position_ for placeholders. This `self.index`
+value increments on each interpolation within a single `feed` call:
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbasic/hb2.py
 :start-at: class HtmlBuil
-:end-at: self.values
+:end-at: self.index
 ```
 
-Now we implement our own `feed()` method, to handle both incoming strings _and_ incoming interpolations:
+TODO Use highlighting on the changed line
+
+:::{note}
+Remember, each `arg` will never have more than one "position" to substitute. Tag string evaluation digests the tag
+string value into chunks.
+:::
+
+Now we implement our own `feed()` method, to handle both incoming `Decoded` _and_ incoming `Interpolation`:
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbasic/hb2.py
 :start-at: def feed
@@ -294,13 +306,11 @@ Now we implement our own `feed()` method, to handle both incoming strings _and_ 
 This example has not switched over yet to the Python 3.14 implementation which uses protocol-based pattern matching.
 ```
 
-Now we see why `__init__` needed `self.values = []`. If `.feed()` is handed an interpolation, we need to call it and
-
-TODO Jim `self.values` is a sequence, but when would feed ever receive more than one interpolation?
-
 Once `feed()` has done its parsing job on each part, the relevant methods step in to process. For now, no change to
-`handle_starttag` and `handle_endtag` as we'll presume the tags are not dynamic. (We'll get back to this.) Thus, we
-only need to update `handle_data`:
+`handle_starttag` and `handle_endtag` as we'll presume the tags are not dynamic. (We'll get back to this.)
+
+For `handle_data`, our strategy is simple: during parsing, we just keep strings with placeholders. We defer the actual
+interpolation until later in the process.
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbasic/hb2.py
 :start-at: def handle_data
@@ -373,3 +383,4 @@ Or tree-walking interpreter.
 - Caching
 - Streaming
 - Next tutorial: SQL, using SQLglot - https://github.com/tobymao/sqlglot
+- FIXME validate this is well-formed HTML
