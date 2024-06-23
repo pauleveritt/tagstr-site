@@ -164,7 +164,7 @@ class ASTParser(HTMLParser):
 
 @dataclass
 class Fill:
-    args: Sequence[list[str | Interpolation]]
+    args: Sequence[str | Interpolation]
 
     def split_by_placeholder(self, s: str) -> Generator[str | Interpolation]:
         for split in placeholder_re.split(s):
@@ -278,7 +278,7 @@ class Fill:
 
 def html(*args: str | Interpolation) -> HTML:
     parser = ASTParser()
-    for i, arg in enumerate(args):
+    for arg in args:
         parser.feed(arg)
     return Fill(args).interpolate(parser.result())
 
@@ -300,11 +300,11 @@ if __name__ == "__main__":
         '</body></html>',
     )
 
-    parser = ASTParser()
+    this_parser = ASTParser()
     for this_arg in these_args:
-        parser.feed(this_arg)
+        this_parser.feed(this_arg)
     print('AST:')
-    print(parser.result())
+    print(this_parser.result())
 
     print('\nDOM:')
     print(repr(html(*these_args)))
