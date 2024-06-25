@@ -1,36 +1,15 @@
+"""HTML builder with simplified parsing into an AST."""
+
 from __future__ import annotations
 
+import re
+from dataclasses import dataclass, field
 from html import escape
 from html.parser import HTMLParser
-from dataclasses import dataclass, field
-from typing import Any, Callable, Generator, Literal, NamedTuple, Protocol, Sequence, runtime_checkable
-import re
+from typing import Any, Generator, Sequence, runtime_checkable, Protocol
 
-
-@runtime_checkable
-class Interpolation(Protocol):
-    def __len__(self):
-        ...
-
-    def __getitem__(self, index: int):
-        ...
-
-    def getvalue(self) -> Callable[[], Any]:
-        ...
-
-    expr: str
-    conv: Literal['a', 'r', 's'] | None
-    format_spec: str | None
-
-
-class InterpolationConcrete(NamedTuple):
-    getvalue: Callable[[], Any]
-    expr: str
-    conv: Literal['a', 'r', 's'] | None = None
-    formatspec: str | None = None
-
-
-Interpolation = InterpolationConcrete  # FIXME workaround for 3.12
+from tagstr_site.builtins import InterpolationConcrete
+from tagstr_site.tagtyping import Interpolation
 
 
 @runtime_checkable
@@ -38,7 +17,6 @@ class HTML(Protocol):
     tag: str
     attrs: dict
     children: Sequence[str | HTML]
-
 
 # Use as an AST for HTML, with placeholders
 
@@ -96,8 +74,6 @@ class HtmlNode:
 
         return ''.join(spaced)
 
-
-HTML = HtmlNode  # FIXME workaround for 3.12
 
 placeholder_re = re.compile(r'(x\$\d+x)')
 placeholder_index_re = re.compile(r'x\$(?P<index>\d+)x')

@@ -32,4 +32,4 @@ class InterpolationConcrete(NamedTuple):
     getvalue: Callable[[], Any]
     expr: str
     conv: Literal["a", "r", "s"] | None = None
-    formatspec: str | None = None
+    format_spec: str | None = None

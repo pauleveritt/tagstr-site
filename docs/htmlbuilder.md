@@ -1,4 +1,4 @@
-# Simple HTML Tutorial
+# Building an HTML Templating Engine
 
 HTML templating is an important part of web development and Python has a long, long history here. Template languages are
 like a domain-specific language (DSL), which tag strings were built for. Tag strings provide an opportunity to develop a
@@ -130,6 +130,23 @@ This is a key point, one that makes it hard to provide good tooling. Jinja2 has 
 semantics, and composition approaches than Python. This means tools like Black, Ruff, and mypy can't really peak inside
 that part of your project.
 
+## Review: tag string protocols
+
+With tag strings, we write a function that receives an `args` sequence of `Decoded` and `Interpolation` values. These
+are Python "protocols". `Decoded` is a string with an extra `raw` value:
+
+```{literalinclude} ../src/tagstr_site/tagtyping.py
+:start-before: class Decoded
+:end-at: raw
+```
+
+The `Interpolation` object captures a dynamic part (between braces) in a tag string:
+
+```{literalinclude} ../src/tagstr_site/tagtyping.py
+:start-before: class Interpolation
+:end-at: format_spec
+```
+
 ## Parsing HTML
 
 Before we introduce templating, let's cover the basics of HTML parsing. In the next few steps, we'll keep it very
@@ -154,7 +171,7 @@ Specifically, to modify `HTMLParser` in order to you'll need to overwrite the fo
 
 Let's start with a class that inherits from the `HTMLParser`:
 
-```{literalinclude} ../src/tagstr_site/examples/htmlbasic/hb1.py
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb1.py
 :start-at: class
 :end-at: return self.stack[-1]
 ```
@@ -163,7 +180,7 @@ Our initializer function makes a root node and sets it as the only element in th
 
 First: what is `HtmlNode`? Just a simple dataclass to keep track of the pieces of a node we are interested in.
 
-```{literalinclude} ../src/tagstr_site/examples/htmlbasic/hb1.py
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb1.py
 :start-at: @dataclass
 :end-at: children: list
 ```
@@ -179,7 +196,7 @@ The `parent` property is just a convenience, making it easier to grab the most-r
 
 The `HTMLParser` needs a method to handle the starting of a tag:
 
-```{literalinclude} ../src/tagstr_site/examples/htmlbasic/hb1.py
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb1.py
 :start-at: def handle_start
 :end-at: self.stack.append
 ```
@@ -189,14 +206,14 @@ The method also "pushes" this new node onto the stack, making it the "parent".
 
 The `handle_data` method takes care of the non-node children. Primarily, this is the plain text:
 
-```{literalinclude} ../src/tagstr_site/examples/htmlbasic/hb1.py
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb1.py
 :start-at: def handle_data
 :end-at: self.parent.children
 ```
 
 The `handle_endtag` is run when a tag closes, for example, `</div>`:
 
-```{literalinclude} ../src/tagstr_site/examples/htmlbasic/hb1.py
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb1.py
 :start-at: def handle_endtag
 :end-at: raise
 ```
@@ -207,7 +224,7 @@ names match.
 To simplify the process of closing the `HTMLParser` and extracting the `HtmlNode` tree, we
 add a `result()` method:
 
-```{literalinclude} ../src/tagstr_site/examples/htmlbasic/hb1.py
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb1.py
 :start-at: def result
 :end-at: return self.root.children
 ```
@@ -283,7 +300,7 @@ placeholders.
 We'll make a small change to the initializer, to let us track the index _position_ for placeholders. This `self.index`
 value increments on each interpolation within a single `feed` call:
 
-```{literalinclude} ../src/tagstr_site/examples/htmlbasic/hb2.py
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb2.py
 :start-at: class HtmlBuil
 :end-at: self.index
 ```
@@ -297,9 +314,9 @@ string value into chunks.
 
 Now we implement our own `feed()` method, to handle both incoming `Decoded` _and_ incoming `Interpolation`:
 
-```{literalinclude} ../src/tagstr_site/examples/htmlbasic/hb2.py
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb2.py
 :start-at: def feed
-:end-at: self.values.append(value)
+:end-at: self.index += 1
 ```
 
 ```{warning}
@@ -312,9 +329,9 @@ Once `feed()` has done its parsing job on each part, the relevant methods step i
 For `handle_data`, our strategy is simple: during parsing, we just keep strings with placeholders. We defer the actual
 interpolation until later in the process.
 
-```{literalinclude} ../src/tagstr_site/examples/htmlbasic/hb2.py
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb2.py
 :start-at: def handle_data
-:end-at: self.parent.children.extend
+:end-at: self.parent.children.append
 ```
 
 The first line is a call to `interleave_with_values`. This function lets you reconnect each occurrence of the
@@ -347,7 +364,7 @@ segments.
 
 Our tag function is straightforward:
 
-```{literalinclude} ../src/tagstr_site/examples/htmlbasic/hb3.py
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb3.py
 :start-at: def html
 :end-at: return
 ```
