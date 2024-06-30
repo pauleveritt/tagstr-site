@@ -7,27 +7,24 @@ from tagstr_site.examples import MainResult, Attrs
 
 
 @dataclass
-class HtmlNode:
-    """A single HTML document object model node."""
-
-    tag: str | None
-    attrs: dict[str, object] = field(default_factory=dict)
-    children: list[str | HtmlNode] = field(default_factory=list)
-
+class AstNode:
+    """Parsed representation of an HTML tag string."""
+    tag: str | None = None
+    children: list[str | AstNode] = field(default_factory=list)
 
 class HtmlBuilder(HTMLParser):
     def __init__(self):
         super().__init__()
-        self.root = HtmlNode(tag=None)
+        self.root = AstNode()
         self.stack = [self.root]
 
     @property
-    def parent(self) -> HtmlNode:
+    def parent(self) -> AstNode:
         """Easy access to the previous node in the stack."""
         return self.stack[-1]
 
     def handle_starttag(self, tag: str, attrs: Attrs) -> None:
-        this_node = HtmlNode(tag)
+        this_node = AstNode(tag)
         self.parent.children.append(this_node)
         self.stack.append(this_node)
 
@@ -39,7 +36,7 @@ class HtmlBuilder(HTMLParser):
         if node.tag != tag:
             raise SyntaxError("Start tag {node.tag!r} does not match end tag {tag!r}")
 
-    def result(self) -> HtmlNode:
+    def result(self) -> AstNode:
         """Convenience method to close the feed and return root."""
         self.close()
         # Don't worry about other cases for now

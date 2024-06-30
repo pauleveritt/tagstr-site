@@ -22,7 +22,7 @@ class HTML(Protocol):
 
 @dataclass
 class AstNode:
-    tag: str = None
+    tag: str | None = None
     attrs: list[tuple[str, str | None]] = field(default_factory=list)
     children: list[str | AstNode] = field(default_factory=list)
 
