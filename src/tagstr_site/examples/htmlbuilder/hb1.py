@@ -12,7 +12,7 @@ class AstNode:
     tag: str | None = None
     children: list[str | AstNode] = field(default_factory=list)
 
-class HtmlBuilder(HTMLParser):
+class ASTParser(HTMLParser):
     def __init__(self):
         super().__init__()
         self.root = AstNode()
@@ -52,9 +52,9 @@ class HtmlBuilder(HTMLParser):
 
 def main() -> MainResult:
     """Main entry point for this example."""
-    builder = HtmlBuilder()
-    builder.feed("<div>Hello World</div>")
-    root_node = builder.result()
+    parser = ASTParser()
+    parser.feed("<div>Hello World</div>")
+    root_node = parser.result()
     assert "div" == root_node.tag
     assert "Hello World" == root_node.children[0]
     return ("div", root_node.tag), ("Hello World", root_node.children[0])

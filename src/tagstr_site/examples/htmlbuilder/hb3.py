@@ -1,10 +1,11 @@
 """Add an HTML tag function to call the builder."""
 
-from tagstr_site.examples import HtmlNode, MainResult
-from tagstr_site.examples.htmlbasic.hb2 import HtmlBuilder
+from tagstr_site.examples.htmlbuilder.hb1 import ASTParser as BaseBuilder
+from tagstr_site.examples import MainResult
+from tagstr_site.htm import HTML
 
 
-def html(*args) -> HtmlNode:
+def html(*args) -> HTML:
     builder = HtmlBuilder()
     for arg in args:
         builder.feed(arg)
