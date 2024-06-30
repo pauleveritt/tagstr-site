@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import Sequence, Generator, runtime_checkable, Protocol
+from typing import Generator
 
 from tagstr_site.examples import MainResult
 from tagstr_site.examples.htmlbuilder.hb1 import AstNode
@@ -15,19 +15,12 @@ placeholder_re = re.compile(r'(x\$\d+x)')
 placeholder_index_re = re.compile(r'x\$(?P<index>\d+)x')
 
 
-@runtime_checkable
-class HTML(Protocol):
-    """Abstract definition of an HTML DOM."""
-    tag: str
-    # We are skipping attributes for now
-    children: Sequence[str | HTML]
-
-
 @dataclass
 class HtmlNode:
     """Implementation of a node or tree of an HTML DOM."""
     tag: str
-    # We are skipping attributes for now
+    # Not yet implementing attributes, default to empty list
+    attrs: dict = field(default_factory=dict)
     children: list[str | HtmlNode] = field(default_factory=list)
 
 
@@ -57,7 +50,7 @@ class Fill:
     def fill_tag(self, tag: str, children) -> HTML:
         """Make an HTML-like-node with any policies."""
         # Reminder, not processing attributes yet.
-        return HtmlNode(tag, children)
+        return HtmlNode(tag=tag, children=children)
 
 
 def html(*args: str | Interpolation) -> HTML:

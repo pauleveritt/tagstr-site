@@ -10,6 +10,8 @@ from tagstr_site.examples import MainResult, Attrs
 class AstNode:
     """Parsed representation of an HTML tag string."""
     tag: str | None = None
+    # Not yet implementing attributes, default to empty list
+    attrs: list[tuple[str, str | None]] = field(default_factory=list)
     children: list[str | AstNode] = field(default_factory=list)
 
 class ASTParser(HTMLParser):
@@ -25,7 +27,7 @@ class ASTParser(HTMLParser):
         return self.stack[-1]
 
     def handle_starttag(self, tag: str, attrs: Attrs) -> None:
-        this_node = AstNode(tag)
+        this_node = AstNode(tag=tag, attrs=attrs)
         last_node = self.parent
         last_node.children.append(this_node)
         self.stack.append(this_node)

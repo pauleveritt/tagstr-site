@@ -8,7 +8,7 @@ from typing import Sequence, Generator
 from tagstr_site.examples import MainResult
 from tagstr_site.examples.htmlbuilder.hb2 import ASTParser
 from tagstr_site.examples.htmlbuilder.hb4 import (
-    placeholder_re, placeholder_index_re, HTML, HtmlNode,
+    placeholder_re, placeholder_index_re, HtmlNode,
     Fill as BaseFill,
 )
 from tagstr_site.htm import HTML
