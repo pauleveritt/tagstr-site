@@ -3,9 +3,10 @@
 from tagstr_site.examples.htmlbuilder.hb1 import AstNode
 from tagstr_site.examples.htmlbuilder.hb2 import ASTParser
 from tagstr_site.examples import MainResult
+from tagstr_site.tagtyping import Interpolation
 
 
-def html(*args) -> AstNode:
+def html(*args: str | Interpolation) -> AstNode:
     parser = ASTParser()
     for arg in args:
         parser.feed(arg)
