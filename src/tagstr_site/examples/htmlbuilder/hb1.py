@@ -13,6 +13,7 @@ class AstNode:
     children: list[str | AstNode] = field(default_factory=list)
 
 class ASTParser(HTMLParser):
+    # TODO Jim Why AstNode and ASTParser (instead of AstParser)?
     def __init__(self):
         super().__init__()
         self.root = AstNode()

@@ -1,4 +1,7 @@
-"""Parse into an AST with interpolation support."""
+"""Parse into an AST with interpolation placeholders.
+
+Doesn't yet support actual filling in data of interpolations.
+"""
 
 from tagstr_site.examples.htmlbuilder.hb1 import ASTParser as BaseParser
 from tagstr_site.builtins import InterpolationConcrete
@@ -17,7 +20,8 @@ class ASTParser(BaseParser):
             case str() as s:
                 # Leaving out the escaping of possible $$ in data
                 super().feed(s)
-            case Interpolation():
+            # case Interpolation() as i:
+            case tuple():  # Temporary, while waiting for 3.14 implementation
                 # TODO Jim is it ok to omit "as t"
                 # TODO Jim we don't have a default case for no match
                 super().feed(f"x${self.index}x")
