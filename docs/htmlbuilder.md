@@ -136,14 +136,14 @@ With tag strings, we write a function that receives an `args` sequence of `Decod
 are Python "protocols". `Decoded` is a string with an extra `raw` value:
 
 ```{literalinclude} ../src/tagstr_site/tagtyping.py
-:start-before: class Decoded
+:start-at: class Decoded
 :end-at: raw
 ```
 
 The `Interpolation` object captures a dynamic part (between braces) in a tag string:
 
 ```{literalinclude} ../src/tagstr_site/tagtyping.py
-:start-before: class Interpolation
+:start-at: class Interpolation
 :end-at: format_spec
 ```
 

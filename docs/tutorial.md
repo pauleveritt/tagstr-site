@@ -104,8 +104,8 @@ more carefully and see what they have to offer, while adding some typing.
 An interpolation is a tuple with this shape:
 
 ```{literalinclude} ../src/tagstr_site/tagtyping.py
-start-at: class Interpolation
-end-at: format_spec
+:start-at: class Interpolation
+:end-at: format_spec
 ```
 
 <!--- invisible-code-block: python
