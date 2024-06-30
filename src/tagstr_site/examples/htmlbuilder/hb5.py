@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Sequence, Generator
+from typing import Sequence, Generator, Callable
 
 from tagstr_site.examples import MainResult
 from tagstr_site.examples.htmlbuilder.hb2 import ASTParser
@@ -33,7 +33,7 @@ class Fill(BaseFill):
                     # Not yet doing any unescaping of the placeholder
                     yield split
 
-    def fill(self, s: str) -> Generator[dict | str | HTML]:
+    def fill(self, s: str, convert: Callable | None = None) -> Generator[dict | str | HTML]:
         """Split into any placeholders then fill them from interpolations."""
         for i, split in enumerate(self.split_by_placeholder(s)):
             match split:
@@ -59,9 +59,9 @@ def main() -> MainResult:
     root_node: HtmlNode = html"<div>Hello {name}</div>"
 
     assert "div" == root_node.tag
-    assert ["Hello ", "World"] == root_node.children
+    assert ["Hello ", name] == root_node.children
 
-    return ("div", root_node.tag), (root_node.children, ["Hello ", "World"])
+    return ("div", root_node.tag), (root_node.children, ["Hello ", name])
 
 
 if __name__ == "__main__":

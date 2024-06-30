@@ -1,12 +1,14 @@
 from typing import Any
 
+from tagstr_site.htm import HTML
+
 # A helper for example writing
 MainResult = str | tuple[tuple[str, str | None], tuple[str, Any]]
 
 PLACEHOLDER = "x$x"
 
 Attrs = list[tuple[str, str | None]]
-
+Children = list[str | HTML]
 
 def escape_placeholder(string: str) -> str:
     return string.replace("$", "$$")

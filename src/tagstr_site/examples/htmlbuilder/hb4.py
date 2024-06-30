@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import Generator
+from typing import Generator, Callable
 
-from tagstr_site.examples import MainResult
+from tagstr_site.examples import MainResult, Attrs
 from tagstr_site.examples.htmlbuilder.hb1 import AstNode
 from tagstr_site.examples.htmlbuilder.hb2 import ASTParser
 from tagstr_site.htm import HTML
@@ -28,7 +28,8 @@ class HtmlNode:
 class Fill:
     """A policy that can fill in nodes in an AST, using interpolations."""
 
-    def fill(self, s: str) -> Generator[dict | str | HTML]:
+    # The convert callable is unused for now
+    def fill(self, s: str, convert: Callable | None = None) -> Generator[dict | str | HTML]:
         """Split into any placeholders then fill them from interpolations."""
         # For now, simulate splitting and filling
         yield "I WAS FILLED" if "$" in s else s
@@ -47,7 +48,7 @@ class Fill:
 
         return self.fill_tag(tag.tag, children)
 
-    def fill_tag(self, tag: str, children) -> HTML:
+    def fill_tag(self, tag: str, attrs: Attrs | None = None, children: list[str | HTML] | None = None) -> HTML:
         """Make an HTML-like-node with any policies."""
         # Reminder, not processing attributes yet.
         return HtmlNode(tag=tag, children=children)
