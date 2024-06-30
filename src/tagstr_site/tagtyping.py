@@ -27,7 +27,6 @@ class Interpolation(Protocol):
     def getvalue(self) -> Callable[[], Any]:
         ...
 
-    index: int
     expr: str
     conv: Literal['a', 'r', 's'] | None
     format_spec: str | None

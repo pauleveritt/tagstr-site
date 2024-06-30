@@ -16,7 +16,7 @@ class HtmlBuilder(HTMLParser):
     def __init__(self):
         super().__init__()
         self.root = AstNode()
-        self.stack = [self.root]
+        self.stack: list[AstNode] = [self.root]
 
     @property
     def parent(self) -> AstNode:
@@ -25,11 +25,13 @@ class HtmlBuilder(HTMLParser):
 
     def handle_starttag(self, tag: str, attrs: Attrs) -> None:
         this_node = AstNode(tag)
-        self.parent.children.append(this_node)
+        last_node = self.parent
+        last_node.children.append(this_node)
         self.stack.append(this_node)
 
     def handle_data(self, data: str) -> None:
-        self.parent.children.append(data)
+        children = self.parent.children
+        children.append(data)
 
     def handle_endtag(self, tag: str) -> None:
         node = self.stack.pop()
@@ -39,8 +41,13 @@ class HtmlBuilder(HTMLParser):
     def result(self) -> AstNode:
         """Convenience method to close the feed and return root."""
         self.close()
-        # Don't worry about other cases for now
-        return self.root.children[0]
+        match self.root.children:
+            case []:
+                raise ValueError('Nothing to return')
+            case [child]:
+                return child
+            case _:
+                return self.root
 
 
 def main() -> MainResult:
@@ -48,6 +55,8 @@ def main() -> MainResult:
     builder = HtmlBuilder()
     builder.feed("<div>Hello World</div>")
     root_node = builder.result()
+    assert "div" == root_node.tag
+    assert "Hello World" == root_node.children[0]
     return ("div", root_node.tag), ("Hello World", root_node.children[0])
 
 
