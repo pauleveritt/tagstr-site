@@ -45,8 +45,7 @@ class Fill:
                     children.extend(self.fill(s))
 
         # For now, skip handling of attributes
-
-        return self.fill_tag(tag.tag, children)
+        return self.fill_tag(tag=tag.tag, children=children)
 
     def fill_tag(self, tag: str, attrs: Attrs | None = None, children: list[str | HTML] | None = None) -> HTML:
         """Make an HTML-like-node with any policies."""
