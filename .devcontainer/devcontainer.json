@@ -1,0 +1,44 @@
+{
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    // CONSIDER: there's little point to having a venv in a devcontainer,
+    // so this would seem to be the best way to install dependencies.
+    //
+    // That said, at the moment, the Makefile goes off and creates/uses
+    // a venv anyway -- so, fine, we will hold off on this for now, and
+    // just use venvs-in-containers. -Dave
+    //
+    // "postCreateCommand": {
+    //     "install python depedencies": "pip install -e ."
+    // },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                // Python auto-complete -- although, of course, it doesn't
+                // support the new tagstring syntax in the PEP
+                "ms-python.python",
+                // Edit the devcontainer and other dockerfiles.
+                "ms-azuretools.vscode-docker",
+                // Edit the makefile
+                "ms-vscode.makefile-tools"
+            ],
+            "settings": {
+                "editor.insertSpaces": true,
+                "editor.rulers": [
+                    80
+                ],
+                "editor.tabSize": 4,
+                "editor.trimAutoWhitespace": true,
+                "files.encoding": "utf8",
+                "files.eol": "\n",
+                "files.insertFinalNewline": true,
+                "files.trimTrailingWhitespace": true,
+                "[restructuredtext]": {
+                    "editor.tabSize": 3
+                },
+                "python.defaultInterpreterPath": ".venv/bin/python3"
+            }
+        }
+    }
+}
