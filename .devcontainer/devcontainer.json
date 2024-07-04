@@ -2,16 +2,13 @@
     "build": {
         "dockerfile": "Dockerfile"
     },
-    // CONSIDER: there's little point to having a venv in a devcontainer,
-    // so this would seem to be the best way to install dependencies.
+    // CONSIDER: what exactly do we want to make/install here?
     //
-    // That said, at the moment, the Makefile goes off and creates/uses
-    // a venv anyway -- so, fine, we will hold off on this for now, and
-    // just use venvs-in-containers. -Dave
-    //
-    // "postCreateCommand": {
-    //     "install python depedencies": "pip install -e ."
-    // },
+    // For speed, probably just setup a bare venv and let the developer
+    // later run `make install-extras`, etc.? -Dave
+    "postCreateCommand": {
+        "install dependencies": "make setup"
+    },
     "customizations": {
         "vscode": {
             "extensions": [
@@ -37,7 +34,7 @@
                 "[restructuredtext]": {
                     "editor.tabSize": 3
                 },
-                "python.defaultInterpreterPath": ".venv/bin/python3"
+                "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python"
             }
         }
     }

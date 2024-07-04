@@ -248,4 +248,4 @@ def interleave_with_values(
 
 
 if __name__ == "__main__":
-    demo()
+    print(demo())
