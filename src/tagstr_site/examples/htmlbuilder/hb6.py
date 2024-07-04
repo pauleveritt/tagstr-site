@@ -66,6 +66,7 @@ class Fill(BaseFill):
         return self.fill_tag(tag.tag, attrs, children)
 
 
+# TODO Paul maybe this isn't changed and can be imported
 def html(*args: str | Interpolation) -> HTML:
     parser = ASTParser()
     for arg in args:
