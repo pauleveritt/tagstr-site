@@ -7,5 +7,8 @@ ENV PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
 # Tell pip not to worry about the user environment
 ENV PIP_ROOT_USER_ACTION=ignore
 
+# Various things to make devcontainers run smoothly
+ENV EDITOR="code --wait"
+
 # Install rust and cargo to support watchfiles, rpds-py, and metadata
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y

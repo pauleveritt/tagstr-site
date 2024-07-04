@@ -9,6 +9,10 @@
     "postCreateCommand": {
         "install dependencies": "make setup"
     },
+    "features": {
+        "git": "os-provided",
+        "sshd": "latest"
+    },
     "customizations": {
         "vscode": {
             "extensions": [
