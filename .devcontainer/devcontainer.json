@@ -1,0 +1,45 @@
+{
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    // CONSIDER: what exactly do we want to make/install here?
+    //
+    // For speed, probably just setup a bare venv and let the developer
+    // later run `make install-extras`, etc.? -Dave
+    "postCreateCommand": {
+        "install dependencies": "make setup"
+    },
+    "features": {
+        "git": "os-provided",
+        "sshd": "latest"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                // Python auto-complete -- although, of course, it doesn't
+                // support the new tagstring syntax in the PEP
+                "ms-python.python",
+                // Edit the devcontainer and other dockerfiles.
+                "ms-azuretools.vscode-docker",
+                // Edit the makefile
+                "ms-vscode.makefile-tools"
+            ],
+            "settings": {
+                "editor.insertSpaces": true,
+                "editor.rulers": [
+                    80
+                ],
+                "editor.tabSize": 4,
+                "editor.trimAutoWhitespace": true,
+                "files.encoding": "utf8",
+                "files.eol": "\n",
+                "files.insertFinalNewline": true,
+                "files.trimTrailingWhitespace": true,
+                "[restructuredtext]": {
+                    "editor.tabSize": 3
+                },
+                "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python"
+            }
+        }
+    }
+}
