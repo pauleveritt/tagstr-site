@@ -6,7 +6,7 @@ import re
 from dataclasses import dataclass
 from typing import Generator, Callable
 
-from tagstr_site.examples import MainResult, Attrs
+from tagstr_site.examples import TestSetup, Attrs
 from tagstr_site.examples.htmlbuilder.hb2 import AstParser
 from tagstr_site.examples.htmlbuilder.hb4 import HtmlNode, AstNode
 from tagstr_site.examples.htmlbuilder.hb5 import Fill as BaseFill
@@ -21,7 +21,7 @@ valid_tagname_re = re.compile(r'^(?!.*--)(?!-?[0-9])[\w-]+(-[\w-]+|[a-zA-Z])?$')
 class Fill(BaseFill):
     """A policy that can fill in nodes in an AST, using interpolations."""
 
-    def fill(self, s: str, convert: Callable | None = None) -> Generator[dict | str | HTML]:
+    def fill(self, s: str, convert: Callable = str) -> Generator[dict | str | HTML]:
         """Split into any placeholders then fill them from interpolations."""
         for i, split in enumerate(self.split_by_placeholder(s)):
             match split:
@@ -73,22 +73,25 @@ def html(*args: str | Interpolation) -> HTML:
     return Fill(args).interpolate(parser.result())
 
 
-def main() -> MainResult:
-    """Main entry point for this example."""
+def setup() -> HTML:
     name = "World"
     level = 1
     title = "The Greeting"
     # Manually typing the result since IDE can't process tag functions yet
     root_node: HtmlNode = html'<h{level} title={title}>Hello {name}</h{level}>'
+    return root_node
 
-    print(root_node.tag)
-    return
+def test() -> TestSetup:
+    root_node = setup()
+    return ("h1", root_node.tag), (root_node.attrs, dict(title="The Greeting")), (root_node.children, ["Hello ", "World"])
+
+def main():
+    """Main entry point for this example."""
+    root_node = setup()
     assert "h1" == root_node.tag
-    assert dict(title=title) == root_node.attrs
-    assert ["Hello ", name] == root_node.children
-
-    return ("h1", root_node.tag), (root_node.attrs, dict(title=title)), (root_node.children, ["Hello ", name])
+    assert dict(title="The Greeting") == root_node.attrs
+    assert ["Hello ", "World"] == root_node.children
 
 
 if __name__ == "__main__":
-    print(main())
+    main()

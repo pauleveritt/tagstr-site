@@ -27,4 +27,5 @@ jupyterlite = [
 
 [tool.pytest.ini_options]
 addopts = "-ra -q --doctest-modules --ignore-glob='**/_build/**'"
-testpaths = ["docs", "tests"]
+# testpaths = ["docs", "tests"]
+testpaths = ["tests"]

@@ -5,7 +5,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Generator, Callable, Sequence
 
-from tagstr_site.examples import MainResult, Attrs
+from tagstr_site.examples import TestSetup, Attrs
 from tagstr_site.examples.htmlbuilder.hb1 import AstNode
 from tagstr_site.examples.htmlbuilder.hb2 import AstParser
 from tagstr_site.htm import HTML
@@ -63,17 +63,22 @@ def html(*args: str | Interpolation) -> HTML:
     return Fill(args).interpolate(parser.result())
 
 
-def main() -> MainResult:
-    """Main entry point for this example."""
+def setup() -> TestSetup:
     name = "World"
     # Manually typing the result since IDE can't process tag functions yet
     root_node: HtmlNode = html"<div>Hello {name}</div>"
+    return root_node
 
+def test() -> TestSetup:
+    root_node = setup()
+    return ("div", root_node.tag), (root_node.children, ["Hello ", "I WAS FILLED"])
+
+def main():
+    """Main entry point for this example."""
+    root_node = setup()
     assert "div" == root_node.tag
     assert ["Hello ", "I WAS FILLED"] == root_node.children
 
-    return ("div", root_node.tag), (root_node.children, ["Hello ", "I WAS FILLED"])
-
 
 if __name__ == "__main__":
-    print(main())
+    main()

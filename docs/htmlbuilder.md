@@ -9,7 +9,7 @@ tutorial will bring your markup and logic closer together by taking inspiration 
 [JSX](https://reactjs.org/docs/introducing-jsx.html), a syntax extension to
 JavaScript commonly used in [ReactJS](https://reactjs.org/) projects.
 
-Here are some examples of what you'll be able to do:
+Here are some examples of what you'll be able to do.
 
 ```python
 # Attribute expansion
@@ -29,7 +29,7 @@ assert (
 While this would certainly be difficult to achieve with a standard templating solution,
 what's perhaps more interesting is that this `html` tag will output a structured
 representation of the HTML that can be freely manipulated - a Document Object Model
-(DOM) of sorts for HTML:
+(DOM) of sorts for HTML.
 
 ```python
 node: HTML = html
@@ -44,7 +44,7 @@ But first, let's see why tag strings might be a better fit over existing, mature
 ## Why not Jinja2?
 
 Python template languages such as Jinja2 take contextual data and generate larger bodies of text, such as HTML. For
-example, if you wanted to create a simple todo list using Jinja it might look something like this:
+example, if you wanted to create a simple todo list using Jinja it might look something like this.
 
 ```python
 from jinja2 import Template
@@ -74,7 +74,7 @@ Which will render as:
 
 This is simple enough, but Jinja templates can grow rapidly in complexity. For example,
 if you want to dynamically set attributes on the `<li>` elements the Jinja template
-it's less straightforward:
+it's less straightforward.
 
 ```python
 from jinja2 import Template
@@ -111,7 +111,7 @@ doc = t.render(
 print(doc)
 ```
 
-The result of which is:
+The result:
 
 ```html
 <h1>My Todo List</h1>
@@ -133,14 +133,14 @@ that part of your project.
 ## Review: tag string protocols
 
 With tag strings, we write a function that receives an `args` sequence of `Decoded` and `Interpolation` values. These
-are Python "protocols". `Decoded` is a string with an extra `raw` value:
+are Python "protocols". `Decoded` is a string with an extra `raw` value.
 
 ```{literalinclude} ../src/tagstr_site/tagtyping.py
 :start-at: class Decoded
 :end-at: raw
 ```
 
-The `Interpolation` object captures a dynamic part (between braces) in a tag string:
+The `Interpolation` object captures a dynamic part (between braces) in a tag string.
 
 ```{literalinclude} ../src/tagstr_site/tagtyping.py
 :start-at: class Interpolation
@@ -188,14 +188,14 @@ Specifically, we'll fill in these `HTMLParser` methods:
 - {py:meth}`html.parser.HTMLParser.handle_data` - processes text in the body of an element (`<div>arbitrary text</div>`).
 - {py:meth}`html.parser.HTMLParser.handle_endtag` - handles the end tag of an element (`</div>`).
 
-Let's start with a class that inherits from the `HTMLParser`:
+Let's start with a class that inherits from the `HTMLParser`.
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb1.py
 :start-at: class AstParser
 :end-at: return self.stack[-1]
 ```
 
-Our initializer function makes a root node and sets it as the only element in the "stack". The root node is an instance of the `AstNode` object described above:
+Our initializer function makes a root node and sets it as the only element in the "stack". The root node is an instance of the `AstNode` object described above.
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb1.py
 :start-at: @dataclass
@@ -211,7 +211,7 @@ a [stack](<https://en.wikipedia.org/wiki/Stack_(abstract_data_type)>) to do just
 
 The `parent` property is just a convenience, making it easier to grab the most-recent node on the stack.
 
-The `AstParser` needs a method to handle the starting of a tag:
+The `AstParser` needs a method to handle the starting of a tag.
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb1.py
 :start-at: def handle_starttag
@@ -221,7 +221,7 @@ The `AstParser` needs a method to handle the starting of a tag:
 With this, the starting of a tag -- such as `<div>` -- makes a new `AstNode` and adds it to the parent node's children.
 The method also "pushes" this new node onto the stack, making it the "parent".
 
-The `handle_data` method takes care of the non-node children. Primarily, this is the plain text:
+The `handle_data` method takes care of the non-node children. Primarily, this is the plain text.
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb1.py
 :start-at: def handle_data
@@ -239,18 +239,25 @@ This example doesn't do much -- it just "pops" the current tag from the stack an
 names match.
 
 To simplify the process of closing the `HTMLParser` and extracting the `AstNode` tree, we
-add a `result()` method:
+add a `result()` method.
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb1.py
 :start-at: def result
 :end-at: return self.root
 ```
 
-Let's see this in action:
+Let's see this in action. First we construct a root `AstNode`.
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb1.py
 :start-at: parser = AstParser()
-:end-at: assert "Hello World"
+:end-at: root_node = 
+```
+
+Now poke around and see if it has what we expect.
+
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb1.py
+:start-at: assert "div"
+:end-at: assert "Hello
 ```
 
 That's it for a very simple HTML parser. It can handle a tree of nodes, but can't handle attributes. It certainly can't
@@ -303,15 +310,21 @@ feed a string that would result in `x$Nx`. Thus, we can reliably identify any `x
 placeholders.
 :::
 
-Let's see the updated `AstParser` in action and show that it can encode interpolation points:
+Let's see the updated `AstParser` in action.
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb2.py
 :start-at: name = 
-:end-at: assert ["Hello ",
+:end-at: root_node =
 ```
 
-That's it for the parser update. It re-uses the methods we already implemented for start/end tag and data. Let's hook `AstParser` up to 
-a tag function.
+As you can see, it can encode interpolation points.
+
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb2.py
+:start-at: assert "div"
+:end-at: assert ["Hello
+```
+
+That's it for the parser update. It re-uses the methods we already implemented for start/end tag and data. Let's hook `AstParser` up to a tag function.
 
 ## Tag function
 
@@ -324,11 +337,18 @@ So far we've made example `AstNode` roots by talking to the parser. To simplify 
 
 This is a simple tag function. It makes an `AstParser` and pumps args into its `feed`. When done, it returns the parser's `result`.
 
-Now our demos can use tag strings:
+Now our demos can use tag strings.
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb3.py
 :start-at: name = 
-:end-at: assert ["div ",
+:end-at: root_node: AstNode
+```
+
+This tag string results in the same `AstNode`.
+
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb3.py
+:start-at: assert "div"
+:end-at: assert ["Hello "
 ```
 
 We're now ready to start interpolating.
@@ -341,10 +361,8 @@ In this step we introduce a fill strategy. It doesn't *actually* do any dynamic 
 
 We'll go in the order of processing. Our `html` tag function is now going to return something that looks like HTML. As such, we have an `HTML` protocol, so we can be independent on the implementation. Here's the implementation we are using: an `HtmlNode`.
 
-TODO Stop putting colon before examples
-
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb4.py
-:start-at: # The start of
+:start-after: The start of
 :end-at: children
 ```
 
@@ -355,14 +373,14 @@ Our tag function now returns `HTML` instead of `AstNode`. It does this by using 
 :end-at: return Fill
 ```
 
-Next we have the `Fill` dataclass. It stores the `args` it was given. This dataclass the heart of the filling-in step:
+Next we have the `Fill` dataclass. It stores the `args` it was given. This dataclass the heart of the filling-in step.
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb4.py
 :start-at: def html
 :end-at: return Fill
 ```
 
-The action starts in the `interpolate` method. This is what the tag function called, passing in the AST:
+The action starts in the `interpolate` method. This is what the tag function called, passing in the AST.
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb4.py
 :start-at: def interpolate
@@ -387,11 +405,18 @@ Our `self.interpolate` method closed with a call to `self.fill_tag`, passing in 
 :end-at: return HtmlNode
 ```
 
-While we're not filling in the `HTML` with values from the tag string, we are filling them in. Let's see it in use:
+While we're not filling in the `HTML` with values from the tag string, we are filling them in with fake results. Let's see it in use:
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb4.py
 :start-at: name = 
-:end-at: assert ["Hello ",
+:end-at: root_node: HtmlNode
+```
+
+As you can see -- `I WAS FILLED`.
+
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb4.py
+:start-at: assert "div"
+:end-at: assert ["Hello
 ```
 
 With this introduction to fill strategies in place, let's actually fill in the placeholders with real values.
@@ -424,7 +449,14 @@ Let's see our first look at dynamic HTML rendering.
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb5.py
 :start-at: name =
-:end-at: assert ["Hello ",
+:end-at: root_node: HtmlNode
+```
+
+We have indeed filled in some values.
+
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb5.py
+:start-at: assert "div"
+:end-at: assert ["Hello "
 ```
 
 It's now time to handle attributes, albeit a simple case.
@@ -435,7 +467,7 @@ So far we left out attribute handling, to let us get an end-to-end view of the s
 
 Nothing changes in most of our code. The AST parser and tag function remain the same. Our `Fill` policy, though, will be taught how to handle attributes.
 
-We said the `interpolate` method was the tag function's entry point to filling. We'll start there.
+We said the `interpolate()` method was the tag function's entry point to filling. We'll start there.
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb6.py
 :start-at: def interpolate
@@ -443,7 +475,7 @@ We said the `interpolate` method was the tag function's entry point to filling. 
 :emphasize-lines: 10-14
 ```
 
-The tag function passed an AST node to get interpolated. That node might have attributes and those attributes might be dynamic -- meaning, need interpolation.
+The tag function passed this method an AST node to get interpolated. That node might have attributes and those attributes might be dynamic -- meaning, need interpolation.
 
 We pass each attribute to a new `self.fill_attr` method, then pass the newly-filled attributes to `self.fill_tag`.
 
@@ -454,7 +486,7 @@ Interpolations in an attribute is -- for now -- simple.
 :end-at: return {
 ```
 
-Also as part of this step, we close the loop on two places we skipped. Our `fill` method now calls a passed-in conversion function, though we're not yet using it from the caller in `self.interpolate`.
+Also as part of this step, we close the loop on two places we skipped. Our `fill` method now calls a passed-in conversion function. If none is provided, it defaults to `str()`. Let's use that conversion function.
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb6.py
 :start-at: def fill(
@@ -462,20 +494,49 @@ Also as part of this step, we close the loop on two places we skipped. Our `fill
 :emphasize-lines: 10
 ```
 
-We also clean up `fill_tag` to support interpolation in the tag name itself.
+Next, we clean up `fill_tag` to support interpolation in the tag name itself.
 
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb6.py
-:start-at: def fill(
-:end-at: yield s
-:emphasize-lines: 10
+:start-at: def fill_tag(
+:end-at: return HtmlNode
+:emphasize-lines: 3
+```
+
+With this in place, we make an example that uses both attributes and a dynamic heading level in a tag.
+
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb6.py
+:start-at: name = "World"
+:end-at: root_node: HtmlNode
+```
+
+We now have attriburtes and our heading level matches the integer `1` from the variable.
+
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb6.py
+:start-at: assert "h1"
+:end-at: assert ["Hello
+```
+
+We've now implemented quite a bit of templating. Except: making a string. Let's see that next.
+
+## DOM to string
+
+We have an HTML "DOM" as nested Python data. We need a way to "stringify" it, possibly with some policies along the way.
+
+We'll add a `__str__` method to our `HtmlNode` dataclass.
+
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb7.py
+:start-after: Add a `__str__`
+:end-at: return ''.join(spaced)
+```
+
+Quite a bit going on, as HTML has a number of interesting places to customize. With this in place, we can stringify our `HtmlNode`.
+
+```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb7.py
+:start-at: result = str(root_node)
+:end-at: assert expected == result
 ```
 
 
-
-
-## Props
-
-## Interpolated tag names
 
 ## Safe inputs, conversion, and format_spec
 
@@ -487,15 +548,3 @@ To escape and unescape strings in this manner it will be useful to have the foll
 ```
 
 ## Subcomponents
-
-## Compiling templates for re-use
-
-Or tree-walking interpreter.
-
-### TODO
-
-- Use Guido's htmlbuilder.py tree walker version as the more accessible HTML one
-- Caching
-- Streaming
-- Next tutorial: SQL, using SQLglot - https://github.com/tobymao/sqlglot
-- FIXME validate this is well-formed HTML

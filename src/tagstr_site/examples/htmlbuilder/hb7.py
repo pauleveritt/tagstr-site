@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from html import escape
 
-from tagstr_site.examples import MainResult, Attrs
+from tagstr_site.examples import TestSetup, Attrs
 from tagstr_site.examples.htmlbuilder.hb2 import AstParser
 from tagstr_site.examples.htmlbuilder.hb4 import HtmlNode as BaseHtmlNode
 from tagstr_site.examples.htmlbuilder.hb6 import Fill as BaseFill
@@ -13,6 +13,7 @@ from tagstr_site.htm import HTML
 from tagstr_site.tagtyping import Interpolation
 
 
+# Add a `__str__` method to the class
 @dataclass
 class HtmlNode(BaseHtmlNode):
     def __str__(self):
@@ -26,9 +27,6 @@ class HtmlNode(BaseHtmlNode):
                 case str(), str():
                     attrs.append(f'{k}="{escape(v, quote=True)}"')
                 case 'style', dict() as css:
-                    # TODO are there other examples of dict structures
-                    # beside the style attr? Could this occur in a
-                    # custom tag?
                     decl = []
                     for property, value in css.items():
                         decl.append(f'{property}: {value}')
@@ -69,7 +67,6 @@ class Fill(BaseFill):
         return HtmlNode(tag, attrs, children)
 
 
-# TODO Paul maybe this isn't changed and can be imported
 def html(*args: str | Interpolation) -> HTML:
     parser = AstParser()
     for arg in args:
@@ -77,12 +74,16 @@ def html(*args: str | Interpolation) -> HTML:
     return Fill(args).interpolate(parser.result())
 
 
-def main() -> MainResult:
-    """Main entry point for this example."""
+def setup() -> HTML:
     name = "World"
     title = "The Greeting"
     # Manually typing the result since IDE can't process tag functions yet
     root_node: HtmlNode = html'<div title={title}>Hello {name}</div>'
+    return root_node
+
+
+def test() -> TestSetup:
+    root_node = setup()
     result = str(root_node)
     expected = '<div title="The Greeting">Hello World</div>'
     assert expected == result
@@ -90,5 +91,13 @@ def main() -> MainResult:
     return expected, result
 
 
+def main():
+    """Main entry point for this example."""
+    root_node = setup()
+    result = str(root_node)
+    expected = '<div title="The Greeting">Hello World</div>'
+    assert expected == result
+
+
 if __name__ == "__main__":
-    print(main())
+    main()
