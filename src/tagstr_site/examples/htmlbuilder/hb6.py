@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Generator, Callable
 
 from tagstr_site.examples import MainResult, Attrs
-from tagstr_site.examples.htmlbuilder.hb2 import ASTParser
+from tagstr_site.examples.htmlbuilder.hb2 import AstParser
 from tagstr_site.examples.htmlbuilder.hb4 import HtmlNode, AstNode
 from tagstr_site.examples.htmlbuilder.hb5 import Fill as BaseFill
 from tagstr_site.htm import HTML
@@ -66,9 +66,8 @@ class Fill(BaseFill):
         return self.fill_tag(tag.tag, attrs, children)
 
 
-# TODO Paul maybe this isn't changed and can be imported
 def html(*args: str | Interpolation) -> HTML:
-    parser = ASTParser()
+    parser = AstParser()
     for arg in args:
         parser.feed(arg)
     return Fill(args).interpolate(parser.result())
@@ -77,15 +76,18 @@ def html(*args: str | Interpolation) -> HTML:
 def main() -> MainResult:
     """Main entry point for this example."""
     name = "World"
+    level = 1
     title = "The Greeting"
     # Manually typing the result since IDE can't process tag functions yet
-    root_node: HtmlNode = html'<div title={title}>Hello {name}</div>'
+    root_node: HtmlNode = html'<h{level} title={title}>Hello {name}</h{level}>'
 
-    assert "div" == root_node.tag
+    print(root_node.tag)
+    return
+    assert "h1" == root_node.tag
     assert dict(title=title) == root_node.attrs
     assert ["Hello ", name] == root_node.children
 
-    return ("div", root_node.tag), (root_node.attrs, dict(title=title)), (root_node.children, ["Hello ", name])
+    return ("h1", root_node.tag), (root_node.attrs, dict(title=title)), (root_node.children, ["Hello ", name])
 
 
 if __name__ == "__main__":

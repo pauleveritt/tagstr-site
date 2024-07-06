@@ -3,13 +3,13 @@
 Doesn't yet support actual filling in data of interpolations.
 """
 
-from tagstr_site.examples.htmlbuilder.hb1 import ASTParser as BaseParser
+from tagstr_site.examples.htmlbuilder.hb1 import AstParser as BaseParser
 from tagstr_site.builtins import InterpolationConcrete
 from tagstr_site.examples import MainResult
 from tagstr_site.tagtyping import Interpolation
 
 
-class ASTParser(BaseParser):
+class AstParser(BaseParser):
     def __init__(self):
         super().__init__()
         self.index = 0
@@ -20,17 +20,18 @@ class ASTParser(BaseParser):
             case str() as s:
                 # Leaving out the escaping of possible $$ in data
                 super().feed(s)
-            # case Interpolation() as i:
+            # case Interpolation():
             case tuple():  # Temporary, while waiting for 3.14 implementation
-                # TODO Jim is it ok to omit "as t"
                 # TODO Jim we don't have a default case for no match
                 super().feed(f"x${self.index}x")
+            case _:
+                raise ValueError("Arg not shaped like a string nor Interpolation")
         self.index += 1
 
 def main() -> MainResult:
     """Main entry point for this example."""
     name = "World"
-    parser = ASTParser()
+    parser = AstParser()
     parser.feed("<div>Hello ")
     interpolation = InterpolationConcrete(lambda: name, 'name', None, None)
     parser.feed(interpolation)

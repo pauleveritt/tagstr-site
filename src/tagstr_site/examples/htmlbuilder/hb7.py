@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from html import escape
 
 from tagstr_site.examples import MainResult, Attrs
-from tagstr_site.examples.htmlbuilder.hb2 import ASTParser
+from tagstr_site.examples.htmlbuilder.hb2 import AstParser
 from tagstr_site.examples.htmlbuilder.hb4 import HtmlNode as BaseHtmlNode
 from tagstr_site.examples.htmlbuilder.hb6 import Fill as BaseFill
 from tagstr_site.htm import HTML
@@ -71,7 +71,7 @@ class Fill(BaseFill):
 
 # TODO Paul maybe this isn't changed and can be imported
 def html(*args: str | Interpolation) -> HTML:
-    parser = ASTParser()
+    parser = AstParser()
     for arg in args:
         parser.feed(arg)
     return Fill(args).interpolate(parser.result())

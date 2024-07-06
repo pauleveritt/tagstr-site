@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Sequence, Generator, Callable
 
 from tagstr_site.examples import MainResult
-from tagstr_site.examples.htmlbuilder.hb2 import ASTParser
+from tagstr_site.examples.htmlbuilder.hb2 import AstParser
 from tagstr_site.examples.htmlbuilder.hb4 import (
     placeholder_re, placeholder_index_re, HtmlNode,
     Fill as BaseFill,
@@ -47,7 +47,7 @@ class Fill(BaseFill):
                     yield s
 
 def html(*args: str | Interpolation) -> HTML:
-    parser = ASTParser()
+    parser = AstParser()
     for arg in args:
         parser.feed(arg)
     return Fill(args).interpolate(parser.result())

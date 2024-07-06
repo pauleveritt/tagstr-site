@@ -3,11 +3,11 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import Generator, Callable
+from typing import Generator, Callable, Sequence
 
 from tagstr_site.examples import MainResult, Attrs
 from tagstr_site.examples.htmlbuilder.hb1 import AstNode
-from tagstr_site.examples.htmlbuilder.hb2 import ASTParser
+from tagstr_site.examples.htmlbuilder.hb2 import AstParser
 from tagstr_site.htm import HTML
 from tagstr_site.tagtyping import Interpolation
 
@@ -15,6 +15,7 @@ placeholder_re = re.compile(r'(x\$\d+x)')
 placeholder_index_re = re.compile(r'x\$(?P<index>\d+)x')
 
 
+# The start of return a DOM-like HTML
 @dataclass
 class HtmlNode:
     """Implementation of a node or tree of an HTML DOM."""
@@ -24,9 +25,11 @@ class HtmlNode:
     children: list[str | HtmlNode] = field(default_factory=list)
 
 
+# Pluggable policies for filling in the interpolations
 @dataclass
 class Fill:
     """A policy that can fill in nodes in an AST, using interpolations."""
+    args: Sequence[str | Interpolation]
 
     # The convert callable is unused for now
     def fill(self, s: str, convert: Callable | None = None) -> Generator[dict | str | HTML]:
@@ -54,10 +57,10 @@ class Fill:
 
 
 def html(*args: str | Interpolation) -> HTML:
-    parser = ASTParser()
+    parser = AstParser()
     for arg in args:
         parser.feed(arg)
-    return Fill().interpolate(parser.result())
+    return Fill(args).interpolate(parser.result())
 
 
 def main() -> MainResult:

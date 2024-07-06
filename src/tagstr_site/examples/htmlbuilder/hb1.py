@@ -14,8 +14,7 @@ class AstNode:
     attrs: list[tuple[str, str | None]] = field(default_factory=list)
     children: list[str | AstNode] = field(default_factory=list)
 
-class ASTParser(HTMLParser):
-    # TODO Jim Why AstNode and ASTParser (instead of AstParser)?
+class AstParser(HTMLParser):
     def __init__(self):
         super().__init__()
         self.root = AstNode()
@@ -38,6 +37,7 @@ class ASTParser(HTMLParser):
 
     def handle_endtag(self, tag: str) -> None:
         node = self.stack.pop()
+        print(323, node.tag, tag)
         if node.tag != tag:
             raise SyntaxError("Start tag {node.tag!r} does not match end tag {tag!r}")
 
@@ -55,7 +55,7 @@ class ASTParser(HTMLParser):
 
 def main() -> MainResult:
     """Main entry point for this example."""
-    parser = ASTParser()
+    parser = AstParser()
     parser.feed("<div>Hello World</div>")
     root_node = parser.result()
     assert "div" == root_node.tag
