@@ -1,0 +1,1034 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Building an HTML Templating Engine &#8212; Using Tag Strings</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=e645c8fa"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'htmlbuilder';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Tutorial" href="tutorial.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Using Tag Strings</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Quick Tutorial</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">HTML Templating</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/htmlbuilder.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Building an HTML Templating Engine</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-not-jinja2">Why not Jinja2?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#review-tag-string-protocols">Review: tag string protocols</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ast-and-html-trees">AST and HTML trees</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parsing-html">Parsing HTML</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-interpolations">Handling interpolations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tag-function">Tag function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starting-a-fill-strategy">Starting a fill strategy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fill-in-values">Fill in values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-attributes">Simple attributes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dom-to-string">DOM to string</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrapup">Wrapup</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="building-an-html-templating-engine">
+<h1>Building an HTML Templating Engine<a class="headerlink" href="#building-an-html-templating-engine" title="Link to this heading">#</a></h1>
+<p>HTML templating is an important part of web development and Python has a long, long history here. Template languages are
+like a domain-specific language (DSL), which tag strings were built for. Tag strings provide an opportunity: a
+syntax specifically designed to ease HTML templating.</p>
+<p>In the tutorial to follow, you’ll learn how to create an <code class="docutils literal notranslate"><span class="pre">html</span></code> tag which can do just this. Specifically, the
+tutorial will bring your markup and logic closer together by taking inspiration from
+<a class="reference external" href="https://reactjs.org/docs/introducing-jsx.html">JSX</a>, a syntax extension to
+JavaScript commonly used in <a class="reference external" href="https://reactjs.org/">ReactJS</a> projects.</p>
+<p>Here are some examples of the kinds of things you could ultimately do.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Attribute expansion</span>
+<span class="n">attributes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;font-weight&quot;</span><span class="p">:</span> <span class="s2">&quot;bold&quot;</span><span class="p">}}</span>
+<span class="k">assert</span> <span class="p">(</span>
+           <span class="nb">str</span><span class="p">(</span><span class="n">html</span><span class="s2">&quot;&lt;h1 </span><span class="si">{attributes}</span><span class="s2">&gt;Hello, world!&lt;/h1&gt;&quot;</span><span class="p">)</span>
+       <span class="o">==</span> <span class="s1">&#39;&lt;h1 color=&quot;blue&quot; style=&quot;font-weight:bold&quot;&gt;Hello, world!&lt;h1&gt;&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># Recursive construction</span>
+<span class="k">assert</span> <span class="p">(</span>
+           <span class="nb">str</span><span class="p">(</span><span class="n">html</span><span class="s2">&quot;&lt;body&gt;{[html&quot;</span> <span class="o">&lt;</span> <span class="n">h</span><span class="p">{</span><span class="n">i</span><span class="p">}</span> <span class="o">/</span> <span class="o">&gt;</span> <span class="s2">&quot; for i in range(1, 4)]}&lt;/body&gt;&quot;</span><span class="p">)</span>
+       <span class="o">==</span> <span class="s2">&quot;&lt;body&gt;&lt;h1&gt;&lt;/h1&gt;&lt;h2&gt;&lt;/h2&gt;&lt;h3&gt;&lt;/h3&gt;&lt;/body&gt;&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This might be difficult to achieve with a standard templating solution.
+More interesting though: this <code class="docutils literal notranslate"><span class="pre">html</span></code> tag will output a structured
+representation of the HTML that can be freely manipulated - a Document Object Model
+(DOM) of sorts for HTML.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="p">:</span> <span class="n">HTML</span> <span class="o">=</span> <span class="n">html</span><span class="s2">&quot;&lt;h1/&gt;&quot;</span>
+<span class="n">node</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span>
+<span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Hello, world!&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;&lt;h1 color=&quot;blue&quot;&gt;Hello, world!&lt;/h1&gt;&#39;</span>
+</pre></div>
+</div>
+<p>But first, let’s see why tag strings might be a better fit over existing, mature choices such as Jinja2.</p>
+<section id="why-not-jinja2">
+<h2>Why not Jinja2?<a class="headerlink" href="#why-not-jinja2" title="Link to this heading">#</a></h2>
+<p>Python template languages such as Jinja2 take contextual data and generate larger bodies of text, such as HTML. For
+example, if you wanted to create a simple todo list using Jinja it might look something like this.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Template</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;h1&gt;{{ title }}&lt;/h1&gt;</span>
+<span class="s2">&lt;ol&gt;{</span><span class="si">% f</span><span class="s2">or item in list_items %}</span>
+<span class="s2">    &lt;li&gt;{{ item }}&lt;/li&gt;{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">&lt;/ol&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+
+<span class="n">doc</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;My Todo List&quot;</span><span class="p">,</span> <span class="n">list_items</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Eat&quot;</span><span class="p">,</span> <span class="s2">&quot;Code&quot;</span><span class="p">,</span> <span class="s2">&quot;Sleep&quot;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Which will render as:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>My Todo List<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">ol</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Eat<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Code<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Sleep<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">ol</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>This is simple enough, but Jinja templates can grow rapidly in complexity. For example,
+if you want to dynamically set attributes on the <code class="docutils literal notranslate"><span class="pre">&lt;li&gt;</span></code> elements the Jinja template
+it’s less straightforward.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Template</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&lt;h1&gt;{{ title }}&lt;/h1&gt;</span>
+<span class="sd">&lt;ol&gt;{% for item in list_items %}</span>
+<span class="sd">    &lt;li {% for key, value in item[&quot;attributes&quot;].items() %}{{ key }}={{ value }} {% endfor %}&gt;</span>
+<span class="sd">        {{ item[&quot;value&quot;] }}</span>
+<span class="sd">    &lt;/li&gt;{% endfor %}</span>
+<span class="sd">&lt;/ol&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="p">)</span>
+
+<span class="n">doc</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;My Todo List&quot;</span><span class="p">,</span>
+    <span class="n">list_items</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;attributes&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;&#39;3&#39;&quot;</span><span class="p">},</span>
+            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;Eat&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;attributes&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;&#39;font-weight: bold&#39;&quot;</span><span class="p">},</span>
+            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;Eat&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;attributes&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;&#39;a&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="s2">&quot;&#39;font-weight: bold&#39;&quot;</span><span class="p">},</span>
+            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;Eat&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The result:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>My Todo List<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">ol</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">li</span> <span class="na">value</span><span class="o">=</span><span class="s">&quot;3&quot;</span><span class="p">&gt;</span>Eat<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">li</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;font-weight: bold&quot;</span><span class="p">&gt;</span>Eat<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">li</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;a&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;font-weight: bold&quot;</span><span class="p">&gt;</span>Eat<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">ol</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>One problem: Jinja is a generic templating tool, so the specific needs that come with rendering
+HTML, like expanding dynamic attributes, aren’t supported out of the box. More broadly, Jinja templates make it
+difficult to coordinate business and UI logic since markup in the template is kept separate from your logic in Python.</p>
+<p>This is a key point, one that makes it hard to provide good tooling. Jinja2 has different scope rules, calling
+semantics, and composition approaches than Python. This means tools like Black, Ruff, and mypy can’t really peak inside
+that part of your project.</p>
+</section>
+<section id="review-tag-string-protocols">
+<h2>Review: tag string protocols<a class="headerlink" href="#review-tag-string-protocols" title="Link to this heading">#</a></h2>
+<p>With tag strings, we write a function that receives an <code class="docutils literal notranslate"><span class="pre">args</span></code> sequence of <code class="docutils literal notranslate"><span class="pre">Decoded</span></code> and <code class="docutils literal notranslate"><span class="pre">Interpolation</span></code> values. These
+are Python “protocols”. <code class="docutils literal notranslate"><span class="pre">Decoded</span></code> is a string with an extra <code class="docutils literal notranslate"><span class="pre">raw</span></code> value.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Decoded</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="o">...</span>
+
+    <span class="n">raw</span><span class="p">:</span> <span class="nb">str</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Interpolation</span></code> object captures a dynamic part (between braces) in a tag string.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">getvalue</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="o">...</span>
+
+    <span class="n">expr</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">conv</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">format_spec</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</section>
+<section id="ast-and-html-trees">
+<h2>AST and HTML trees<a class="headerlink" href="#ast-and-html-trees" title="Link to this heading">#</a></h2>
+<p>We’re going to use an HTML “template” to render some data. Our strategy could be to do all the processing in one step. But most templating systems split into several steps, for reasons such as performance.</p>
+<p>This tutorial will show a parsing step and a rendering step. The parsing step will create an <a class="reference external" href="https://en.wikipedia.org/wiki/Abstract_syntax_tree">abstract syntax tree</a> or AST. The AST will be a nested collection of Python data, representing the tree of HTML. It will also, though, capture the “placeholders” where something dynamic needs to be inserted.</p>
+<p>For this, we’ll have an <code class="docutils literal notranslate"><span class="pre">AstParser</span></code> which generates <code class="docutils literal notranslate"><span class="pre">AstNode</span></code> objects. Here’s what the <code class="docutils literal notranslate"><span class="pre">AstNode</span></code> will look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use as an AST for HTML, with placeholders</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">AstNode</span><span class="p">:</span>
+    <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">attrs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">children</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">AstNode</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In a second step, we’ll use the <code class="docutils literal notranslate"><span class="pre">AstNode</span></code> tree to create a tree of <code class="docutils literal notranslate"><span class="pre">HtmlNode</span></code> objects, with the rendered data.</p>
+</section>
+<section id="parsing-html">
+<h2>Parsing HTML<a class="headerlink" href="#parsing-html" title="Link to this heading">#</a></h2>
+<p>Before we introduce templating, let’s cover the basics of HTML parsing. In the next few steps, we’ll keep it very
+simple: for example, no support for attributes.</p>
+<p>Given that you’re going to be parsing HTML, it will be useful to lean on Python’s
+built-in <a class="reference external" href="https://docs.python.org/3/library/html.parser.html#html.parser.HTMLParser" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">html.parser.HTMLParser</span></code></a> which can be subclassed to customize its behavior:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>An <a class="reference external" href="https://docs.python.org/3/library/html.parser.html#html.parser.HTMLParser" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">html.parser.HTMLParser</span></code></a> instance is fed HTML data
+and calls handler
+methods when start tags, end tags, text, comments, and other markup elements are
+encountered. The user should subclass <a class="reference external" href="https://docs.python.org/3/library/html.parser.html#html.parser.HTMLParser" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">html.parser.HTMLParser</span></code></a> and override
+its methods to implement the desired behavior.</p>
+</div>
+<p>Specifically, we’ll fill in these <code class="docutils literal notranslate"><span class="pre">HTMLParser</span></code> methods:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/html.parser.html#html.parser.HTMLParser.handle_starttag" title="(in Python v3.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">html.parser.HTMLParser.handle_starttag()</span></code></a> - handles the start tag of an element (<code class="docutils literal notranslate"><span class="pre">&lt;div</span> <span class="pre">id=&quot;something&quot;&gt;</span></code>).</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/html.parser.html#html.parser.HTMLParser.handle_data" title="(in Python v3.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">html.parser.HTMLParser.handle_data()</span></code></a> - processes text in the body of an element (<code class="docutils literal notranslate"><span class="pre">&lt;div&gt;arbitrary</span> <span class="pre">text&lt;/div&gt;</span></code>).</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/html.parser.html#html.parser.HTMLParser.handle_endtag" title="(in Python v3.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">html.parser.HTMLParser.handle_endtag()</span></code></a> - handles the end tag of an element (<code class="docutils literal notranslate"><span class="pre">&lt;/div&gt;</span></code>).</p></li>
+</ul>
+<p>Let’s start with a class that inherits from the <code class="docutils literal notranslate"><span class="pre">HTMLParser</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">AstParser</span><span class="p">(</span><span class="n">HTMLParser</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">AstNode</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AstNode</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AstNode</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Easy access to the previous node in the stack.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Our initializer function makes a root node and sets it as the only element in the “stack”. The root node is an instance of the <code class="docutils literal notranslate"><span class="pre">AstNode</span></code> object described above.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">AstNode</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parsed representation of an HTML tag string.&quot;&quot;&quot;</span>
+
+    <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># Not yet implementing attributes, default to empty list</span>
+    <span class="n">attrs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">children</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">AstNode</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Again: for now, we’re not interested for now with attributes.</p>
+<p>What’s the purpose of <code class="docutils literal notranslate"><span class="pre">self.stack</span></code>? As we go down through nested nodes, we need to keep track of the parent element that is
+currently being constructed at any point. This lets you append newly created child elements and body text to
+the appropriate parent element. We use a data structure called
+a <a class="reference external" href="https://en.wikipedia.org/wiki/Stack_(abstract_data_type)">stack</a> to do just this.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">parent</span></code> property is just a convenience, making it easier to grab the most-recent node on the stack.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">AstParser</span></code> needs a method to handle the starting of a tag.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">handle_starttag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attrs</span><span class="p">:</span> <span class="n">Attrs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">this_node</span> <span class="o">=</span> <span class="n">AstNode</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">)</span>
+        <span class="n">last_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span>
+        <span class="n">last_node</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">this_node</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With this, the starting of a tag – such as <code class="docutils literal notranslate"><span class="pre">&lt;div&gt;</span></code> – makes a new <code class="docutils literal notranslate"><span class="pre">AstNode</span></code> and adds it to the parent node’s children.
+The method also “pushes” this new node onto the stack, making it the “parent”.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">handle_data</span></code> method takes care of the non-node children. Primarily, this is the plain text.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">handle_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">children</span>
+        <span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">handle_endtag</span></code> is run when a tag closes, for example, <code class="docutils literal notranslate"><span class="pre">&lt;/div&gt;</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">handle_endtag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="c1"># if node.tag != tag:</span>
+        <span class="c1">#     raise SyntaxError(&quot;Start tag {node.tag!r} does not match end tag {tag!r}&quot;)</span>
+</pre></div>
+</div>
+<p>This example doesn’t do much – it just “pops” the current tag from the stack and ensures the starting and ending tag
+names match.</p>
+<p>To simplify the process of closing the <code class="docutils literal notranslate"><span class="pre">HTMLParser</span></code> and extracting the <code class="docutils literal notranslate"><span class="pre">AstNode</span></code> tree, we
+add a <code class="docutils literal notranslate"><span class="pre">result()</span></code> method.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">result</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AstNode</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convenience method to close the feed and return root.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">match</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">case</span> <span class="p">[]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Nothing to return&quot;</span><span class="p">)</span>
+            <span class="k">case</span> <span class="p">[</span><span class="n">child</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="n">child</span>
+            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
+</pre></div>
+</div>
+<p>Let’s see this in action. First we construct a root <code class="docutils literal notranslate"><span class="pre">AstNode</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">parser</span> <span class="o">=</span> <span class="n">AstParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s2">&quot;&lt;div&gt;Hello World&lt;/div&gt;&quot;</span><span class="p">)</span>
+    <span class="n">root_node</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Now poke around and see if it has what we expect.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">assert</span> <span class="s2">&quot;div&quot;</span> <span class="o">==</span> <span class="n">root_node</span><span class="o">.</span><span class="n">tag</span>
+    <span class="k">assert</span> <span class="s2">&quot;Hello World&quot;</span> <span class="o">==</span> <span class="n">root_node</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>That’s it for a very simple HTML parser. It can handle a tree of nodes, but can’t handle attributes. It certainly can’t
+handle templating. Let’s tackle that next.</p>
+</section>
+<section id="handling-interpolations">
+<h2>Handling interpolations<a class="headerlink" href="#handling-interpolations" title="Link to this heading">#</a></h2>
+<p>We now have an “AST” representation of the HTML. But not the interpolations. In fact, we haven’t implemented the <a class="reference external" href="https://docs.python.org/3/library/html.parser.html#html.parser.HTMLParser.feed" title="(in Python v3.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">html.parser.HTMLParser.feed()</span></code></a> method. This means we’re using the standard feed method. It only takes strings, and our tag function’s <code class="docutils literal notranslate"><span class="pre">args</span></code> is a sequence of string-like values and interpolations</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Tag functions can take a string-like thing and an interpolation. The PEP defines protocols for these: <code class="docutils literal notranslate"><span class="pre">Decoded</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Interpolation</span></code>. The tutorial will use these protocol names, rather than implementation names.</p>
+</div>
+<p>Our interpolations are position-based, so we need to keep an index as we are fed the args.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">AstParser</span><span class="p">(</span><span class="n">BaseParser</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+</span></pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Remember, each <code class="docutils literal notranslate"><span class="pre">arg</span></code> will never have more than one “position” to substitute. Tag string evaluation digests the tag
+string value into chunks.</p>
+</div>
+<p>We now override the base class’s feed method.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="hll">    <span class="k">def</span> <span class="nf">feed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Interpolation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span>        <span class="c1"># We don&#39;t need Decoded as this method never uses raw</span>
+        <span class="k">match</span> <span class="n">arg</span><span class="p">:</span>
+<span class="hll">            <span class="k">case</span> <span class="nb">str</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+</span>                <span class="c1"># Leaving out the escaping of possible $$ in data</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="c1"># case Interpolation():</span>
+<span class="hll">            <span class="k">case</span> <span class="nb">tuple</span><span class="p">():</span>  <span class="c1"># Temporary, while waiting for 3.14 implementation</span>
+</span>                <span class="c1"># TODO Jim we don&#39;t have a default case for no match</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x$</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
+<span class="hll">            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+</span>                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Arg not shaped like a string nor Interpolation&quot;</span><span class="p">)</span>
+<span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></pre></div>
+</div>
+<ul class="simple">
+<li><p>Our <code class="docutils literal notranslate"><span class="pre">feed</span></code> method takes strings and <code class="docutils literal notranslate"><span class="pre">Interpolation</span></code></p></li>
+<li><p>The pattern matching expects something shaped like a string or an <code class="docutils literal notranslate"><span class="pre">Interpolation</span></code>, and fails if it gets something else</p></li>
+<li><p>Strings just get fed to the parser for now (later, some processing)</p></li>
+<li><p>Interpolations get fed a placeholder that encodes the index</p></li>
+</ul>
+<p>This placeholder strategy is the key to the templating. We are encoding a tiny bit of structure, into a string. Namely, the position in the args that should later get substituted.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Why <code class="docutils literal notranslate"><span class="pre">x$Nx</span></code>as placeholder? <code class="docutils literal notranslate"><span class="pre">HTMLParser</span></code>includes a regex pattern for element tags that expects them to begin with a letter.
+To allow element tags themselves to be interpolated (e.g. <code class="docutils literal notranslate"><span class="pre">div</span></code>), the first character of the placeholder must meet this
+requirement. In our case, we just happen to have chosen <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+<p>Also, after “escaping” user provided strings by replacing all <code class="docutils literal notranslate"><span class="pre">$</span></code> characters with <code class="docutils literal notranslate"><span class="pre">$$</span></code>, there is no way for a user to
+feed a string that would result in <code class="docutils literal notranslate"><span class="pre">x$Nx</span></code>. Thus, we can reliably identify any <code class="docutils literal notranslate"><span class="pre">x$Nx</span></code> passed to the parser to be
+placeholders.</p>
+</div>
+<p>Let’s see the updated <code class="docutils literal notranslate"><span class="pre">AstParser</span></code> in action.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;World&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">AstParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s2">&quot;&lt;div&gt;Hello &quot;</span><span class="p">)</span>
+    <span class="n">interpolation</span> <span class="o">=</span> <span class="n">InterpolationConcrete</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">interpolation</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="s2">&quot;&lt;/div&gt;&quot;</span><span class="p">)</span>
+    <span class="c1"># Manually typing the result since IDE can&#39;t process tag functions yet</span>
+    <span class="n">root_node</span><span class="p">:</span> <span class="n">AstNode</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>As you can see, it can encode interpolation points.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">assert</span> <span class="s2">&quot;div&quot;</span> <span class="o">==</span> <span class="n">root_node</span><span class="o">.</span><span class="n">tag</span>
+    <span class="k">assert</span> <span class="p">[</span><span class="s2">&quot;Hello &quot;</span><span class="p">,</span> <span class="s2">&quot;x$1x&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">root_node</span><span class="o">.</span><span class="n">children</span>
+</pre></div>
+</div>
+<p>That’s it for the parser update. It re-uses the methods we already implemented for start/end tag and data. Let’s hook <code class="docutils literal notranslate"><span class="pre">AstParser</span></code> up to a tag function.</p>
+</section>
+<section id="tag-function">
+<h2>Tag function<a class="headerlink" href="#tag-function" title="Link to this heading">#</a></h2>
+<p>So far we’ve made example <code class="docutils literal notranslate"><span class="pre">AstNode</span></code> roots by talking to the parser. To simplify our work, and to build towards tag strings, let’s make a tag function that returns an <code class="docutils literal notranslate"><span class="pre">AstNode</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">html</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Interpolation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AstNode</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">AstParser</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This is a simple tag function. It makes an <code class="docutils literal notranslate"><span class="pre">AstParser</span></code> and pumps <code class="docutils literal notranslate"><span class="pre">args</span></code> into its <code class="docutils literal notranslate"><span class="pre">feed</span></code>. When done, it returns the parser’s <code class="docutils literal notranslate"><span class="pre">result</span></code>.</p>
+<p>Now our demos can use tag strings.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;World&quot;</span>
+    <span class="c1"># Manually typing the result since IDE can&#39;t process tag functions yet</span>
+    <span class="n">root_node</span><span class="p">:</span> <span class="n">AstNode</span> <span class="o">=</span> <span class="n">html</span><span class="s2">&quot;&lt;div&gt;Hello </span><span class="si">{name}</span><span class="s2">&lt;/div&gt;&quot;</span>
+</pre></div>
+</div>
+<p>This tag string results in the same <code class="docutils literal notranslate"><span class="pre">AstNode</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">assert</span> <span class="s2">&quot;div&quot;</span> <span class="o">==</span> <span class="n">root_node</span><span class="o">.</span><span class="n">tag</span>
+    <span class="k">assert</span> <span class="p">[</span><span class="s2">&quot;Hello &quot;</span><span class="p">,</span> <span class="s1">&#39;x$1x&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">root_node</span><span class="o">.</span><span class="n">children</span>
+</pre></div>
+</div>
+<p>We’re now ready to start interpolating.</p>
+</section>
+<section id="starting-a-fill-strategy">
+<h2>Starting a fill strategy<a class="headerlink" href="#starting-a-fill-strategy" title="Link to this heading">#</a></h2>
+<p>DSLs are going to have rich ideas about filling data into templates. It’s nice to isolate this “filling” part: for testing, for swapping policies, etc.</p>
+<p>In this step we introduce a fill strategy. It doesn’t <em>actually</em> do any dynamic filling. Instead, we just outline how it works.</p>
+<p>We’ll go in the order of processing. Our <code class="docutils literal notranslate"><span class="pre">html</span></code> tag function is now going to return something that looks like HTML. As such, we have an <code class="docutils literal notranslate"><span class="pre">HTML</span></code> protocol, so we can be independent with the implementation. Here’s the implementation we are using: an <code class="docutils literal notranslate"><span class="pre">HtmlNode</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">HtmlNode</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implementation of a node or tree of an HTML DOM.&quot;&quot;&quot;</span>
+    <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="c1"># Not yet implementing attributes, default to empty list</span>
+    <span class="n">attrs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="n">children</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">HtmlNode</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Our tag function now returns <code class="docutils literal notranslate"><span class="pre">HTML</span></code> instead of <code class="docutils literal notranslate"><span class="pre">AstNode</span></code>. It does this by using a <code class="docutils literal notranslate"><span class="pre">Fill</span></code> strategy that interpolates <em>into</em> the parser results. Meaning, it fills the AST.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">html</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Interpolation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HTML</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">AstParser</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+<span class="hll">    <span class="k">return</span> <span class="n">Fill</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
+</span></pre></div>
+</div>
+<p>Next we have the <code class="docutils literal notranslate"><span class="pre">Fill</span></code> dataclass. It stores the <code class="docutils literal notranslate"><span class="pre">args</span></code> it was given. This dataclass the heart of the filling-in step.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Fill</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A policy that can fill in nodes in an AST, using interpolations.&quot;&quot;&quot;</span>
+    <span class="n">args</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">Interpolation</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The action starts in the <code class="docutils literal notranslate"><span class="pre">interpolate</span></code> method. This is the method called by tag function, passing in the AST.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="n">AstNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HTML</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The entry point for processing interpolations.&quot;&quot;&quot;</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">tag</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">match</span> <span class="n">child</span><span class="p">:</span>
+<span class="hll">                <span class="k">case</span> <span class="n">AstNode</span><span class="p">()</span> <span class="k">as</span> <span class="n">node</span><span class="p">:</span>
+</span>                    <span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+<span class="hll">                <span class="k">case</span> <span class="nb">str</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+</span>                    <span class="n">children</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+
+        <span class="c1"># For now, skip handling of attributes</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_tag</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="n">children</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This pattern matching block is the dispatcher approach we’ve been seeing. It handles <code class="docutils literal notranslate"><span class="pre">AstNode</span></code> objects from the parser, going through children.</p>
+<p>If the child is another <em>node</em>, the method recurses, calling <code class="docutils literal notranslate"><span class="pre">self.interpolate</span></code> again and appending the result. If the parser stored a <em>string</em>, <code class="docutils literal notranslate"><span class="pre">interpolate</span></code> calls the filling strategy and returns the result.</p>
+<p>The filling strategy in this section is just a stand-in. We’ll do actual interpolation in the next step.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">convert</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">HTML</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Split into any placeholders then fill them from interpolations.&quot;&quot;&quot;</span>
+        <span class="c1"># For now, simulate splitting and filling</span>
+        <span class="k">yield</span> <span class="s2">&quot;I WAS FILLED&quot;</span> <span class="k">if</span> <span class="s2">&quot;$&quot;</span> <span class="ow">in</span> <span class="n">s</span> <span class="k">else</span> <span class="n">s</span>
+</pre></div>
+</div>
+<p>Our <code class="docutils literal notranslate"><span class="pre">self.interpolate</span></code> method closed with a call to <code class="docutils literal notranslate"><span class="pre">self.fill_tag</span></code>, passing in the AstNode’s tag and the interpolated children. Here’s a simple version <code class="docutils literal notranslate"><span class="pre">self.fill_tag</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">fill_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attrs</span><span class="p">:</span> <span class="n">Attrs</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">children</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">HTML</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HTML</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make an HTML-like-node with any policies.&quot;&quot;&quot;</span>
+        <span class="c1"># Reminder, not processing attributes yet.</span>
+        <span class="k">return</span> <span class="n">HtmlNode</span><span class="p">(</span><span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="n">children</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>While we’re not filling in the <code class="docutils literal notranslate"><span class="pre">HTML</span></code> with values from the tag string, we are filling them in with fake results. Let’s see it in use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;World&quot;</span>
+    <span class="c1"># Manually typing the result since IDE can&#39;t process tag functions yet</span>
+    <span class="n">root_node</span><span class="p">:</span> <span class="n">HtmlNode</span> <span class="o">=</span> <span class="n">html</span><span class="s2">&quot;&lt;div&gt;Hello </span><span class="si">{name}</span><span class="s2">&lt;/div&gt;&quot;</span>
+</pre></div>
+</div>
+<p>As you can see – <code class="docutils literal notranslate"><span class="pre">I</span> <span class="pre">WAS</span> <span class="pre">FILLED</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">assert</span> <span class="s2">&quot;div&quot;</span> <span class="o">==</span> <span class="n">root_node</span><span class="o">.</span><span class="n">tag</span>
+    <span class="k">assert</span> <span class="p">[</span><span class="s2">&quot;Hello &quot;</span><span class="p">,</span> <span class="s2">&quot;I WAS FILLED&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">root_node</span><span class="o">.</span><span class="n">children</span>
+</pre></div>
+</div>
+<p>With this introduction to fill strategies in place, let’s actually fill in the placeholders with real values.</p>
+</section>
+<section id="fill-in-values">
+<h2>Fill in values<a class="headerlink" href="#fill-in-values" title="Link to this heading">#</a></h2>
+<p>It turns out that filling in values is a pretty interesting step in the process. Our previous <code class="docutils literal notranslate"><span class="pre">fill</span></code> method was boring: it ignored what it was passed and just returned <code class="docutils literal notranslate"><span class="pre">I</span> <span class="pre">WAS</span> <span class="pre">FILLED</span></code> if the string had a placeholder in it.</p>
+<p>In this step we will process the placeholder and get the correct value. Along the way, we’ll leave behind a spot to do any handling of the value. Here’s the new <code class="docutils literal notranslate"><span class="pre">fill</span></code> method.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">convert</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">HTML</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Split into any placeholders then fill them from interpolations.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">split</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split_by_placeholder</span><span class="p">(</span><span class="n">s</span><span class="p">)):</span>
+            <span class="k">match</span> <span class="n">split</span><span class="p">:</span>
+                <span class="c1"># The 3.14 branch doesn&#39;t yet have Interpolation</span>
+                <span class="c1"># case Interpolation() as interpolation:</span>
+<span class="hll">                <span class="k">case</span> <span class="nb">tuple</span><span class="p">()</span> <span class="k">as</span> <span class="n">interpolation</span><span class="p">:</span>
+</span>                    <span class="c1"># Not yet running a convert function to escape string values.</span>
+                    <span class="c1"># yield interpolation.getvalue()</span>
+                    <span class="k">yield</span> <span class="n">interpolation</span><span class="p">[</span><span class="mi">0</span><span class="p">]()</span>
+<span class="hll">                <span class="k">case</span> <span class="nb">str</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+</span>                    <span class="k">yield</span> <span class="n">s</span>
+</pre></div>
+</div>
+<p>It’s terse but action-packed. First, it calls another method to pick apart the structure in the string, in case it is a placeholder. It does this by calling a helper method <code class="docutils literal notranslate"><span class="pre">self.split_by_placeholder</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">split_by_placeholder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">Interpolation</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Split any strings with placeholders, then lookup the interpolation by position.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">split</span> <span class="ow">in</span> <span class="n">placeholder_re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">split</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+<span class="hll">                <span class="k">if</span> <span class="n">m</span> <span class="o">:=</span> <span class="n">placeholder_index_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">split</span><span class="p">):</span>
+</span>                    <span class="c1"># We have a string with a placeholder. Get the index position</span>
+                    <span class="c1"># from the placeholder, then grap the interpolation at</span>
+                    <span class="c1"># that position in the args.</span>
+<span class="hll">                    <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">))]</span>
+</span>                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Not yet doing any unescaping of the placeholder</span>
+                    <span class="k">yield</span> <span class="n">split</span>
+</pre></div>
+</div>
+<p>This helper is looking to see if a string looks like it has a placeholder. If so, it gets the index from the <code class="docutils literal notranslate"><span class="pre">x$ix</span></code> structure in the string. It then yields the arg at that position.</p>
+<p>The helper has returned either a string or an…<code class="docutils literal notranslate"><span class="pre">Interpolation</span></code>! We are now back to the point where we can call the lambda to evaluate the expression.</p>
+<p>The pattern matching in the <code class="docutils literal notranslate"><span class="pre">fill</span></code> method handles either the interpolation (by getting the value) or just return ing a string. We’ll do more here in the next steps.</p>
+<p>Let’s see our first look at dynamic HTML rendering.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;World&quot;</span>
+    <span class="c1"># Manually typing the result since IDE can&#39;t process tag functions yet</span>
+    <span class="n">root_node</span><span class="p">:</span> <span class="n">HtmlNode</span> <span class="o">=</span> <span class="n">html</span><span class="s2">&quot;&lt;div&gt;Hello </span><span class="si">{name}</span><span class="s2">&lt;/div&gt;&quot;</span>
+</pre></div>
+</div>
+<p>We have indeed filled in some values.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">assert</span> <span class="s2">&quot;div&quot;</span> <span class="o">==</span> <span class="n">root_node</span><span class="o">.</span><span class="n">tag</span>
+    <span class="k">assert</span> <span class="p">[</span><span class="s2">&quot;Hello &quot;</span><span class="p">,</span> <span class="s2">&quot;World&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">root_node</span><span class="o">.</span><span class="n">children</span>
+</pre></div>
+</div>
+<p>It’s now time to handle attributes, albeit a simple case.</p>
+</section>
+<section id="simple-attributes">
+<h2>Simple attributes<a class="headerlink" href="#simple-attributes" title="Link to this heading">#</a></h2>
+<p>So far we left out attribute handling, to let us get an end-to-end view of the simplest case. Attributes are actually a topic with lots of interesting possibilities. Which we’ll ignore for now, and just handle the simplest usage.</p>
+<p>Nothing changes in most of our code. The AST parser and tag function remain the same. Our <code class="docutils literal notranslate"><span class="pre">Fill</span></code> policy, though, will be taught how to handle attributes.</p>
+<p>We said the <code class="docutils literal notranslate"><span class="pre">interpolate()</span></code> method was the tag function’s entry point to filling. We’ll start there.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="n">AstNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HTML</span><span class="p">:</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">tag</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">match</span> <span class="n">child</span><span class="p">:</span>
+                <span class="k">case</span> <span class="n">AstNode</span><span class="p">()</span> <span class="k">as</span> <span class="n">node</span><span class="p">:</span>
+                    <span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">node</span><span class="p">))</span>
+                <span class="k">case</span> <span class="nb">str</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+                    <span class="n">children</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+
+<span class="hll">        <span class="n">attrs</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class="hll">        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">tag</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+</span><span class="hll">            <span class="n">attrs</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_attr</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+</span><span class="hll">
+</span><span class="hll">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_tag</span><span class="p">(</span><span class="n">tag</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span> <span class="n">attrs</span><span class="p">,</span> <span class="n">children</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>The tag function passed this method an AST node to get interpolated. That node might have attributes and those attributes might be dynamic – meaning, need interpolation.</p>
+<p>We pass each attribute to a new <code class="docutils literal notranslate"><span class="pre">self.fill_attr</span></code> method, then pass the newly-filled attributes to <code class="docutils literal notranslate"><span class="pre">self.fill_tag</span></code>.</p>
+<p>Filling placeholders in an attribute is – for now – simple.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">fill_attr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process attribute keys and values for any interpolations.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Not handling extra stuff like looking for boolean-style attributes, nor</span>
+        <span class="c1"># handling actual dicts, nor un-escaping.</span>
+
+        <span class="n">interpolated_key</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">k</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">interpolated_value</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">v</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">interpolated_key</span><span class="p">:</span> <span class="n">interpolated_value</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Also as part of this step, we close the loop on two places we skipped. Our <code class="docutils literal notranslate"><span class="pre">fill</span></code> method now calls a passed-in conversion function. If none is provided, it defaults to <code class="docutils literal notranslate"><span class="pre">str()</span></code>. Let’s use that conversion function.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">convert</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">dict</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">HTML</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Split into any placeholders then fill them from interpolations.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">split</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split_by_placeholder</span><span class="p">(</span><span class="n">s</span><span class="p">)):</span>
+            <span class="k">match</span> <span class="n">split</span><span class="p">:</span>
+                <span class="c1"># The 3.14 branch doesn&#39;t yet have Interpolation</span>
+                <span class="c1"># case Interpolation() as interpolation:</span>
+                <span class="k">case</span> <span class="nb">tuple</span><span class="p">()</span> <span class="k">as</span> <span class="n">interpolation</span><span class="p">:</span>
+                    <span class="c1"># value = interpolation.getvalue()</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">interpolation</span><span class="p">[</span><span class="mi">0</span><span class="p">]()</span>
+<span class="hll">                    <span class="k">yield</span> <span class="n">value</span> <span class="k">if</span> <span class="n">convert</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</span>                <span class="k">case</span> <span class="nb">str</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">s</span>
+</pre></div>
+</div>
+<p>Next, we clean up <code class="docutils literal notranslate"><span class="pre">fill_tag</span></code> to support interpolation in the tag name itself.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">fill_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attrs</span><span class="p">:</span> <span class="n">Attrs</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">children</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">HTML</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HTML</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Support interpolation in the tag name for dynamic heading levels and subcomponents.&quot;&quot;&quot;</span>
+<span class="hll">        <span class="n">elems</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">tag</span><span class="p">))</span>
+</span>        <span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">elems</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">HtmlNode</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">attrs</span><span class="p">,</span> <span class="n">children</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With this in place, we make an example that uses both attributes and a dynamic heading level in a tag.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;World&quot;</span>
+    <span class="n">level</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;The Greeting&quot;</span>
+    <span class="c1"># Manually typing the result since IDE can&#39;t process tag functions yet</span>
+    <span class="n">root_node</span><span class="p">:</span> <span class="n">HtmlNode</span> <span class="o">=</span> <span class="n">html</span><span class="s1">&#39;&lt;h</span><span class="si">{level}</span><span class="s1"> title=</span><span class="si">{title}</span><span class="s1">&gt;Hello </span><span class="si">{name}</span><span class="s1">&lt;/h</span><span class="si">{level}</span><span class="s1">&gt;&#39;</span>
+</pre></div>
+</div>
+<p>We now have attriburtes and our heading level matches the integer <code class="docutils literal notranslate"><span class="pre">1</span></code> from the variable.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">assert</span> <span class="s2">&quot;h1&quot;</span> <span class="o">==</span> <span class="n">root_node</span><span class="o">.</span><span class="n">tag</span>
+    <span class="k">assert</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;The Greeting&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">root_node</span><span class="o">.</span><span class="n">attrs</span>
+    <span class="k">assert</span> <span class="p">[</span><span class="s2">&quot;Hello &quot;</span><span class="p">,</span> <span class="s2">&quot;World&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">root_node</span><span class="o">.</span><span class="n">children</span>
+</pre></div>
+</div>
+<p>We’ve now implemented quite a bit of templating. Except: making a string. Let’s see that next.</p>
+</section>
+<section id="dom-to-string">
+<h2>DOM to string<a class="headerlink" href="#dom-to-string" title="Link to this heading">#</a></h2>
+<p>We have an HTML “DOM” as nested Python data. We need a way to “stringify” it, possibly with some policies along the way.</p>
+<p>We’ll add a <code class="docutils literal notranslate"><span class="pre">__str__</span></code> method to our <code class="docutils literal notranslate"><span class="pre">HtmlNode</span></code> dataclass.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">HtmlNode</span><span class="p">(</span><span class="n">BaseHtmlNode</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">match</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span>
+                <span class="k">case</span> <span class="nb">str</span><span class="p">(),</span> <span class="nb">bool</span><span class="p">():</span>
+                    <span class="n">attrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="k">case</span> <span class="nb">str</span><span class="p">(),</span> <span class="nb">int</span><span class="p">():</span>
+                    <span class="n">attrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+                <span class="k">case</span> <span class="nb">str</span><span class="p">(),</span> <span class="nb">str</span><span class="p">():</span>
+                    <span class="n">attrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=&quot;</span><span class="si">{</span><span class="n">escape</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">quote</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+                <span class="k">case</span> <span class="s1">&#39;style&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">()</span> <span class="k">as</span> <span class="n">css</span><span class="p">:</span>
+                    <span class="n">decl</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="nb">property</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">css</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">decl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">property</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="n">attrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1">=&quot;</span><span class="si">{</span><span class="n">escape</span><span class="p">((</span><span class="s1">&#39;; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">decl</span><span class="p">))</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+
+        <span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">match</span> <span class="n">child</span><span class="p">:</span>
+                <span class="k">case</span> <span class="nb">str</span><span class="p">():</span>
+                    <span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">escape</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
+                <span class="k">case</span> <span class="n">HTML</span><span class="p">():</span>
+                    <span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
+
+        <span class="n">spaced</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">attrs</span><span class="p">:</span>
+            <span class="n">spaced</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+            <span class="n">spaced</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attrs</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">children</span><span class="p">:</span>
+            <span class="n">spaced</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">)</span>
+            <span class="n">spaced</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">children</span><span class="p">))</span>
+            <span class="n">spaced</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&lt;/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="si">}</span><span class="s1">&gt;&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">spaced</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;/&gt;&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">spaced</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Quite a bit going on, as HTML has a number of interesting places to customize. With this in place, we can stringify our <code class="docutils literal notranslate"><span class="pre">HtmlNode</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">result</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">root_node</span><span class="p">)</span>
+    <span class="n">expected</span> <span class="o">=</span> <span class="s1">&#39;&lt;div title=&quot;The Greeting&quot;&gt;Hello World&lt;/div&gt;&#39;</span>
+    <span class="k">assert</span> <span class="n">expected</span> <span class="o">==</span> <span class="n">result</span>
+</pre></div>
+</div>
+</section>
+<section id="wrapup">
+<h2>Wrapup<a class="headerlink" href="#wrapup" title="Link to this heading">#</a></h2>
+<p>We’ve just seen the basics for writing an HTML templating engine based on tag strings.
+There’s a lot more to show – escaping inputs, using the conversion and format_spec flags, subcomponents – but those are topics for other tutorials.</p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="tutorial.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tutorial</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-not-jinja2">Why not Jinja2?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#review-tag-string-protocols">Review: tag string protocols</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ast-and-html-trees">AST and HTML trees</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parsing-html">Parsing HTML</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-interpolations">Handling interpolations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tag-function">Tag function</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starting-a-fill-strategy">Starting a fill strategy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fill-in-values">Fill in values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-attributes">Simple attributes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dom-to-string">DOM to string</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wrapup">Wrapup</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Jim Baker
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Jim Baker.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
