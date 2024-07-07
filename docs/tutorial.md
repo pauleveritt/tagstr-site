@@ -1,11 +1,11 @@
 # Tutorial
 
 Imagine: A fictional company has a standard way to do greetings. For this, it
-created a tag function to properly format greetings  according to its standards.
+created a tag function to properly format greetings according to its standards.
 
 ## Simple Tag Function
 
-We start with a tag function ``greet`` that's used as a prefix:
+We start with a tag function `greet` that's used as a prefix:
 
 ```python
 def greet(*args):
@@ -14,7 +14,7 @@ def greet(*args):
     return f"{salutation}!"
 ```
 
-If it looks like the ``f-`` in f-strings -- correct! You can then use this tag
+If it looks like the `f-` in f-strings -- correct! You can then use this tag
 function as a "tag" on a string:
 
 ```{code-block} python
@@ -22,34 +22,34 @@ function as a "tag" on a string:
 HELLO!
 ```
 
-In the ``greet`` function -- a *tag* function -- we see the first step into
-tag strings. You're given an ``*args`` sequence for all the parts in the
+In the `greet` function -- a _tag_ function -- we see the first step into
+tag strings. You're given an `*args` sequence for all the parts in the
 string being tagged. We see how this PEP tokenizes/processes the string
 being tagged, into datastructures to be easily handled.
 
-We then see a usage -- a tagged string in ``main`` with ``greet"Hello"``. This
-"tags" the ``Hello`` string with the function ``greet``.
+We then see a usage -- a tagged string in `main` with `greet"Hello"`. This
+"tags" the `Hello` string with the function `greet`.
 
 ## Interpolation
 
 That example showed the basics but had no dynamicism in it. f-strings make
 it easy to insert variables and expressions with extra instructions. We
-call these *interpolations*. Let's see a super-simple example:
+call these _interpolations_. Let's see a super-simple example:
 
 ```python
 def greet(*args):
-    """Handle an interpolation thunk."""
+    """Handle an interpolation."""
     salutation = args[0].strip()
-    # Second arg is a "thunk" tuple for the interpolation.
+    # Second arg is an "interpolation" tuple.
     getvalue = args[1][0]
     recipient = getvalue().upper()
     return f"{salutation} {recipient}!"
 ```
 
-The second argument is the ``{name}`` part, represented as a tuple. The
-tuple's first argument is a callable that evaluates *in the scope* where the
+The second argument is the `{name}` part, represented as a tuple. The
+tuple's first argument is a callable that evaluates _in the scope_ where the
 tag string happened. Calling it yields the value, thus by convention we call
-this ``getvalue``.
+this `getvalue`.
 
 This time, we'll tag a string that inserts a variable:
 
@@ -68,9 +68,9 @@ interpolations.
 
 In fact, let's start adopting the jargon used in this proposal:
 
-- *Decodeds* are segments that are static strings
-- *Interpolations* are the structure representing an interpolation
-- The *args* are thus an arbitrary sequence of decodeds and interpolations, intermixed
+- _Decodeds_ are segments that are static strings
+- _Interpolations_ are the structure representing an interpolation
+- The _args_ are thus an arbitrary sequence of decodeds and interpolations, intermixed
 
 Here's the code to generalize args:
 
@@ -103,20 +103,20 @@ more carefully and see what they have to offer, while adding some typing.
 
 An interpolation is a tuple with this shape:
 
-```{literalinclude} ../../src/tagstr_site/__init__.py
-start-at: class Thunk
-end-at: formatspect
+```{literalinclude} ../src/tagstr_site/tagtyping.py
+:start-at: class Interpolation
+:end-at: format_spec
 ```
 
 <!--- invisible-code-block: python
-from tagstr_site import Thunk
+from tagstr_site.tagtyping import Decoded, Interpolation
 -->
 
 It will likely be defined in the `typing` module. Once imported, you can use it as a type hint for your tag string's arguments:
 
 ```{code-block} python
-def greet(*args: str | Thunk) -> str:
-    """More about the thunk."""
+def greet(*args: Decoded | Interpolation) -> str:
+    """More about the interpolation."""
     result = []
     for arg in args:
         match arg:
@@ -133,15 +133,12 @@ def greet(*args: str | Thunk) -> str:
 ```
 
 Let's add some typing information to our greet function.
-We'll
 
 ```{code-block} python
 >>> print(greet"Hello {name!r:s}")  # name is still World
 Hello gv: World, r: name, c: r, f: s!
 ```
 
+## Wrapup
 
-## More
-
-- Deferred
-- Non-string
+That's a quick walkthrough tag strings. For a deeper dive, see the [HTML templating tutorial](./htmlbuilder.md).

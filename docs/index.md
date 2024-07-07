@@ -11,9 +11,8 @@ Tag strings are an extension to f-strings, with a custom function -- the "tag"
 such as safety checks, lazy evaluation, DSLs such as web templating, and more.
 
 Tag strings are similar to [JavaScript tagged templates](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates)
-and similar ideas in other languages. See the [work-in-progress PEP](./pep).
+and similar ideas in other languages. See the [work-in-progress PEP](https://github.com/jimbaker/tagstr).
 for more detail.
-
 
 ## Example
 
@@ -36,12 +35,12 @@ HELLO!
 Tag strings are usually much richer and process the arguments Python assembles when calling:
 
 <!--- invisible-code-block: python
-from tagstr_site import Thunk
+from tagstr_site.tagtyping import Decoded, Interpolation
 -->
 
 ```{code-block} python
-def greet(*args: str | Thunk) -> str:
-    """More about the thunk."""
+def greet(*args: Decoded | Interpolation) -> str:
+    """More about the interpolation."""
     result = []
     for arg in args:
         match arg:
@@ -62,7 +61,6 @@ def greet(*args: str | Thunk) -> str:
 :maxdepth: 1
 :caption: Contents
 
-Tutorial <tutorial>
-Work-In-Progress PEP <pep>
-Examples <examples/index>
+Quick Tutorial <tutorial>
+HTML Templating <htmlbuilder>
 ```

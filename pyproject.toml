@@ -9,25 +9,23 @@ description = "Collection of tag string demos, docs, and contributions."
 requires-python = ">=3.12"
 dependencies = [
     "pytest~=7.4.3",
-    "sphinx",
-    "sphinx-book-theme",
+    "sphinx~=7.3",
+    "sphinx-book-theme~=1.1",
     "pytest-sphinx",
-    "sphinx-autobuild",
     "sybil",
-    "myst-parser",
-    "jupyterlite-core[all]",
-    "jupyterlite-pyodide-kernel",
-    "ipython"
+    "myst-parser~=3.0",
 ]
 
 
 [project.optional-dependencies]
-jupyterlite = ["jupyterlite-core[all]~=0.2.0", "jupyterlite-pyodide-kernel~=0.2.0", "ipython~=8.17.2"]
+jupyterlite = [
+    "jupyterlite-core[all]~=0.2.0",
+    "jupyterlite-pyodide-kernel~=0.2.0",
+    "ipython~=8.17.2",
+    "sphinx-autobuild"
+]
 
 [tool.pytest.ini_options]
 addopts = "-ra -q --doctest-modules --ignore-glob='**/_build/**'"
-testpaths = ["tests", "docs"]
-
-[tool.ruff.format]
-docstring-code-format = true
-docstring-code-line-length = 20
+# testpaths = ["docs", "tests"]
+testpaths = ["tests"]

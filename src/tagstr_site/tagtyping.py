@@ -2,6 +2,9 @@
 
 This PEP focuses on the structure and behavior more than the implementations. These are expressed as protocols which
 will live in Python's typing module."""
+
+from __future__ import annotations
+
 from typing import Protocol, Callable, Any, Literal, runtime_checkable
 
 
@@ -26,7 +29,7 @@ class Interpolation(Protocol):
 
     expr: str
     conv: Literal['a', 'r', 's'] | None
-    formatspec: str | None
+    format_spec: str | None
 
 
 class TagFunction(Protocol):
