@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterator, Iterable
 from html import escape
 from html.parser import HTMLParser
 from dataclasses import dataclass, field
@@ -28,9 +29,6 @@ class InterpolationConcrete(NamedTuple):
     expr: str
     conv: Literal['a', 'r', 's'] | None = None
     formatspec: str | None = None
-
-
-Interpolation = InterpolationConcrete  # FIXME workaround for 3.12
 
 
 @runtime_checkable
@@ -97,8 +95,6 @@ class HtmlNode:
         return ''.join(spaced)
 
 
-HTML = HtmlNode  # FIXME workaround for 3.12
-
 placeholder_re = re.compile(r'(x\$\d+x)')
 placeholder_index_re = re.compile(r'x\$(?P<index>\d+)x')
 valid_attribute_name_re = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_\-\.]*$')
@@ -118,7 +114,7 @@ def unescape_placeholder(string: str) -> str:
 # Well-formed HTML - tags are properly closed - use stack field for this
 # Valid HTML, such as li must be a child of ul or ol
 
-class ASTParser(HTMLParser):
+class AstParser(HTMLParser):
     def __init__(self):
         super().__init__()
         self.root = AstNode()
@@ -178,18 +174,23 @@ class Fill:
         for i, split in enumerate(self.split_by_placeholder(s)):
             match split:
                 case Interpolation() as interpolation:
-                    yield convert(interpolation.getvalue())
+                    yield from convert(interpolation.getvalue())
                 case str() as s:
                     yield s
 
-    def convert_child(self, value: Any) -> HTML | str:
+    def convert_child(self, value: Any) -> Generator[HTML | str]:
         match value:
             case HTML():
-                return value
+                yield value
             case str() as s:
-                return escape(s)
+                yield escape(s)
+            case Iterable() as it:
+                for child in it:
+                    yield from self.convert_child(child)
             case _:
-                raise TypeError(f'Expected HTML or str, got {value!r}')
+                # NOTE we could apply the format_spec, conv here
+                # applies to non-iterable values like integers, etc
+                yield escape(str(value))
 
     def convert_attr_key(self, value: Any) -> str:
         match value:
@@ -230,7 +231,7 @@ class Fill:
             case str(), str():
                 return {
                     require_one_value(self.fill(k, self.convert_attr_key)):
-                        require_one_value(self.fill(v, self.convert_attr_value))
+                    require_one_value(self.fill(v, self.convert_attr_value))
                 }
 
     def convert_name(self, value: Any) -> HTML | str:
@@ -277,17 +278,19 @@ class Fill:
 
 
 def html(*args: str | Interpolation) -> HTML:
-    parser = ASTParser()
-    for arg in args:
+    parser = AstParser()
+    for arg in enumerate(args):
         parser.feed(arg)
     return Fill(args).interpolate(parser.result())
 
 
 if __name__ == "__main__":
+    # FIXME convert to proper unit tests with pytest
+
     x = {'bar': 42}
     y = 'abc'
     MyComponent = HtmlNode('div', {'class': 'custom'}, ["My component"])
-    these_args = (
+    args = (
         '<html><head><title>Test</title></head>',
         '<body><h1 class="foo" ',
         InterpolationConcrete(lambda: x, 'x', None, None),
@@ -300,14 +303,39 @@ if __name__ == "__main__":
         '</body></html>',
     )
 
-    this_parser = ASTParser()
-    for this_arg in these_args:
-        this_parser.feed(this_arg)
+    parser = AstParser()
+    for arg in args:
+        parser.feed(arg)
     print('AST:')
-    print(this_parser.result())
+    print(parser.result())
 
     print('\nDOM:')
-    print(repr(html(*these_args)))
+    print(repr(html(*args)))
 
     print('\nHTML:')
-    print(html(*these_args))
+    print(html(*args))
+
+# FIXME this code currently fails
+#     print(html"""<html>
+#   <head><title>Test</title></head>
+#   <body>
+#     <h1 class="foo" {x}>Parse {y}</h1>
+#     <{MyComponent} baz="bar"><p>Extra</p><//>',
+#   </body>
+# </html>
+# """)
+
+    # not necessarily the best way to write this code!
+    items = (html'<li>Item #{i}</li>' for i in range(10))
+    listing = html'<ol>{items}</ol>'
+    print(listing)
+
+    # Something like the following looks a lot nicer, and we should show
+    # this as the best practice - specially once the list item gets at
+    # all somewhat complicated
+
+    def items(n):
+        for i in range(n):
+            yield html"<li>Item #{i}</li>"
+
+    print(html"<ol>{items(5)}</ol>")
