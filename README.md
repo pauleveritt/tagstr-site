@@ -4,28 +4,17 @@ An early stage PEP that introduces tag strings - a natural extension of "f-strin
 
 ## Install
 
+Using a tagstr-capable branch (e.g. the Lysandros implementation below):
+
 ```shell
 $ path/to/venv/bin/pip install -e .
 ```
 
-## Docker
-
-This repo has a `/docker/` directory with Dockerfiles for various images.
-Koudai manages these and also has published them to a registry at https://hub.docker.com/r/koxudaxi/python
-to make it easier to use.
-
 ## Documents
 
-- [WIP PEP](https://github.com/jimbaker/tagstr/blob/main/docs/pep.rst)
-- [Tutorial](https://github.com/jimbaker/tagstr/blob/main/docs/tutorial.rst)
-- [Implementation (WIP)](https://github.com/gvanrossum/cpython/tree/tag-strings-v2)
-
-## Examples
-
-- [Shell](https://github.com/jimbaker/tagstr/blob/main/src/tagstr/shell.py)
-- [SQL](https://github.com/jimbaker/tagstr/blob/main/src/tagstr/sql.py)
-- [HTML](https://github.com/jimbaker/tagstr/blob/main/src/tagstr/htmldom.py)
-- [Among others...](https://github.com/jimbaker/tagstr/blob/main/src/tagstr)
+- [Documentation](https://pauleveritt.github.io/tagstr-site/) from this website including the [HTML tutorial](https://pauleveritt.github.io/tagstr-site/htmlbuilder.html)
+- [WIP PEP](https://github.com/jimbaker/tagstr/blob/main/pep.rst)
+- [Implementation (WIP) based on 3.14](https://github.com/lysnikolaou/cpython/tree/tag-strings-rebased)
 
 ## Related Work
 
@@ -33,6 +22,12 @@ to make it easier to use.
 - [Tagged library](https://github.com/jviide/tagged)
 - [PEP 501: Interpolation templates](https://peps.python.org/pep-0501/)
 - [Earlier work by the same authors](https://github.com/jimbaker/fl-string-pep)
+
+## Docker
+
+This repo has a `/docker/` directory with Dockerfiles for various images.
+Koudai manages these and also has published them to a registry at https://hub.docker.com/r/koxudaxi/python
+to make it easier to use.
 
 ## Devcontainers and vscode
 
