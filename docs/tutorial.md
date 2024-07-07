@@ -139,7 +139,6 @@ Let's add some typing information to our greet function.
 Hello gv: World, r: name, c: r, f: s!
 ```
 
-## More
+## Wrapup
 
-- Deferred
-- Non-string
+That's a quick walkthrough tag strings. For a deeper dive, see the [HTML templating tutorial](./htmlbuilder.md).

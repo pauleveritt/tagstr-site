@@ -20,8 +20,6 @@ class HTML(Protocol):
 
 
 # Use as an AST for HTML, with placeholders
-
-
 @dataclass
 class AstNode:
     tag: str | None = None

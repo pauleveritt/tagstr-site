@@ -61,5 +61,6 @@ def greet(*args: Decoded | Interpolation) -> str:
 :maxdepth: 1
 :caption: Contents
 
+Quick Tutorial <tutorial>
 HTML Templating <htmlbuilder>
 ```

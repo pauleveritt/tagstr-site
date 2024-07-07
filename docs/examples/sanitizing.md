@@ -1,2 +1,0 @@
-# Sanitizing Text
-
