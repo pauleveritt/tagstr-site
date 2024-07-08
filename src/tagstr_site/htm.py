@@ -1,15 +1,34 @@
-"""HTML builder with simplified parsing into an AST."""
-
 from __future__ import annotations
 
-import re
-from dataclasses import dataclass, field
+from collections.abc import Iterable
 from html import escape
 from html.parser import HTMLParser
-from typing import Any, Generator, Sequence, runtime_checkable, Protocol
+from dataclasses import dataclass, field
+from typing import Any, Callable, Generator, Literal, NamedTuple, Protocol, Sequence, runtime_checkable
+import re
 
-from tagstr_site.builtins import InterpolationConcrete
-from tagstr_site.tagtyping import Interpolation
+
+@runtime_checkable
+class Interpolation(Protocol):
+    def __len__(self):
+        ...
+
+    def __getitem__(self, index: int):
+        ...
+
+    def getvalue(self) -> Callable[[], Any]:
+        ...
+
+    expr: str
+    conv: Literal['a', 'r', 's'] | None
+    format_spec: str | None
+
+
+class InterpolationConcrete(NamedTuple):
+    getvalue: Callable[[], Any]
+    expr: str
+    conv: Literal['a', 'r', 's'] | None = None
+    formatspec: str | None = None
 
 
 @runtime_checkable
@@ -20,9 +39,10 @@ class HTML(Protocol):
 
 
 # Use as an AST for HTML, with placeholders
+
 @dataclass
 class AstNode:
-    tag: str | None = None
+    tag: str = None
     attrs: list[tuple[str, str | None]] = field(default_factory=list)
     children: list[str | AstNode] = field(default_factory=list)
 
@@ -43,13 +63,13 @@ class HtmlNode:
                     attrs.append(f'{k}="{v}"')
                 case str(), str():
                     attrs.append(f'{k}="{escape(v, quote=True)}"')
-                case "style", dict() as css:
+                case 'style', dict() as css:
                     # TODO are there other examples of dict structures
                     # beside the style attr? Could this occur in a
                     # custom tag?
                     decl = []
                     for property, value in css.items():
-                        decl.append(f"{property}: {value}")
+                        decl.append(f'{property}: {value}')
                     attrs.append(f'{k}="{escape(('; ').join(decl))}"')
 
         children = []
@@ -60,33 +80,33 @@ class HtmlNode:
                 case HTML():
                     children.append(str(child))
 
-        spaced = [f"<{self.tag}"]
+        spaced = [f'<{self.tag}']
         if attrs:
-            spaced.append(" ")
-            spaced.append(" ".join(attrs))
+            spaced.append(' ')
+            spaced.append(' '.join(attrs))
 
         if children:
-            spaced.append(">")
-            spaced.append("".join(children))
-            spaced.append(f"</{self.tag}>")
+            spaced.append('>')
+            spaced.append(''.join(children))
+            spaced.append(f'</{self.tag}>')
         else:
-            spaced.append("/>")
+            spaced.append('/>')
 
-        return "".join(spaced)
+        return ''.join(spaced)
 
 
-placeholder_re = re.compile(r"(x\$\d+x)")
-placeholder_index_re = re.compile(r"x\$(?P<index>\d+)x")
-valid_attribute_name_re = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_\-\.]*$")
-valid_tagname_re = re.compile(r"^(?!.*--)(?!-?[0-9])[\w-]+(-[\w-]+|[a-zA-Z])?$")
+placeholder_re = re.compile(r'(x\$\d+x)')
+placeholder_index_re = re.compile(r'x\$(?P<index>\d+)x')
+valid_attribute_name_re = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_\-\.]*$')
+valid_tagname_re = re.compile(r'^(?!.*--)(?!-?[0-9])[\w-]+(-[\w-]+|[a-zA-Z])?$')
 
 
 def escape_placeholder(string: str) -> str:
-    return string.replace("$", "$$")
+    return string.replace('$', '$$')
 
 
 def unescape_placeholder(string: str) -> str:
-    return string.replace("$$", "$")
+    return string.replace('$$', '$')
 
 
 # NOTE: doesn't validate the following:
@@ -94,8 +114,7 @@ def unescape_placeholder(string: str) -> str:
 # Well-formed HTML - tags are properly closed - use stack field for this
 # Valid HTML, such as li must be a child of ul or ol
 
-
-class ASTParser(HTMLParser):
+class AstParser(HTMLParser):
     def __init__(self):
         super().__init__()
         self.root = AstNode()
@@ -111,14 +130,14 @@ class ASTParser(HTMLParser):
             case str() as s:
                 super().feed(escape_placeholder(s))
             case Interpolation() as t:
-                super().feed(f"x${self.index}x")
+                super().feed(f'x${self.index}x')
         self.index += 1
 
     def result(self) -> AstNode:
         self.close()
         match self.root.children:
             case []:
-                raise ValueError("Nothing to return")
+                raise ValueError('Nothing to return')
             case [child]:
                 return child
             case _:
@@ -145,9 +164,9 @@ class Fill:
 
     def split_by_placeholder(self, s: str) -> Generator[str | Interpolation]:
         for split in placeholder_re.split(s):
-            if split != "":
+            if split != '':
                 if m := placeholder_index_re.match(split):
-                    yield self.args[int(m.group("index"))]
+                    yield self.args[int(m.group('index'))]
                 else:
                     yield unescape_placeholder(split)
 
@@ -155,28 +174,33 @@ class Fill:
         for i, split in enumerate(self.split_by_placeholder(s)):
             match split:
                 case Interpolation() as interpolation:
-                    yield convert(interpolation.getvalue())
+                    yield from convert(interpolation.getvalue())
                 case str() as s:
                     yield s
 
-    def convert_child(self, value: Any) -> HTML | str:
+    def convert_child(self, value: Any) -> Generator[HTML | str]:
         match value:
             case HTML():
-                return value
+                yield value
             case str() as s:
-                return escape(s)
+                yield escape(s)
+            case Iterable() as it:
+                for child in it:
+                    yield from self.convert_child(child)
             case _:
-                raise TypeError(f"Expected HTML or str, got {value!r}")
+                # NOTE we could apply the format_spec, conv here
+                # applies to non-iterable values like integers, etc
+                yield escape(str(value))
 
     def convert_attr_key(self, value: Any) -> str:
         match value:
             case str() as s:
                 k = escape(s, quote=True)
                 if not valid_attribute_name_re.match(k):
-                    raise ValueError(f"Not a valid attribute name: {k!r}")
+                    raise ValueError(f'Not a valid attribute name: {k!r}')
                 return k
             case _:
-                raise TypeError(f"Expected str, got {value!r}")
+                raise TypeError(f'Expected str, got {value!r}')
 
     def convert_attr_value(self, value: Any) -> dict | str:
         match value:
@@ -187,7 +211,7 @@ class Fill:
             case int() as n:
                 return str(n)
             case _:
-                raise TypeError(f"Expected dict, str, or int, got {value!r}")
+                raise TypeError(f'Expected dict, str, or int, got {value!r}')
 
     def fill_attr(self, k: str, v: str | None) -> dict:
         def require_one_value(it):
@@ -206,9 +230,8 @@ class Fill:
                         return {k_only: True}
             case str(), str():
                 return {
-                    require_one_value(
-                        self.fill(k, self.convert_attr_key)
-                    ): require_one_value(self.fill(v, self.convert_attr_value))
+                    require_one_value(self.fill(k, self.convert_attr_key)):
+                    require_one_value(self.fill(v, self.convert_attr_value))
                 }
 
     def convert_name(self, value: Any) -> HTML | str:
@@ -220,24 +243,22 @@ class Fill:
             case int() as n:
                 return str(n)
             case _:
-                raise TypeError(f"Expected HTML, str, or int, got {value!r}")
+                raise TypeError(f'Expected HTML, str, or int, got {value!r}')
 
     def fill_tag(self, tag: str, attrs, children) -> HTML:
         elems = list(self.fill(tag, self.convert_name))
         if any(isinstance(elem, HTML) for elem in elems):
             if len(elems) > 1:
-                raise ValueError(
-                    f"Can only have a standalone HTML component in name: {elems!r}"
-                )
+                raise ValueError(f'Can only have a standalone HTML component in name: {elems!r}')
             node = elems[0]
             # FIXME this is probably not the right way to override things. Need
             # to determine a better default policy - and make it configurable
             # for any given node supporting the HTML protocol
             return type(node)(node.tag, node.attrs | attrs, node.children + children)
         else:
-            tag = "".join(elems)
+            tag = ''.join(elems)
             if not valid_tagname_re.match(tag):
-                raise ValueError(f"Not a valid tag: {tag}")
+                raise ValueError(f'Not a valid tag: {tag}')
             return HtmlNode(tag, attrs, children)
 
     def interpolate(self, tag: AstNode) -> HTML:
@@ -257,38 +278,64 @@ class Fill:
 
 
 def html(*args: str | Interpolation) -> HTML:
-    parser = ASTParser()
-    for arg in args:
+    parser = AstParser()
+    for arg in enumerate(args):
         parser.feed(arg)
     return Fill(args).interpolate(parser.result())
 
 
 if __name__ == "__main__":
-    x = {"bar": 42}
-    y = "abc"
-    level = "1"
-    MyComponent = HtmlNode("div", {"class": "custom"}, ["My component"])
-    these_args = (
-        "<html><head><title>Test</title></head>",
+    # FIXME convert to proper unit tests with pytest
+
+    x = {'bar': 42}
+    y = 'abc'
+    MyComponent = HtmlNode('div', {'class': 'custom'}, ["My component"])
+    args = (
+        '<html><head><title>Test</title></head>',
         '<body><h1 class="foo" ',
-        InterpolationConcrete(lambda: x, "x", None, None),
-        ">Parse ",
-        InterpolationConcrete(lambda: y, "y", None, None),
-        "</h1>",
-        "<",
-        InterpolationConcrete(lambda: MyComponent, "MyComponent", None, None),
+        InterpolationConcrete(lambda: x, 'x', None, None),
+        '>Parse ',
+        InterpolationConcrete(lambda: y, 'y', None, None),
+        '</h1>',
+        '<',
+        InterpolationConcrete(lambda: MyComponent, 'MyComponent', None, None),
         ' baz="bar"><p>Extra</p><//>',
-        "</body></html>",
+        '</body></html>',
     )
 
-    this_parser = ASTParser()
-    for this_arg in these_args:
-        this_parser.feed(this_arg)
-    print("AST:")
-    print(this_parser.result())
+    parser = AstParser()
+    for arg in args:
+        parser.feed(arg)
+    print('AST:')
+    print(parser.result())
 
-    print("\nDOM:")
-    print(repr(html(*these_args)))
+    print('\nDOM:')
+    print(repr(html(*args)))
 
-    print("\nHTML:")
-    print(html(*these_args))
+    print('\nHTML:')
+    print(html(*args))
+
+# FIXME this code currently fails
+#     print(html"""<html>
+#   <head><title>Test</title></head>
+#   <body>
+#     <h1 class="foo" {x}>Parse {y}</h1>
+#     <{MyComponent} baz="bar"><p>Extra</p><//>',
+#   </body>
+# </html>
+# """)
+
+    # not necessarily the best way to write this code!
+    items = (html'<li>Item #{i}</li>' for i in range(10))
+    listing = html'<ol>{items}</ol>'
+    print(listing)
+
+    # Something like the following looks a lot nicer, and we should show
+    # this as the best practice - specially once the list item gets at
+    # all somewhat complicated
+
+    def items(n):
+        for i in range(n):
+            yield html"<li>Item #{i}</li>"
+
+    print(html"<ol>{items(5)}</ol>")
