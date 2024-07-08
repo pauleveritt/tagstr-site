@@ -608,12 +608,10 @@ string value into chunks.</p>
 <span class="hll">            <span class="k">case</span> <span class="nb">str</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
 </span>                <span class="c1"># Leaving out the escaping of possible $$ in data</span>
                 <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-            <span class="c1"># case Interpolation():</span>
-<span class="hll">            <span class="k">case</span> <span class="nb">tuple</span><span class="p">():</span>  <span class="c1"># Temporary, while waiting for 3.14 implementation</span>
-</span>                <span class="c1"># TODO Jim we don&#39;t have a default case for no match</span>
-                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x$</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
-<span class="hll">            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
-</span>                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Arg not shaped like a string nor Interpolation&quot;</span><span class="p">)</span>
+<span class="hll">            <span class="k">case</span> <span class="n">Interpolation</span><span class="p">():</span>
+</span><span class="hll">                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;x$</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
+</span>            <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Arg not shaped like a string nor Interpolation&quot;</span><span class="p">)</span>
 <span class="hll">        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
 </span></pre></div>
 </div>
@@ -756,9 +754,7 @@ placeholders.</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Split into any placeholders then fill them from interpolations.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">split</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split_by_placeholder</span><span class="p">(</span><span class="n">s</span><span class="p">)):</span>
             <span class="k">match</span> <span class="n">split</span><span class="p">:</span>
-                <span class="c1"># The 3.14 branch doesn&#39;t yet have Interpolation</span>
-                <span class="c1"># case Interpolation() as interpolation:</span>
-<span class="hll">                <span class="k">case</span> <span class="nb">tuple</span><span class="p">()</span> <span class="k">as</span> <span class="n">interpolation</span><span class="p">:</span>
+<span class="hll">                <span class="k">case</span> <span class="n">Interpolation</span><span class="p">()</span> <span class="k">as</span> <span class="n">interpolation</span><span class="p">:</span>
 </span>                    <span class="c1"># Not yet running a convert function to escape string values.</span>
                     <span class="c1"># yield interpolation.getvalue()</span>
                     <span class="k">yield</span> <span class="n">interpolation</span><span class="p">[</span><span class="mi">0</span><span class="p">]()</span>
@@ -838,13 +834,12 @@ placeholders.</p>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">split</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">split_by_placeholder</span><span class="p">(</span><span class="n">s</span><span class="p">)):</span>
             <span class="k">match</span> <span class="n">split</span><span class="p">:</span>
                 <span class="c1"># The 3.14 branch doesn&#39;t yet have Interpolation</span>
-                <span class="c1"># case Interpolation() as interpolation:</span>
-                <span class="k">case</span> <span class="nb">tuple</span><span class="p">()</span> <span class="k">as</span> <span class="n">interpolation</span><span class="p">:</span>
+                <span class="k">case</span> <span class="n">Interpolation</span><span class="p">()</span> <span class="k">as</span> <span class="n">interpolation</span><span class="p">:</span>
                     <span class="c1"># value = interpolation.getvalue()</span>
                     <span class="n">value</span> <span class="o">=</span> <span class="n">interpolation</span><span class="p">[</span><span class="mi">0</span><span class="p">]()</span>
-<span class="hll">                    <span class="k">yield</span> <span class="n">value</span> <span class="k">if</span> <span class="n">convert</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-</span>                <span class="k">case</span> <span class="nb">str</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
-                    <span class="k">yield</span> <span class="n">s</span>
+                    <span class="k">yield</span> <span class="n">value</span> <span class="k">if</span> <span class="n">convert</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+<span class="hll">                <span class="k">case</span> <span class="nb">str</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+</span>                    <span class="k">yield</span> <span class="n">s</span>
 </pre></div>
 </div>
 <p>Next, we clean up <code class="docutils literal notranslate"><span class="pre">fill_tag</span></code> to support interpolation in the tag name itself.</p>

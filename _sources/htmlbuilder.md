@@ -285,7 +285,7 @@ We now override the base class's feed method.
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb2.py
 :start-at: def feed
 :end-at: self.index += 1
-:emphasize-lines: 1, 4, 8, 11, 13
+:emphasize-lines: 1, 4, 7, 8, 11
 ```
 
 - Our `feed` method takes strings and `Interpolation`
@@ -427,7 +427,7 @@ In this step we will process the placeholder and get the correct value. Along th
 ```{literalinclude} ../src/tagstr_site/examples/htmlbuilder/hb5.py
 :start-at: def fill
 :end-at: yield s
-:emphasize-lines: 7,11
+:emphasize-lines: 5,9
 ```
 
 It's terse but action-packed. First, it calls another method to pick apart the structure in the string, in case it is a placeholder. It does this by calling a helper method `self.split_by_placeholder`.
