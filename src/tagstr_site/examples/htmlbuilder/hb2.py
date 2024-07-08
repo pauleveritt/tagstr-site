@@ -20,9 +20,7 @@ class AstParser(BaseParser):
             case str() as s:
                 # Leaving out the escaping of possible $$ in data
                 super().feed(s)
-            # case Interpolation():
-            case tuple():  # Temporary, while waiting for 3.14 implementation
-                # TODO Jim we don't have a default case for no match
+            case Interpolation():
                 super().feed(f"x${self.index}x")
             case _:
                 raise ValueError("Arg not shaped like a string nor Interpolation")

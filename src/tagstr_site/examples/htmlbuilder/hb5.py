@@ -37,9 +37,7 @@ class Fill(BaseFill):
         """Split into any placeholders then fill them from interpolations."""
         for i, split in enumerate(self.split_by_placeholder(s)):
             match split:
-                # The 3.14 branch doesn't yet have Interpolation
-                # case Interpolation() as interpolation:
-                case tuple() as interpolation:
+                case Interpolation() as interpolation:
                     # Not yet running a convert function to escape string values.
                     # yield interpolation.getvalue()
                     yield interpolation[0]()
