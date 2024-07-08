@@ -26,8 +26,7 @@ class Fill(BaseFill):
         for i, split in enumerate(self.split_by_placeholder(s)):
             match split:
                 # The 3.14 branch doesn't yet have Interpolation
-                # case Interpolation() as interpolation:
-                case tuple() as interpolation:
+                case Interpolation() as interpolation:
                     # value = interpolation.getvalue()
                     value = interpolation[0]()
                     yield value if convert is None else convert(value)
