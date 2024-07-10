@@ -2,13 +2,31 @@
 
 An early stage PEP that introduces tag strings - a natural extension of "f-strings" from [PEP 498](https://peps.python.org/pep-0498/) which enables Python developers to create and use their own custom tags (or prefixes) when working with string literals and any interpolation. Tag strings are based on a related idea in JavaScript, [tagged template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates) but with a Pythonic syntax for both the use of and the definition of tags.
 
-## Install
+## Try tag strings today!
 
-Using a tagstr-capable branch (e.g. the Lysandros implementation below):
+### Using [GitHub Codespaces](https://github.com/features/codespaces)
 
-```shell
-$ path/to/venv/bin/pip install -e .
-```
+The fastest way to try tag strings, right in your browser.
+
+1. Go to the [repo homepage](https://github.com/pauleveritt/tagstr-site/)
+1. Click the "Code" button
+1. Click the "Codespaces" tab
+1. Click "Create codespace on main"
+1. After things spin up, you'll have [vscode](https://code.visualstudio.com/) in your browser, attached to cloud dev environment
+1. Open a terminal in vscode (`ctrl` + `shift` + `\``)
+1. `make install`
+1. Try it! `python src/tagstr_site/htmldom.py`
+
+### Using your local dev machine
+
+If you have [vscode](https://code.visualstudio.com/) and [Docker](https://www.docker.com/) installed locally, you can:
+
+1. Clone this repository
+1. Open it in `vscode`
+1. When prompted by `vscode`, click the "Re-open in Container" button
+1. Open a terminal in vscode (`ctrl` + `shift` + `\``)
+1. `make install`
+1. Try it! `python src/tagstr_site/htmldom.py`
 
 ## Documents
 
@@ -23,20 +41,6 @@ $ path/to/venv/bin/pip install -e .
 - [PEP 501: Interpolation templates](https://peps.python.org/pep-0501/)
 - [Earlier work by the same authors](https://github.com/jimbaker/fl-string-pep)
 
-## Docker
+## cpython docker images
 
-This repo has a `/docker/` directory with Dockerfiles for various images.
-Koudai manages these and also has published them to a registry at https://hub.docker.com/r/koxudaxi/python
-to make it easier to use.
-
-## Devcontainers and vscode
-
-If you use [vscode](https://code.visualstudio.com/) and have [Docker](https://www.docker.com/) installed, this repository includes a [devcontainer](https://code.visualstudio.com/docs/devcontainers/containers) to get you running the included demos on top of a pre-release version of python that supports tag strings.
-
-To get going:
-
-1. Open this repository in `vscode`
-2. When prompted by `vscode`, click the "Re-open in Container" button
-3. After the container is built and running, open a terminal. The terminal should be "inside" the devcontainer. You'll be running as a root user and a python [venv](https://docs.python.org/3/library/venv.html) will already be configured and activated.
-4. Run `make install` to install dependencies into your venv
-5. Try a demo! For instance, `python src/tagstr_site/htmldom.py`
+This repo has a `/docker/` submodule that contains dockerfiles used to build [Lysandros](https://github.com/lysnikolaou)' underlying [cpython branch](https://github.com/lysnikolaou/cpython/tree/tag-strings-rebased). [Koudai](https://github.com/koxudaxi) manages the submodule and also has published the images to a registry at https://hub.docker.com/r/koxudaxi/python to make them easier to use.
