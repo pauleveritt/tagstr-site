@@ -8,12 +8,12 @@ An early stage PEP that introduces tag strings - a natural extension of "f-strin
 
 The fastest way to try tag strings, right in your browser.
 
-1. Go to the [repo homepage](https://github.com/pauleveritt/tagstr-site/)
+1. Go to the [repo homepage](https://github.com/pauleveritt/tagstr-site/?tab=readme-ov-file#try-tag-strings-today)
 1. Click the "Code" button
 1. Click the "Codespaces" tab
 1. Click "Create codespace on main"
 1. After things spin up, you'll have [vscode](https://code.visualstudio.com/) in your browser, attached to cloud dev environment
-1. Open a terminal in vscode (`ctrl` + `shift` + `\``)
+1. Open a terminal in vscode (`ctrl` + `shift` + `` ` ``)
 1. `make install`
 1. Try it! `python src/tagstr_site/htmldom.py`
 
@@ -24,7 +24,7 @@ If you have [vscode](https://code.visualstudio.com/) and [Docker](https://www.do
 1. Clone this repository
 1. Open it in `vscode`
 1. When prompted by `vscode`, click the "Re-open in Container" button
-1. Open a terminal in vscode (`ctrl` + `shift` + `\``)
+1. Open a terminal in vscode (`ctrl` + `shift` + `` ` ``)
 1. `make install`
 1. Try it! `python src/tagstr_site/htmldom.py`
 
