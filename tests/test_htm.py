@@ -1,4 +1,6 @@
-from tagstr_site.htm import AstParser, InterpolationConcrete, html
+import pytest
+
+from tagstr_site.htm import AstParser, InterpolationConcrete, html, HtmlNode
 
 
 def test_ast_basic_parsing():
@@ -55,14 +57,61 @@ def test_interpolate_tag_name():
     assert "h1" == root_node.tag
 
 
+def test_interpolate_tag_name_not_matching():
+    level = 1
+    wrong_level = 2
+    with pytest.raises(RuntimeError) as exc:
+        root_node = html'<h{level}>Hello</h{wrong_level}>'
+    assert "Unexpected </h{wrong_level}>" == str(exc.value)
+
+
 def test_end_tag_must_match_start_tag():
     root_node = html'<h1>Hello</h1>'
     assert "h1" == root_node.tag
 
 
 def test_end_tag_does_not_match_start_tag():
-    root_node = html'<h1>Hello</h2>'
+    with pytest.raises(RuntimeError) as e:
+        html"<h1>Hello</h2>"
+    assert "Unexpected </h2>" in str(e.value)
 
+def test_genexp_in_interpolation():
+    items = (html'<li>Item #{i}</li>' for i in range(5))
+    listing = html'<ol>{items}</ol>'
+    expected = '<ol><li>Item #0</li><li>Item #1</li><li>Item #2</li><li>Item #3</li><li>Item #4</li></ol>'
+    assert expected == str(listing)
+
+
+def test_basic_component():
+    MyComponent = HtmlNode('div', {'class': 'custom'}, ["My component"])
+
+    x = 42
+    y = 47
+    result = html"""
+<html>
+  <head><title>Test</title></head>
+  <body>
+    <h1 class="foo" {x}>Parse {y}</h1>
+    <{MyComponent} baz="bar"><p>Extra</p></{MyComponent}>',
+  </body>
+</html>    
+    """
+
+def test_basic_component_double_slash():
+    # Simplify this later
+    MyComponent = HtmlNode('div', {'class': 'custom'}, ["My component"])
+
+    x = 42
+    y = 47
+    result = html"""
+<html>
+  <head><title>Test</title></head>
+  <body>
+    <h1 class="foo" {x}>Parse {y}</h1>
+    <{MyComponent} baz="bar"><p>Extra</p><//>',
+  </body>
+</html>    
+    """
 
 # TODO
 # - AST allows <h{level}> (currently complains that placeholder doesn't match)

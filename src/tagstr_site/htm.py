@@ -120,6 +120,7 @@ class AstParser(HTMLParser):
         self.root = AstNode()
         self.stack: list[AstNode] = [self.root]
         self.index = 0
+        self.exprs: dict[int, str] = {}
 
     @property
     def parent(self):
@@ -129,7 +130,8 @@ class AstParser(HTMLParser):
         match arg:
             case str() as s:
                 super().feed(escape_placeholder(s))
-            case Interpolation() as t:
+            case Interpolation() as interpolation:
+                self.exprs[self.index] = interpolation.expr
                 super().feed(f'x${self.index}x')
         self.index += 1
 
@@ -154,8 +156,29 @@ class AstParser(HTMLParser):
         children.append(data)
 
     def handle_endtag(self, tag: str) -> None:
-        node = self.stack.pop()
-        # FIXME validate this is well-formed HTML
+        recovered_tag = self.recover_interpolations(tag)
+        recovered_parent = self.recover_interpolations(self.parent.tag)
+        if  recovered_tag != recovered_parent:
+            raise RuntimeError(f"Unexpected </{recovered_tag}>")
+        self.stack.pop()
+
+    def recover_interpolations(self, tag: str) -> str:
+        recovered_tag = []
+        for arg in _split_by_placeholder(tag):
+            match arg:
+                case str() as s:
+                    recovered_tag.append(s)
+                case int() as i:
+                    recovered_tag.append(f'{{{self.exprs[i]}}}')
+        return ''.join(recovered_tag)
+
+def _split_by_placeholder(s: str) -> str | int :
+    for split in placeholder_re.split(s):
+        if split != '':
+            if m := placeholder_index_re.match(split):
+                yield int(m.group('index'))
+            else:
+                yield unescape_placeholder(split)
 
 
 @dataclass
@@ -294,11 +317,6 @@ if __name__ == "__main__":
 #   </body>
 # </html>
 # """)
-
-    # not necessarily the best way to write this code!
-    items = (html'<li>Item #{i}</li>' for i in range(10))
-    listing = html'<ol>{items}</ol>'
-    print(listing)
 
     # Something like the following looks a lot nicer, and we should show
     # this as the best practice - specially once the list item gets at
