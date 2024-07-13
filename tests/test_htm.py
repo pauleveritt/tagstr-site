@@ -63,3 +63,4 @@ def test_basic_stringifying():
 #   * <Header title="!"/>
 #   * <Header title="!"><//>
 # - Any ValueError/TypeError that gets raised, write tests to ensure
+# - Class attributes and ordering

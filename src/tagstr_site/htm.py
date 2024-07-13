@@ -202,14 +202,14 @@ class Fill:
             case _:
                 raise TypeError(f'Expected str, got {value!r}')
 
-    def convert_attr_value(self, value: Any) -> dict | str:
+    def convert_attr_value(self, value: Any) -> dict | list[str]:
         match value:
             case dict() as d:
                 return d
             case str() as s:
-                return escape(s, quote=True)
+                return [escape(s, quote=True)]
             case int() as n:
-                return str(n)
+                return [str(n)]
             case _:
                 raise TypeError(f'Expected dict, str, or int, got {value!r}')
 
