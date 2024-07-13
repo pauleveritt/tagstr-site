@@ -285,36 +285,6 @@ def html(*args: str | Interpolation) -> HTML:
 
 
 if __name__ == "__main__":
-    # FIXME convert to proper unit tests with pytest
-
-    x = {'bar': 42}
-    y = 'abc'
-    MyComponent = HtmlNode('div', {'class': 'custom'}, ["My component"])
-    args = (
-        '<html><head><title>Test</title></head>',
-        '<body><h1 class="foo" ',
-        InterpolationConcrete(lambda: x, 'x', None, None),
-        '>Parse ',
-        InterpolationConcrete(lambda: y, 'y', None, None),
-        '</h1>',
-        '<',
-        InterpolationConcrete(lambda: MyComponent, 'MyComponent', None, None),
-        ' baz="bar"><p>Extra</p><//>',
-        '</body></html>',
-    )
-
-    parser = AstParser()
-    for arg in args:
-        parser.feed(arg)
-    print('AST:')
-    print(parser.result())
-
-    print('\nDOM:')
-    print(repr(html(*args)))
-
-    print('\nHTML:')
-    print(html(*args))
-
 # FIXME this code currently fails
 #     print(html"""<html>
 #   <head><title>Test</title></head>

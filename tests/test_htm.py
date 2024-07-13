@@ -30,13 +30,10 @@ def test_basic_tag_usage():
 
 
 def test_basic_attributes():
-    name = "World"
-    level = 1
     title = "The Greeting"
-    root_node = html'<h{level} title={title}>Hello {name}</h{level}>'
-    assert "h1" == root_node.tag
+    root_node = html'<h1 title={title}>Hello World</h1>'
     assert dict(title="The Greeting") == root_node.attrs
-    assert ["Hello ", "World"] == root_node.children
+    assert ["Hello World"] == root_node.children
 
 
 def test_basic_stringifying():
@@ -45,6 +42,27 @@ def test_basic_stringifying():
     root_node = html'<div title={title}>Hello {name}</div>'
     result = str(root_node)
     assert '<div title="The Greeting">Hello World</div>' == result
+
+
+def test_closing_tag_double_slash():
+    root_node = html"<div>123<//>"
+    assert "div" == root_node.tag
+
+
+def test_interpolate_tag_name():
+    level = 1
+    root_node = html'<h{level}>Hello</h{level}>'
+    assert "h1" == root_node.tag
+
+
+def test_end_tag_must_match_start_tag():
+    root_node = html'<h1>Hello</h1>'
+    assert "h1" == root_node.tag
+
+
+def test_end_tag_does_not_match_start_tag():
+    root_node = html'<h1>Hello</h2>'
+
 
 # TODO
 # - AST allows <h{level}> (currently complains that placeholder doesn't match)
