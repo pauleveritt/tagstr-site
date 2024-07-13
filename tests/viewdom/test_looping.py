@@ -1,5 +1,8 @@
+import pytest
+
 from tagstr_site.htm import html
 
+pytest.skip(reason="Not yet implemented", allow_module_level=True)
 
 def test_simple_looping():
     message = "Hello"

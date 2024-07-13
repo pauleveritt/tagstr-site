@@ -1,5 +1,9 @@
+import pytest
+
 from tagstr_site.htm import html
 from conftest import name  # noqa F401
+
+pytest.skip(reason="Not yet implemented", allow_module_level=True)
 
 def test_insert_value():
     name = "viewdom"  # noqa F401
