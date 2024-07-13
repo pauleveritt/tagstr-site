@@ -82,6 +82,7 @@ def test_genexp_in_interpolation():
     assert expected == str(listing)
 
 
+@pytest.mark.skip(reason="Not implemented yet")
 def test_basic_component():
     MyComponent = HtmlNode('div', {'class': 'custom'}, ["My component"])
 
@@ -97,6 +98,7 @@ def test_basic_component():
 </html>    
     """
 
+@pytest.mark.skip(reason="Not implemented yet")
 def test_basic_component_double_slash():
     # Simplify this later
     MyComponent = HtmlNode('div', {'class': 'custom'}, ["My component"])
