@@ -45,3 +45,21 @@ def test_basic_stringifying():
     root_node = html'<div title={title}>Hello {name}</div>'
     result = str(root_node)
     assert '<div title="The Greeting">Hello World</div>' == result
+
+# TODO
+# - AST allows <h{level}> (currently complains that placeholder doesn't match)
+# - Escape/unescape input for placeholders
+# - Subcomponents
+# - format_spec etc.
+# - Items yield "best practice" from htm.main
+# - Attributes
+#   * Pass in a dict
+#   * Collapse boolean
+#   * Nested dict aka style attribute
+# - Regex policies e.g. valid tag names
+# - Various styles to close calling a component
+#   * <Header title="!"></Header>,
+#   * <Header title="!" />
+#   * <Header title="!"/>
+#   * <Header title="!"><//>
+# - Any ValueError/TypeError that gets raised, write tests to ensure
