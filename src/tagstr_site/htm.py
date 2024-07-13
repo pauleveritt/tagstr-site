@@ -28,7 +28,7 @@ class InterpolationConcrete(NamedTuple):
     getvalue: Callable[[], Any]
     expr: str
     conv: Literal['a', 'r', 's'] | None = None
-    formatspec: str | None = None
+    format_spec: str | None = None
 
 
 @runtime_checkable
@@ -279,7 +279,7 @@ class Fill:
 
 def html(*args: str | Interpolation) -> HTML:
     parser = AstParser()
-    for arg in enumerate(args):
+    for arg in args:
         parser.feed(arg)
     return Fill(args).interpolate(parser.result())
 
