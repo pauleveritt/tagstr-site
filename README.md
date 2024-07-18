@@ -6,7 +6,7 @@ An early stage PEP that introduces tag strings - a natural extension of "f-strin
 
 ## JupyterLite notebook
 
-No installation, no anything. A notebook, in your browser, with the a WASM Python built from the implementation. [Open greet notebook](https://pauleveritt.github.io/tagstr-site/playground/lab/index.html)
+No installation, no anything. A notebook, in your browser, with the a WASM Python built from the implementation. [Open greet notebook](https://pauleveritt.github.io/tagstr-site/playground/lab/index.html?path=greet.ipynb)
 
 ### Using [GitHub Codespaces](https://github.com/features/codespaces)
 
