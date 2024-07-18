@@ -9,10 +9,10 @@ on:
       - '*'
 
 jobs:
-  defaults:
-    runs-on:
-      working-directory: playground
-  build:
+  build-and-deploy:
+    permissions:
+      actions: write
+      contents: read
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -37,32 +37,21 @@ jobs:
     - name: Install dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install --no-interaction
+      working-directory:
+        playground
     - name: Build the JupyterLite site
+      working-directory:
+        playground
       run: |
-        cd playground
         poetry run jupyter lite build --contents content --output-dir dist
     - name: Copy pyodide to dist
+      working-directory: playground
       run: |
         cp -r ./pyodide dist/pyodide
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v1
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v4
+      if: github.ref == 'refs/heads/main'
       with:
-        path: ./dist
-
-  deploy:
-    needs: build
-    if: github.ref == 'refs/heads/main'
-    permissions:
-      actions: write
-      contents: read
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: dist/
-          destination_dir: playground
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: playground/dist/
+        destination_dir: playground
