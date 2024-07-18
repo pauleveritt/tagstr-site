@@ -10,8 +10,7 @@ jobs:
   deploy:
     runs-on: ubuntu-22.04
     permissions:
-      actions: write
-      contents: read
+      contents: write
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
