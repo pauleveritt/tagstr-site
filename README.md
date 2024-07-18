@@ -4,6 +4,10 @@ An early stage PEP that introduces tag strings - a natural extension of "f-strin
 
 ## Try tag strings today!
 
+## JupyterLite notebook
+
+No installation, no anything. A notebook, in your browser, with the a WASM Python built from the implementation. [Open greet notebook](https://pauleveritt.github.io/tagstr-site/playground/lab/index.html)
+
 ### Using [GitHub Codespaces](https://github.com/features/codespaces)
 
 The fastest way to try tag strings, right in your browser.
