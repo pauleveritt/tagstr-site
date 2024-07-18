@@ -53,7 +53,8 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/main'
     permissions:
-      contents: write
+      actions: write
+      contents: read
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
 
