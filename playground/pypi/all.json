@@ -1,0 +1,28 @@
+{
+  "ipython": {
+    "releases": {
+      "8.26.0": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "e34a7c7416033849d24e7c000969d6cc",
+            "sha256": "e6b347c27bdf9c32ee9d31ae85defc525755a1869f14057e900675b9e8d6e6ff"
+          },
+          "downloads": -1,
+          "filename": "ipython-8.26.0-py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "e34a7c7416033849d24e7c000969d6cc",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.10",
+          "size": 817939,
+          "upload_time": "2024-06-28T08:45:31Z",
+          "upload_time_iso_8601": "2024-06-28T08:45:31Z",
+          "url": "./ipython-8.26.0-py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  }
+}
