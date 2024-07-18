@@ -1,0 +1,57 @@
+name: Build and Deploy playground
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  build-and-deploy:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.12'
+
+    - name: Upgrade pip
+      run: |
+        python3 -m pip install --upgrade pip
+
+    - name: Get pip cache dir
+      id: pip-cache
+      run: echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.pip-cache.outputs.dir }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - run: python3 -m pip install -e ."[jupyterlite]"
+
+    - name: Build the JupyterLite site
+      working-directory:
+        playground
+      run: |
+        jupyter lite build --contents content --output-dir dist
+    - name: Copy pyodide to dist
+      working-directory: playground
+      run: |
+        cp -r ./pyodide dist/pyodide
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v4
+      if: github.ref == 'refs/heads/main'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: playground/dist/
+        destination_dir: playground
