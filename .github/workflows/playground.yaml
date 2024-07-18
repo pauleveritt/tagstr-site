@@ -15,35 +15,36 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python '3.12'
-      uses: actions/setup-python@v4
+    - uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v3
       with:
         python-version: '3.12'
-    - name: Install Poetry
-      uses: snok/install-poetry@v1
+
+    - name: Upgrade pip
+      run: |
+        python3 -m pip install --upgrade pip
+
+    - name: Get pip cache dir
+      id: pip-cache
+      run: echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+
+    - name: Cache dependencies
+      uses: actions/cache@v3
       with:
-        version: 1.7.0
-        virtualenvs-path: .venv
-        virtualenvs-create: true
-        virtualenvs-in-project: true
-        installer-parallel: true
-    - name: Load cached venv
-      id: cached-poetry-dependencies
-      uses: actions/cache@v2
-      with:
-        path: .venv
-        key: venv-v1-${{ hashFiles('**/poetry.lock') }}
-    - name: Install dependencies
-      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction
-      working-directory:
-        playground
+        path: ${{ steps.pip-cache.outputs.dir }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - run: python3 -m pip install -e ."[jupyterlite]"
+
     - name: Build the JupyterLite site
       working-directory:
         playground
       run: |
-        poetry run jupyter lite build --contents content --output-dir dist
+        jupyter lite build --contents content --output-dir dist
     - name: Copy pyodide to dist
       working-directory: playground
       run: |
