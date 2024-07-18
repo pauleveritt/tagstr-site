@@ -1,0 +1,67 @@
+name: Build and Deploy playground
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  defaults:
+    runs-on:
+      working-directory: playground
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python '3.12'
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: 1.7.0
+        virtualenvs-path: .venv
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+        installer-parallel: true
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v2
+      with:
+        path: .venv
+        key: venv-v1-${{ hashFiles('**/poetry.lock') }}
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction
+    - name: Build the JupyterLite site
+      run: |
+        cd playground
+        poetry run jupyter lite build --contents content --output-dir dist
+    - name: Copy pyodide to dist
+      run: |
+        cp -r ./pyodide dist/pyodide
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: ./dist
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: dist/
+          destination_dir: playground
