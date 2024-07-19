@@ -2,11 +2,11 @@
 
 This directory contains Dockerfiles for CPython of lysnikolaou's [tag-strings-rebased](https://github.com/lysnikolaou/cpython/tree/tag-strings-rebased) branch.
 
-The dockerfile were generated with [a patched version of the official dockerfile code generator](https://github.com/koxudaxi/docker-python/blob/support_tag_string_v2_branch/apply-templates.sh).
-The patched code generator and Dockerfiles exist in [Koudai's(@koxudaxi) repository](https://github.com/koxudaxi/docker-python/tree/support_tag_string_v2_branch) is fork on the official Python Dockerfile repository.
+The dockerfile were generated with [a patched version of the official dockerfile code generator](https://github.com/koxudaxi/docker-python/blob/support_tag_strings_rebased/apply-templates.sh).
+The patched code generator and Dockerfiles exist in [Koudai's(@koxudaxi) repository](https://github.com/koxudaxi/docker-python/tree/support_tag_strings_rebased) is fork on the official Python Dockerfile repository.
 
 All images are available on [Docker Hub](https://hub.docker.com/r/koxudaxi/python).
-These images are built and published on [GitHub Actions](https://github.com/koxudaxi/tagstr-docker/actions)
+These images are built and published on [GitHub Actions](https://github.com/pauleveritt/tagstr-site/actions) (and [Old GitHub Actions](https://github.com/koxudaxi/tagstr-docker/actions))
 
 ## How to pull from Docker Hub
 ```shell
