@@ -11,6 +11,10 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      checks: write
+      contents: write
     strategy:
       fail-fast: false
       matrix:
