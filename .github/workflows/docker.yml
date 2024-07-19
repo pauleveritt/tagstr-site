@@ -1,10 +1,6 @@
 name: Build and Publish Docker Image
 
 on:
-  # TODO: Remove the push event when the PR is merged and tested
-  push:
-    branches:
-      - main
   schedule:
     # Build and push Docker images every 12 hours
     - cron:  '0 0,12 * * *'
@@ -79,8 +75,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
       - name: Update README.md with the latest commit hash ${{ steps.get_commit_hash.outputs.commit_hash }}
-        #if: github.ref == 'refs/heads/main' && matrix.base_image == 'alpine3.20' && steps.check-image.outputs.exists == 'false'
-        if: github.ref == 'refs/heads/main' && matrix.base_image == 'alpine3.20'
+        if: github.ref == 'refs/heads/main' && matrix.base_image == 'alpine3.20' && steps.check-image.outputs.exists == 'false'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GIT_COMMIT_HASH: ${{ steps.get_commit_hash.outputs.commit_hash }}
@@ -95,8 +90,7 @@ jobs:
           git push origin main
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v4
-        if: github.ref == 'refs/heads/main' && matrix.base_image == 'alpine3.20'
-        # if: github.ref == 'refs/heads/main' && matrix.base_image == 'alpine3.20' && steps.check-image.outputs.exists == 'false'
+        if: github.ref == 'refs/heads/main' && matrix.base_image == 'alpine3.20' && steps.check-image.outputs.exists == 'false'
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
