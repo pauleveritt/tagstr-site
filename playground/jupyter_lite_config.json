@@ -1,7 +1,6 @@
 {
   "PipliteAddon": {
     "piplite_urls": [
-      "https://files.pythonhosted.org/packages/73/48/4d2818054671bb272d1b12ca65748a4145dc602a463683b5c21b260becee/ipython-8.26.0-py3-none-any.whl"
     ]
   }
 }
