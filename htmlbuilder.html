@@ -469,9 +469,10 @@ are Python “protocols”. <code class="docutils literal notranslate"><span cla
 <p>This tutorial will show a parsing step and a rendering step. The parsing step will create an <a class="reference external" href="https://en.wikipedia.org/wiki/Abstract_syntax_tree">abstract syntax tree</a> or AST. The AST will be a nested collection of Python data, representing the tree of HTML. It will also, though, capture the “placeholders” where something dynamic needs to be inserted.</p>
 <p>For this, we’ll have an <code class="docutils literal notranslate"><span class="pre">AstParser</span></code> which generates <code class="docutils literal notranslate"><span class="pre">AstNode</span></code> objects. Here’s what the <code class="docutils literal notranslate"><span class="pre">AstNode</span></code> will look like:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use as an AST for HTML, with placeholders</span>
+
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">AstNode</span><span class="p">:</span>
-    <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">attrs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="n">children</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">AstNode</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 </pre></div>
