@@ -3,7 +3,7 @@
   "jupyter-config-data": {
     "litePluginSettings": {
       "@jupyterlite/pyodide-kernel-extension:kernel": {
-        "pyodideUrl": "https://pauleveritt.github.io/tagstr-site/playground/pyodide/pyodide.js"
+        "pyodideUrl": "https://koxudaxi.github.io/pyodide/pyodide.js"
       }
     }
   }
