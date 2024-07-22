@@ -12,3 +12,7 @@ ENV EDITOR="code --wait"
 
 # Install rust and cargo to support watchfiles, rpds-py, and metadata
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+# Install jq
+RUN apt-get update && apt-get install -y jq
+

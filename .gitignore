@@ -130,3 +130,9 @@ dmypy.json
 
 package.json
 package-lock.json
+
+# Jupyter lite local
+_output/
+
+# macOS Finder
+.DS_Store
