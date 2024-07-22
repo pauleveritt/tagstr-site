@@ -28,15 +28,9 @@ build-playground: install-extras check-jq
 clean-playground:
 	rm -rf playground/dist
 
-# Run a built copy of the playground locally.
 .PHONY: run-playground
 run-playground:
 	source $(VENV_PATH)/bin/activate && cd playground/dist && python -m http.server 8000
-
-# Run the jupyter lite server locally, no build step required.
-.PHONY: dev-playground
-dev-playground:
-	source $(VENV_PATH)/bin/activate && jupyter lite serve --contents playground/content --config playground/jupyter-lite.json
 
 .PHONY: check-jq
 check-jq:
