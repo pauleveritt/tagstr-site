@@ -17,8 +17,6 @@ An early stage PEP that introduces tag strings - a natural extension of "f-strin
 
 [Click this link to open an example notebook](https://pauleveritt.github.io/tagstr-site/playground/lab/index.html?path=greet.ipynb) in your browser. No installation is required.
 
-There are several example notebooks to choose from. Here's what they look like:
-
 ### Using GitHub Codespaces
 
 **Want to dive a little deeper and/or write code outside of a notebook?**
