@@ -20,8 +20,9 @@ build-docs:
 	source $(VENV_PATH)/bin/activate && $(MAKE) -C docs html
 
 .PHONY: build-playground
-build-playground: install-extras clean-playground
-	source $(VENV_PATH)/bin/activate && cd playground && jupyter lite build --contents content --output-dir dist && cp -r ./pyodide dist/pyodide
+build-playground: install-extras check-jq
+	source $(VENV_PATH)/bin/activate && cd playground && jupyter lite build --contents content --output-dir dist && \
+		jq '.["jupyter-config-data"]["litePluginSettings"]["@jupyterlite/pyodide-kernel-extension:kernel"].pyodideUrl = "https://koxudaxi.github.io/pyodide/pyodide.js"' dist/jupyter-lite.json > temp.json && mv temp.json dist/jupyter-lite.json
 
 .PHONY: clean-playground
 clean-playground:
@@ -30,6 +31,10 @@ clean-playground:
 .PHONY: run-playground
 run-playground:
 	source $(VENV_PATH)/bin/activate && cd playground/dist && python -m http.server 8000
+
+.PHONY: check-jq
+check-jq:
+	which jq || (echo "jq is not installed. Please install jq to continue." && exit 1)
 
 .PHONY: all
 all: setup install install-extras build-docs build-playground

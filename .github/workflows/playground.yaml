@@ -44,10 +44,6 @@ jobs:
         playground
       run: |
         jupyter lite build --contents content --output-dir dist
-    - name: Copy pyodide to dist
-      working-directory: playground
-      run: |
-        cp -r ./pyodide dist/pyodide
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       if: github.ref == 'refs/heads/main'
