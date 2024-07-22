@@ -4,16 +4,30 @@ An early stage PEP that introduces tag strings - a natural extension of "f-strin
 
 ## Try tag strings today!
 
-## JupyterLite notebook
+### Tutorial
 
-No installation, no anything. A notebook, in your browser, with the a WASM Python built from the implementation. [Open greet notebook](https://pauleveritt.github.io/tagstr-site/playground/lab/index.html?path=greet.ipynb)
+**Want to read about how tag strings work and how to use them?**
 
-### Using [GitHub Codespaces](https://github.com/features/codespaces)
+[Read the tutorial here](https://pauleveritt.github.io/tagstr-site/).
 
-The fastest way to try tag strings, right in your browser.
 
-1. Go to the [repo homepage](https://github.com/pauleveritt/tagstr-site/?tab=readme-ov-file#try-tag-strings-today)
-1. Click the "Code" button
+### JupyterLite notebooks
+
+**Want to write a little code to experiment with tag strings?**
+
+[Click this link to open an example notebook](https://pauleveritt.github.io/tagstr-site/playground/lab/index.html?path=greet.ipynb) in your browser. No installation is required.
+
+There are several example notebooks to choose from. Here's what they look like:
+
+### Using GitHub Codespaces
+
+**Want to dive a little deeper and/or write code outside of a notebook?**
+
+This repository supports [GitHub Codespaces](https://github.com/features/codespaces).
+
+With a single click, you can spin up a full browser-based development environment using vscode, and backed by a running container image with all the necessary development tools. No local installation is necessary, but you do need a GitHub account.
+
+1. Click the "Code" button on the [home page for this repo](https://github.com/pauleveritt/tagstr-site/?tab=readme-ov-file)
 1. Click the "Codespaces" tab
 1. Click "Create codespace on main"
 1. After things spin up, you'll have [vscode](https://code.visualstudio.com/) in your browser, attached to cloud dev environment
@@ -34,9 +48,10 @@ If you have [vscode](https://code.visualstudio.com/) and [Docker](https://www.do
 
 ## Documents
 
-- [Documentation](https://pauleveritt.github.io/tagstr-site/) from this website including the [HTML tutorial](https://pauleveritt.github.io/tagstr-site/htmlbuilder.html)
-- [WIP PEP](https://github.com/jimbaker/tagstr/blob/main/pep.rst)
-- [Implementation (WIP) based on 3.14](https://github.com/lysnikolaou/cpython/tree/tag-strings-rebased)
+- [Tutorial documents](https://pauleveritt.github.io/tagstr-site/), including the [HTML tutorial](https://pauleveritt.github.io/tagstr-site/htmlbuilder.html)
+- [Tutorial notebooks](https://pauleveritt.github.io/tagstr-site/playground/lab/index.html?path=greet.ipynb)
+- [WIP PEP](https://github.com/python/peps/pull/3858)
+- [WIP `cpython` implementation based on 3.14](https://github.com/lysnikolaou/cpython/tree/tag-strings-rebased)
 
 ## Related Work
 
@@ -48,3 +63,4 @@ If you have [vscode](https://code.visualstudio.com/) and [Docker](https://www.do
 ## cpython docker images
 
 This repo has a `/docker/` submodule that contains dockerfiles used to build [Lysandros](https://github.com/lysnikolaou)' underlying [cpython branch](https://github.com/lysnikolaou/cpython/tree/tag-strings-rebased). [Koudai](https://github.com/koxudaxi) manages the submodule and also has published the images to a registry at https://hub.docker.com/r/koxudaxi/python to make them easier to use.
+

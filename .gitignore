@@ -133,6 +133,7 @@ package-lock.json
 
 # Jupyter lite local
 _output/
+.jupyterlite.doit.db
 
 # macOS Finder
 .DS_Store
