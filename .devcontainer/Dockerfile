@@ -10,9 +10,11 @@ ENV PIP_ROOT_USER_ACTION=ignore
 # Various things to make devcontainers run smoothly
 ENV EDITOR="code --wait"
 
+# Install locales and locales-all, required to build sphinx docs
+# in the devcontainer, since sphinx main starts sith `locale.setlocale(LC_ALL, '')`
+#
+# Also, install jq (required for building the playground)
+RUN apt-get update && apt-get install -y locales locales-all jq
+
 # Install rust and cargo to support watchfiles, rpds-py, and metadata
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-
-# Install jq
-RUN apt-get update && apt-get install -y jq
-
