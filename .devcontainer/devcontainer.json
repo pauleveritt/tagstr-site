@@ -22,7 +22,9 @@
                 // Edit the devcontainer and other dockerfiles.
                 "ms-azuretools.vscode-docker",
                 // Edit the makefile
-                "ms-vscode.makefile-tools"
+                "ms-vscode.makefile-tools",
+                // Support for jupyter notebooks in vscode
+                "ms-toolsai.jupyter"
             ],
             "settings": {
                 "editor.insertSpaces": true,

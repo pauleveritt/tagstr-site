@@ -22,6 +22,8 @@ jupyterlite = [
     "jupyterlite-core[all]~=0.3.0",
     "jupyterlite-pyodide-kernel~=0.3.2",
     "ipython~=8.26.0",
+    # See https://github.com/ipython/ipython/issues/14303#issuecomment-1925423956
+    "executing@git+https://github.com/alexmojaki/executing@3.13#egg=executing",
     "sphinx-autobuild"
 ]
 
