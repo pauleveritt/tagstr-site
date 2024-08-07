@@ -30,7 +30,7 @@ clean-playground:
 
 .PHONY: run-playground
 run-playground:
-	source $(VENV_PATH)/bin/activate && cd playground/dist && python -m http.server 8000
+	source $(VENV_PATH)/bin/activate && cd playground/dist && jupyter lite serve
 
 .PHONY: check-jq
 check-jq:

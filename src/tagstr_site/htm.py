@@ -6,6 +6,7 @@ from html.parser import HTMLParser
 from dataclasses import dataclass, field
 from typing import Any, Callable, Generator, Literal, NamedTuple, Protocol, Sequence, runtime_checkable
 import re
+from collections import abc
 
 
 @runtime_checkable
@@ -42,7 +43,7 @@ class HTML(Protocol):
 
 @dataclass
 class AstNode:
-    tag: str = None
+    tag: str | Callable[[Any], Any] = None
     attrs: list[tuple[str, str | None]] = field(default_factory=list)
     children: list[str | AstNode] = field(default_factory=list)
 
@@ -197,7 +198,12 @@ class Fill:
         for i, split in enumerate(self.split_by_placeholder(s)):
             match split:
                 case Interpolation() as interpolation:
-                    yield from convert(interpolation.getvalue())
+                    conversion = convert(interpolation.getvalue())
+                    match conversion:
+                        case Iterable() as it:
+                            yield from it
+                        case _:
+                            yield conversion
                 case str() as s:
                     yield s
 
@@ -265,6 +271,8 @@ class Fill:
                 return s
             case int() as n:
                 return str(n)
+            case abc.Callable() as f:
+                return self.convert_name(f())
             case _:
                 raise TypeError(f'Expected HTML, str, or int, got {value!r}')
 

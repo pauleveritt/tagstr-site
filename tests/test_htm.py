@@ -1,17 +1,69 @@
 import pytest
 
-from tagstr_site.htm import AstParser, InterpolationConcrete, html, HtmlNode
+from tagstr_site.htm import AstParser, InterpolationConcrete, html, HtmlNode, AstNode
 
 
-def test_ast_basic_parsing():
+def test_ast_root_string():
+    parser = AstParser()
+    parser.feed("Hello World")
+    root_node = parser.result()
+    # TODO Should this be an AstNode?
+    assert root_node == "Hello World"
+
+
+def test_ast_root_node():
     parser = AstParser()
     parser.feed("<div>Hello World</div>")
     root_node = parser.result()
-    assert "div" == root_node.tag
-    assert "Hello World" == root_node.children[0]
+    assert root_node == AstNode(
+        tag="div",
+        children=["Hello World"]
+    )
+
+def test_ast_attributes():
+    parser = AstParser()
+    parser.feed('<div title="Greeting">Hello World</div>')
+    root_node = parser.result()
+    assert root_node == AstNode(
+        tag="div",
+        attrs=[("title", "Greeting")],
+        children=["Hello World"]
+    )
 
 
-def test_ast_basic_placeholder():
+def test_ast_placeholder():
+    name = "World"
+    parser = AstParser()
+    parser.feed("<div>Hello ")
+    interpolation = InterpolationConcrete(lambda: name, "name", None, None)
+    parser.feed(interpolation)
+    parser.feed("</div>")
+    root_node = parser.result()
+    assert root_node == AstNode(
+        tag="div",
+        children=["Hello ", "x$1x"]
+    )
+
+def test_ast_subcomponent():
+    def MyComponent():
+        return html"<span>Hello</span>"
+
+    parser = AstParser()
+    parser.feed('<div><')
+    parser.feed(InterpolationConcrete(lambda: MyComponent, "MyComponent", None, None))
+    parser.feed('></')
+    parser.feed(InterpolationConcrete(lambda: MyComponent, "MyComponent", None, None))
+    parser.feed('></div>')
+    root_node = parser.result()
+    children = root_node.children
+    assert "x$1x" == children[0].tag
+    assert root_node == AstNode(
+        tag="div",
+        children=[AstNode(tag="x$1x")]
+    )
+
+
+def test_ast_attributes_placeholder():
     name = "World"
     parser = AstParser()
     parser.feed("<div>Hello ")
@@ -81,9 +133,30 @@ def test_genexp_in_interpolation():
     expected = '<ol><li>Item #0</li><li>Item #1</li><li>Item #2</li><li>Item #3</li><li>Item #4</li></ol>'
     assert expected == str(listing)
 
+def test_basic_component_ast_parse():
+    def MyComponent():
+        return
+    parser = AstParser()
+    parser.feed("<div>Hello ")
+    interpolation = InterpolationConcrete(lambda: MyComponent, "MyComponent", None, None)
+    parser.feed(interpolation)
+    parser.feed("</div>")
+    # Manually typing the result since IDE can't process tag functions yet
+    root_node = parser.result()
+    assert "div" == root_node.tag
+    assert ["Hello ", "x$1x"] == root_node.children
+
+
+def test_basic_component_as_tag_string():
+    def MyComponent():
+        return html"<span>Hello</span>"
+
+    result = html"<div><{MyComponent}></{MyComponent}></div>"
+    assert "<div><span>Hello</span></div>" == str(result)
+
 
 @pytest.mark.skip(reason="Not implemented yet")
-def test_basic_component():
+def test_full_component():
     MyComponent = HtmlNode('div', {'class': 'custom'}, ["My component"])
 
     x = 42
@@ -98,38 +171,37 @@ def test_basic_component():
 </html>    
     """
 
-@pytest.mark.skip(reason="Not implemented yet")
+
 def test_basic_component_double_slash():
     # Simplify this later
     MyComponent = HtmlNode('div', {'class': 'custom'}, ["My component"])
 
     x = 42
     y = 47
-    result = html"""
-<html>
+    result = html"""<html>
   <head><title>Test</title></head>
   <body>
     <h1 class="foo" {x}>Parse {y}</h1>
-    <{MyComponent} baz="bar"><p>Extra</p><//>',
+    <{MyComponent} baz="bar"><p>Extra</p></{MyComponent}>',
   </body>
 </html>    
     """
 
 # TODO
-# - AST allows <h{level}> (currently complains that placeholder doesn't match)
-# - Escape/unescape input for placeholders
+# - Clean up the (fake) builtins and typing modules on this side
 # - Subcomponents
-# - format_spec etc.
-# - Items yield "best practice" from htm.main
 # - Attributes
 #   * Pass in a dict
 #   * Collapse boolean
 #   * Nested dict aka style attribute
-# - Regex policies e.g. valid tag names
 # - Various styles to close calling a component
 #   * <Header title="!"></Header>,
 #   * <Header title="!" />
 #   * <Header title="!"/>
 #   * <Header title="!"><//>
-# - Any ValueError/TypeError that gets raised, write tests to ensure
+# - Escape/unescape input for placeholders
+# - Items yield "best practice" from htm.main
 # - Class attributes and ordering
+# - Regex policies e.g. valid tag names
+# - format_spec etc.
+# - Any ValueError/TypeError that gets raised, write tests to ensure
