@@ -21,11 +21,11 @@ build-docs:
 	source $(VENV_PATH)/bin/activate && $(MAKE) -C docs html
 
 .PHONY: build-playground
-build-playground: install-extras
+build-playground: install-extras wheel
 	source $(VENV_PATH)/bin/activate && $(MAKE) build-playground-without-venv
 
 .PHONY: build-playground-without-venv
-build-playground-without-venv: check-jq wheel
+build-playground-without-venv: check-jq
 	cd playground && rm -fr pypi/* && cp -v ../dist/*.whl pypi/ && jupyter lite build && \
 		WHL_FILE=$$(ls pypi | grep .whl) && \
 		jq '.["jupyter-config-data"]["litePluginSettings"]["@jupyterlite/pyodide-kernel-extension:kernel"].pyodideUrl = "https://koxudaxi.github.io/pyodide/pyodide.js"' dist/jupyter-lite.json | \
@@ -34,6 +34,7 @@ build-playground-without-venv: check-jq wheel
 .PHONY: wheel
 wheel: clean-wheel
 	$(VENV_PATH)/bin/python -m build
+
 
 .PHONY: clean-wheel
 clean-wheel:

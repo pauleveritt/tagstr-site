@@ -36,9 +36,10 @@ jobs:
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
-
-    - run: python3 -m pip install -e ."[jupyterlite]"
-
+    - name: Install jupyterlite
+      run: python3 -m pip install -e ."[jupyterlite]"
+    - name: Build the package
+      run: python3 -m build
     - name: Build the JupyterLite site
       run: |
          SITE_PREFIX=/tagstr-site/playground/ make build-playground-without-venv
