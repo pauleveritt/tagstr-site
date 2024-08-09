@@ -40,8 +40,6 @@ jobs:
     - run: python3 -m pip install -e ."[jupyterlite]"
 
     - name: Build the JupyterLite site
-      working-directory:
-        playground
       run: |
          SITE_PREFIX=/tagstr-site/playground/ make build-playground
     - name: Deploy to GitHub Pages
