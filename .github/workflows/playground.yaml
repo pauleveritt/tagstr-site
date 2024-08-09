@@ -41,7 +41,7 @@ jobs:
 
     - name: Build the JupyterLite site
       run: |
-         SITE_PREFIX=/tagstr-site/playground/ make build-playground
+         SITE_PREFIX=/tagstr-site/playground/ make build-playground-without-venv
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       if: github.ref == 'refs/heads/main'
