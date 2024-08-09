@@ -23,7 +23,7 @@ jobs:
 
     - name: Upgrade pip
       run: |
-        python3 -m pip install --upgrade pip
+        python3 -m pip install --upgrade pip setuptools wheel build
 
     - name: Get pip cache dir
       id: pip-cache
@@ -43,7 +43,7 @@ jobs:
       working-directory:
         playground
       run: |
-        jupyter lite build --contents content --output-dir dist
+         SITE_PREFIX=/tagstr-site/playground/ make build-playground
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       if: github.ref == 'refs/heads/main'
