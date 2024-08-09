@@ -19,8 +19,8 @@ dependencies = [
 
 [project.optional-dependencies]
 jupyterlite = [
-    "jupyterlite-core[all]~=0.3.0",
-    "jupyterlite-pyodide-kernel~=0.3.2",
+    "jupyterlite-core[all]~=0.4.0",
+    "jupyterlite-pyodide-kernel~=0.4.1",
     "ipython~=8.26.0",
     # See https://github.com/ipython/ipython/issues/14303#issuecomment-1925423956
     "executing@git+https://github.com/alexmojaki/executing@3.13#egg=executing",
@@ -31,3 +31,6 @@ jupyterlite = [
 addopts = "-ra -q --doctest-modules --ignore-glob='**/_build/**'"
 # testpaths = ["docs", "tests"]
 testpaths = ["tests"]
+
+[tool.distutils.bdist_wheel]
+universal = true
