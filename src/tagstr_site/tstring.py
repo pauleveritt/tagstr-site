@@ -14,7 +14,7 @@ class Template[T](Protocol):
         ...
 
 
-class _EagerInterpolation(Interpolation):
+class EagerInterpolationConcrete(Interpolation):
     def __init__(self, interpolation: Interpolation):
         # For now, support both `.value` *and* `.getvalue()`.
         self.value = interpolation.getvalue()
@@ -46,7 +46,18 @@ class TemplateConcrete[T](Template[T]):
 
 
 def t(*args: Interpolation | Decoded) -> Template:
-    eager_args = tuple(_EagerInterpolation(arg) if isinstance(arg, Interpolation) else arg for arg in args)
+    eager_args = tuple(EagerInterpolationConcrete(arg) if isinstance(arg, Interpolation) else arg for arg in args)
     # XXX possibly we want `else arg.raw` if `arg` is `Decoded`?
     source = "".join(f"{{{arg.expr}}}" if isinstance(arg, Interpolation) else arg for arg in args)
     return TemplateConcrete(eager_args, source)
+
+
+
+# >>> from tagstr_site.tstring import t
+# >>> x = t"hello {42}"
+# >>> x.source
+# 'hello {42}'
+# >>> x.args[0]
+# DecodedConcrete('hello ')
+# >>> x.args[1].value
+# 42
