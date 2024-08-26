@@ -47,6 +47,8 @@ class TemplateConcrete[T](Template[T]):
 
 def t(*args: Interpolation | Decoded) -> Template:
     eager_args = tuple(EagerInterpolationConcrete(arg) if isinstance(arg, Interpolation) else arg for arg in args)
+    # XXX in the "real" implementation, `Template.source` will be something we 
+    # can memoize off of; that's not the case in this makeshift implementation.
     # XXX possibly we want `else arg.raw` if `arg` is `Decoded`?
     source = "".join(f"{{{arg.expr}}}" if isinstance(arg, Interpolation) else arg for arg in args)
     return TemplateConcrete(eager_args, source)
