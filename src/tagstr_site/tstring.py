@@ -16,6 +16,7 @@ class Template[T](Protocol):
 
 class _EagerInterpolation(Interpolation):
     def __init__(self, interpolation: Interpolation):
+        # For now, support both `.value` *and* `.getvalue()`.
         self.value = interpolation.getvalue()
         self.expr = interpolation.expr
         self.conv = interpolation.conv
