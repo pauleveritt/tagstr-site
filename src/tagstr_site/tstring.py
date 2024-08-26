@@ -3,7 +3,7 @@ from typing import Interpolation, Decoded, Protocol, runtime_checkable, Annotate
 
 @runtime_checkable
 class Template[T](Protocol):
-    # TODO What about Template[T]? What would [T] even be?
+    # CONSIDER What is T useful for?
 
     @property
     def args(self) -> tuple[Interpolation | Decoded, ...]:
@@ -49,6 +49,3 @@ def t(*args: Interpolation | Decoded) -> Template:
     # XXX possibly we want `else arg.raw` if `arg` is `Decoded`?
     source = "".join(f"{{{arg.expr}}}" if isinstance(arg, Interpolation) else arg for arg in args)
     return TemplateConcrete(eager_args, source)
-
-
-
