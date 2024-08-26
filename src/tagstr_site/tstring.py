@@ -47,7 +47,8 @@ class TemplateConcrete[T](Template[T]):
 
 def t(*args: Interpolation | Decoded) -> Template:
     eager_args = tuple(EagerInterpolationConcrete(arg) if isinstance(arg, Interpolation) else arg for arg in args)
-    # XXX possibly we want `else arg.raw` if `arg` is `Decoded`?
+    # XXX support Interpolation.conv and .format_spec
+    # XXX possibly we want `arg.raw` when `arg` is `Decoded`?
     source = "".join(f"{{{arg.expr}}}" if isinstance(arg, Interpolation) else arg for arg in args)
     return TemplateConcrete(eager_args, source)
 
