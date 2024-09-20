@@ -1,6 +1,6 @@
 from typing import Iterable, TextIO, Any, Interpolation
 
-from .tstring import Template, _ValueInterpolation, _TemplateConcrete
+from .tstring import Template, _ValueInterpolation, _TemplateConcrete, t
 
 
 # NOTE WELL: this is experimental code for fun. Your mileage may vary.
@@ -67,33 +67,44 @@ def make_template(source: TextIO | str, context: dict[str, Any]) -> Template:
 
     Use the provided `context` dictionary to evaluate the template string.
     """
-    source = source if isinstance(source, str) else source.read()
+    raw = source if isinstance(source, str) else source.read()
     args: list[Interpolation | str] = []
-    for part in _parse_str(source):
+    last_was_str: bool = False
+    for part in _parse_str(raw):
         if isinstance(part, _InterpolationExpr):
+            if not last_was_str:
+                args.append("")
             value = eval(part, context)
             # TODO support Interpolation.conv and .format_spec
             args.append(_ValueInterpolation(value, part, None, None))
+            last_was_str = False
         else:
             # TODO create a concrete Decoded class and handle .raw
             args.append(part)
-    return _TemplateConcrete(tuple(args), source)
+            last_was_str = True
+    if not last_was_str:
+        args.append("")
+    return _TemplateConcrete(tuple(args), tuple(arg for arg in args if isinstance(arg, str)), raw)
 
 
 # >>> from tagstr_site.tstring import make_template
 # >>> x = make_template("{a} and {b}", {"a": 10, "b": 42})
 # >>> x
 # <tagstr_site.tstring._TemplateConcrete object at 0x7f4c1c1b1d60>
-# >>> x.source
+# >>> x.raw
 # '{a} and {b}'
 # >>> x.args[0]
-# <tagstr_site.tstring._ValueInterpolation object at 0xffffb7463b10>>
-# >>> x.args[0].value
-# 10
+# ''
 # >>> x.args[1]
+# <tagstr_site.tstring._ValueInterpolation object at 0xffffb7463b10>>
+# >>> x.args[1].value
+# 10
+# >>> x.args[2]
 # ' and '
-# >>> x.args[2].value
+# >>> x.args[3].value
 # 42
+# >>> x.args[4]
+# ''
 
 
 # -----------------------------------------------------------------------
@@ -143,11 +154,15 @@ def as_t(text: TextIO | str) -> Template:
 # >>> x = f()
 # >>> x
 # <tagstr_site.tstring._TemplateConcrete object at 0x7f4c1c1b1d60>
-# >>> x.source
+# >>> x.raw
 # '{l} and {g}'
-# >>> x.args[0].value
+# >>> x.args[0]
+# ''
+# >>> x.args[1].value
 # 10
-# >>> x.args[1]
+# >>> x.args[2]
 # DecodedConcrete(' and ')
-# >>> x.args[2].value
+# >>> x.args[3].value
 # 42
+# >>> x.args[4]
+# ''
