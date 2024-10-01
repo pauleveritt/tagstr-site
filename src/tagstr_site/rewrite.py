@@ -1,8 +1,9 @@
 import dis  # useful for showing the scope analysis
 from types import FunctionType
 
-from tagstr_site.tagtyping import Decoded, Interpolation
+from tagstr_site.tagtyping import Interpolation
 from tagstr_site.taglib import decode_raw
+from tagstr_site.tstring import Template
 
 
 def param_list(names):
@@ -52,9 +53,9 @@ def outer({param_list(code.co_freevars)}):
     return new_getvalue, wrapped, conv, formatspec
 
 
-def rewritten(*args: Decoded | Interpolation):
+def rewritten(template: Template):
     new_args = []
-    for arg in decode_raw(*args):
+    for arg in template.args:
         match arg:
             case str():
                 new_args.append(arg)
@@ -74,7 +75,7 @@ def nested1():
             # new_args is rewritten such that each interpolation's getvalue is a new
             # function/code object that returns that the mapping of the
             # variables that are used to their values (namely, for a, b, c, d)
-            new_args = rewritten"{d**a + c * c * c * a * b * a + d}"
+            new_args = rewritten(t"{d**a + c * c * c * a * b * a + d}")
             print(new_args[0][0]())
         nested3()
     nested2()

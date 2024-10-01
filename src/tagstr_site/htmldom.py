@@ -25,17 +25,17 @@ def demo2():
     }
 
     html_paragraphs = [
-        html"""
+        html(t"""
             <h{title_level} { {"style": title_style} }>{title}</{...}>
             <p { {"style": body_style} }>{body}</p>
-        """
+        """)
         for title, body in paragraphs.items()
     ]
 
     def simple_wrapper(*children):
-        return html'<div class="simple-wrapper">{children}</div>'
+        return html(t'<div class="simple-wrapper">{children}</div>')
 
-    result = html"<{simple_wrapper}>{html_paragraphs}</{simple_wrapper}>"
+    result = html(t"<{simple_wrapper}>{html_paragraphs}</{simple_wrapper}>")
     print(result)
 
 

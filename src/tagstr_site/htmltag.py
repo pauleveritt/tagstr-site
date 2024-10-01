@@ -52,9 +52,9 @@ class DomCodeGenerator(HTMLParser):
     def handle_data(self, data: str):
         # At the very least the first empty line needs to be removed, as might
         # be seen in
-        # html"""
+        # html(t"""
         #   <tag>...</tag>
-        # """
+        # """)
         # (given that our codegen is so rudimentary!)
 
         # Arguably other blank strings should be removed as well, and this
@@ -181,12 +181,12 @@ def demo():
     def TodoList(prefix, todos):
         return html'<ul>{[Todo(prefix, label) for label in todos]}</ul>'
 
-    b = html"""<html>
+    b = html(t"""<html>
         <body attr=blah" yo={1}>
             {TodoList('High', ['Get milk', 'Change tires'])}
         </body>
     </html>
-    """
+    """)
     print(b)
 
 

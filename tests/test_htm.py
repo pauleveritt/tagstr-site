@@ -26,7 +26,7 @@ def test_ast_basic_placeholder():
 
 def test_basic_tag_usage():
     name = "World"
-    root_node = html"<div>Hello {name}</div>"
+    root_node = html(t"<div>Hello {name}</div>")
     assert "div" == root_node.tag
     assert ["Hello ", "World"] == root_node.children
 
@@ -47,7 +47,7 @@ def test_basic_stringifying():
 
 
 def test_closing_tag_double_slash():
-    root_node = html"<div>123<//>"
+    root_node = html(t"<div>123<//>")
     assert "div" == root_node.tag
 
 
@@ -72,7 +72,7 @@ def test_end_tag_must_match_start_tag():
 
 def test_end_tag_does_not_match_start_tag():
     with pytest.raises(RuntimeError) as e:
-        html"<h1>Hello</h2>"
+        html(t"<h1>Hello</h2>")
     assert "Unexpected </h2>" in str(e.value)
 
 def test_genexp_in_interpolation():
@@ -88,7 +88,7 @@ def test_basic_component():
 
     x = 42
     y = 47
-    result = html"""
+    result = html(t"""
 <html>
   <head><title>Test</title></head>
   <body>
@@ -96,7 +96,7 @@ def test_basic_component():
     <{MyComponent} baz="bar"><p>Extra</p></{MyComponent}>',
   </body>
 </html>    
-    """
+    """)
 
 @pytest.mark.skip(reason="Not implemented yet")
 def test_basic_component_double_slash():
@@ -105,7 +105,7 @@ def test_basic_component_double_slash():
 
     x = 42
     y = 47
-    result = html"""
+    result = html(t"""
 <html>
   <head><title>Test</title></head>
   <body>
@@ -113,7 +113,7 @@ def test_basic_component_double_slash():
     <{MyComponent} baz="bar"><p>Extra</p><//>',
   </body>
 </html>    
-    """
+    """)
 
 # TODO
 # - AST allows <h{level}> (currently complains that placeholder doesn't match)

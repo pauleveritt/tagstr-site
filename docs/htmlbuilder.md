@@ -15,13 +15,13 @@ Here are some examples of the kinds of things you could ultimately do.
 # Attribute expansion
 attributes = {"color": "blue", "style": {"font-weight": "bold"}}
 assert (
-           str(html"<h1 {attributes}>Hello, world!</h1>")
+           str(html(t"<h1 {attributes}>Hello, world!</h1>"))
        == '<h1 color="blue" style="font-weight:bold">Hello, world!<h1>'
 )
 
 # Recursive construction
 assert (
-           str(html"<body>{[html" < h{i} / > " for i in range(1, 4)]}</body>")
+           str(html(t"<body>{[html" < h{i} / > " for i in range(1, 4)]}</body>"))
        == "<body><h1></h1><h2></h2><h3></h3></body>"
 )
 ```
@@ -32,7 +32,7 @@ representation of the HTML that can be freely manipulated - a Document Object Mo
 (DOM) of sorts for HTML.
 
 ```python
-node: HTML = html"<h1/>"
+node: HTML = html(t"<h1/>")
 node.attributes["color"] = "blue"
 node.children.append("Hello, world!")
 assert str(node) == '<h1 color="blue">Hello, world!</h1>'

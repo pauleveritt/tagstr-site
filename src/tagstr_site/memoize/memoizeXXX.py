@@ -60,12 +60,12 @@ def main():
     # Example usage to adapt. Subset of functionality in IDOM's vdom constructor
     html = make_html_tag()
 
-    return html"""<html>
+    return html(t"""<html>
         <body attr="blah" yo={1}>
           <p>Hello</p>
         </body>
     </html>
-    """
+    """)
 
 
 if __name__ == '__main__':
