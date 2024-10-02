@@ -172,14 +172,14 @@ def demo():
     some_attrs = {'a': 6, 'b': 7}
     for i in range(3):
         for j in range(3):
-            node = html'<body {some_attrs} attr1={i}><div{j}>: {i} along with {j}</div{j}></body>'
+            node = html(t'<body {some_attrs} attr1={i}><div{j}>: {i} along with {j}</div{j}></body>')
             print(node)
 
     def Todo(prefix, label):
-        return html'<li>{prefix}: {label}</li>'
+        return html(t'<li>{prefix}: {label}</li>')
 
     def TodoList(prefix, todos):
-        return html'<ul>{[Todo(prefix, label) for label in todos]}</ul>'
+        return html(t'<ul>{[Todo(prefix, label) for label in todos]}</ul>')
 
     b = html(t"""<html>
         <body attr=blah" yo={1}>

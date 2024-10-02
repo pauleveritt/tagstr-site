@@ -12,7 +12,7 @@ from tagstr_site.tagtyping import Decoded as Thunk
 
 def demo():
     name = "World"
-    return html'<div>Hello {name}'
+    return html(t'<div>Hello {name}')
 
 def demo2():
     title_level = 1
