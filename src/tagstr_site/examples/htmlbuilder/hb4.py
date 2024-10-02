@@ -66,7 +66,7 @@ def html(*args: str | Interpolation) -> HTML:
 def setup() -> TestSetup:
     name = "World"
     # Manually typing the result since IDE can't process tag functions yet
-    root_node: HtmlNode = html"<div>Hello {name}</div>"
+    root_node: HtmlNode = html(t"<div>Hello {name}</div>")
     return root_node
 
 def test() -> TestSetup:

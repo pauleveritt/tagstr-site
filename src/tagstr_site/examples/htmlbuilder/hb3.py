@@ -17,7 +17,7 @@ def setup() -> AstNode:
     """Main entry point for this example."""
     name = "World"
     # Manually typing the result since IDE can't process tag functions yet
-    root_node: AstNode = html"<div>Hello {name}</div>"
+    root_node: AstNode = html(t"<div>Hello {name}</div>")
     return root_node
 
 def test() -> TestSetup:

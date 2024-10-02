@@ -77,7 +77,7 @@ def setup() -> HTML:
     level = 1
     title = "The Greeting"
     # Manually typing the result since IDE can't process tag functions yet
-    root_node: HtmlNode = html'<h{level} title={title}>Hello {name}</h{level}>'
+    root_node: HtmlNode = html(t'<h{level} title={title}>Hello {name}</h{level}>')
     return root_node
 
 def test() -> TestSetup:

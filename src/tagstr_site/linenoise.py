@@ -9,11 +9,12 @@ import re as re_module
 import string
 
 from tagstr_site.tagtyping import Decoded, Interpolation
+from tagstr_site.tstring import Template, t
 
 
-def re(*args: Decoded | Interpolation) -> re_module.Pattern:
+def re(template: Template) -> re_module.Pattern:
     pattern = []
-    for arg in args:
+    for arg in template.args:
         match arg:
             case str():
                 pattern.append(arg)
@@ -26,10 +27,10 @@ def re(*args: Decoded | Interpolation) -> re_module.Pattern:
 def demo():
     line = string.printable
 
-    print(re'a.*z'.search(line))
+    print(re(t'a.*z').search(line))
 
     decoded = 'efg'
-    print(re'a.*{decoded}'.search(line))
+    print(re(t'a.*{decoded}').search(line))
 
 
 if __name__ == '__main__':

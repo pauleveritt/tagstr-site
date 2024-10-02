@@ -4,6 +4,7 @@ import textwrap
 
 from tagstr_site.tagtyping import Decoded, Interpolation
 from tagstr_site.taglib import decode_raw
+from tagstr_site.tstring import Template
 
 
 class PythonCode(str):
@@ -19,7 +20,7 @@ def param_list(names):
 INITIAL_WHITESPACE_RE = re.compile(r'^( +)')
 
 
-def code(*args: Decoded | Interpolation) -> PythonCode:
+def code(template: Template) -> PythonCode:
     text = []
     indent_level = None
 
@@ -29,7 +30,7 @@ def code(*args: Decoded | Interpolation) -> PythonCode:
             lines.append(f'{" " * (indent_level) if i > 0 else ""}{line}\n')
         return ''.join(lines)
 
-    for arg in decode_raw(*args):
+    for arg in template.args:
         match arg:
             case str():
                 lines = arg.split('\n')
@@ -61,11 +62,11 @@ def code(*args: Decoded | Interpolation) -> PythonCode:
 def useit():
     args = ['x', 'y', 'z']
     results = {'a': 2, 'b': 3, 'c': 5, 'd': 7, 'e': 11}
-    print(code"""
+    print(code(t"""
             def f({args:params}):
                 return \\
                     {results:pretty}
-        """)
+        """))
 
 
     if __name__ == '__main__':

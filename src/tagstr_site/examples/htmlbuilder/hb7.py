@@ -78,7 +78,7 @@ def setup() -> HTML:
     name = "World"
     title = "The Greeting"
     # Manually typing the result since IDE can't process tag functions yet
-    root_node: HtmlNode = html'<div title={title}>Hello {name}</div>'
+    root_node: HtmlNode = html(t'<div title={title}>Hello {name}</div>')
     return root_node
 
 

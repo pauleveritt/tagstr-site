@@ -7,6 +7,8 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Generator, Literal, NamedTuple, Protocol, Sequence, runtime_checkable
 import re
 
+from tagstr_site.tstring import Template
+
 
 @runtime_checkable
 class Interpolation(Protocol):
@@ -300,23 +302,23 @@ class Fill:
         return self.fill_tag(tag.tag, attrs, children)
 
 
-def html(*args: str | Interpolation) -> HTML:
+def html(template: Template) -> HTML:
     parser = AstParser()
-    for arg in args:
+    for arg in template.args:
         parser.feed(arg)
-    return Fill(args).interpolate(parser.result())
+    return Fill(template.args).interpolate(parser.result())
 
 
 if __name__ == "__main__":
 # FIXME this code currently fails
-#     print(html"""<html>
+#     print(html(t"""<html>
 #   <head><title>Test</title></head>
 #   <body>
 #     <h1 class="foo" {x}>Parse {y}</h1>
 #     <{MyComponent} baz="bar"><p>Extra</p><//>',
 #   </body>
 # </html>
-# """)
+# """))
 
     # Something like the following looks a lot nicer, and we should show
     # this as the best practice - specially once the list item gets at
@@ -324,6 +326,6 @@ if __name__ == "__main__":
 
     def items(n):
         for i in range(n):
-            yield html"<li>Item #{i}</li>"
+            yield html(t"<li>Item #{i}</li>")
 
-    print(html"<ol>{items(5)}</ol>")
+    print(html(t"<ol>{items(5)}</ol>"))

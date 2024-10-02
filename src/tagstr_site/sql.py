@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from tagstr_site.tagtyping import Decoded, Interpolation
-
+from tagstr_site.tstring import Template
 
 # NOTE: other dialects have different rules, for example Postgres
 # allows for Unicode in the unquoted identifier, per the docs.
@@ -91,10 +91,10 @@ def analyze_sql(parts, bindings=None, param_counts=None) -> tuple[str, dict[str,
     return ''.join(text), bindings
 
 
-def sql(*args: Decoded | Interpolation) -> SQL:
+def sql(template: Template) -> SQL:
     """Implements sql tag"""
     parts = []
-    for arg in args:
+    for arg in template.args:
         match arg:
             case str():
                 parts.append(arg)
@@ -118,14 +118,14 @@ def demo():
 
     with sqlite3.connect(':memory:') as conn:
         cur = conn.cursor()
-        cur.execute(*sql'create table {Identifier(table_name)} (name, first_appeared)')
-        cur.execute(*sql'insert into lang values ({name}, {date})')
+        cur.execute(*sql(t'create table {Identifier(table_name)} (name, first_appeared)'))
+        cur.execute(*sql(t'insert into lang values ({name}, {date})'))
         assert set(cur.execute('select * from lang')) == {('C', 1972)}
 
         try:
             # Verify that not using an identifier will result in an
             # incorrect usage of placeholders
-            cur.execute(*sql'drop table {table_name}')
+            cur.execute(*sql(t'drop table {table_name}'))
             assert 'Did not raise error'
         except sqlite3.OperationalError:
             pass
@@ -136,13 +136,13 @@ def demo():
         # NOTE: separating out these queries like this probably doesn't
         # make it easier to read, but at least we can show the subquery
         # aspects work as expected, including placeholder usage.
-        base_case = sql'select 1, 0, 1'
-        inductive_case = sql"""
+        base_case = sql(t'select 1, 0, 1')
+        inductive_case = sql(t"""
             select n + 1, next_fib_n, fib_n + next_fib_n
                 from fibonacci where n < {num}
-            """
+            """)
 
-        results = cur.execute(*sql"""
+        results = cur.execute(*sql(t"""
             with recursive fibonacci (n, fib_n, next_fib_n) AS
                 (
                     {base_case}
@@ -152,7 +152,7 @@ def demo():
                 select n, fib_n from fibonacci
                 order by n
                 limit {num_results + 1}
-            """)
+            """))
         assert set(results) == \
              {(1, 0), (2, 1), (3, 1), (4, 2), (5, 3),
               (6, 5), (7, 8), (8, 13), (9, 21), (10, 34)}
@@ -176,13 +176,13 @@ Install the following packages to see this demo:
         num = 50
         num_results = 9  # actually using num_results + 1, or 10
 
-        base_case = sql'select 1, 0, 1'
-        inductive_case = sql"""
+        base_case = sql(t'select 1, 0, 1')
+        inductive_case = sql(t"""
             select n + 1, next_fib_n, fib_n + next_fib_n
                 from fibonacci where n < {num}
-            """
+            """)
 
-        statement = sql"""
+        statement = sql(t"""
             with recursive fibonacci (n, fib_n, next_fib_n) AS
                 (
                     {base_case}
@@ -192,7 +192,7 @@ Install the following packages to see this demo:
                 select n, fib_n from fibonacci
                 order by n
                 limit {num_results + 1}
-            """
+            """)
 
         sa_stmt = statement.to_sqlalchemy()
         results = session.execute(sa_stmt)
