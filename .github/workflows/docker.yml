@@ -6,7 +6,7 @@ on:
     - cron:  '0 */3 * * *'
 jobs:
   docker:
-    if: github.repository_owner == 'pauleveritt' && github.repository == 'tagstr-site' && github.ref == 'refs/heads/main'
+    if: ${{ always() && github.event_name == 'schedule' && github.repository_owner == 'pauleveritt' }}
     runs-on: ubuntu-latest
     permissions:
       actions: write
