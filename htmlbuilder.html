@@ -334,13 +334,13 @@ JavaScript commonly used in <a class="reference external" href="https://reactjs.
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Attribute expansion</span>
 <span class="n">attributes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;font-weight&quot;</span><span class="p">:</span> <span class="s2">&quot;bold&quot;</span><span class="p">}}</span>
 <span class="k">assert</span> <span class="p">(</span>
-           <span class="nb">str</span><span class="p">(</span><span class="n">html</span><span class="s2">&quot;&lt;h1 </span><span class="si">{attributes}</span><span class="s2">&gt;Hello, world!&lt;/h1&gt;&quot;</span><span class="p">)</span>
+           <span class="nb">str</span><span class="p">(</span><span class="n">html</span><span class="p">(</span><span class="n">t</span><span class="s2">&quot;&lt;h1 </span><span class="si">{attributes}</span><span class="s2">&gt;Hello, world!&lt;/h1&gt;&quot;</span><span class="p">))</span>
        <span class="o">==</span> <span class="s1">&#39;&lt;h1 color=&quot;blue&quot; style=&quot;font-weight:bold&quot;&gt;Hello, world!&lt;h1&gt;&#39;</span>
 <span class="p">)</span>
 
 <span class="c1"># Recursive construction</span>
 <span class="k">assert</span> <span class="p">(</span>
-           <span class="nb">str</span><span class="p">(</span><span class="n">html</span><span class="s2">&quot;&lt;body&gt;{[html&quot;</span> <span class="o">&lt;</span> <span class="n">h</span><span class="p">{</span><span class="n">i</span><span class="p">}</span> <span class="o">/</span> <span class="o">&gt;</span> <span class="s2">&quot; for i in range(1, 4)]}&lt;/body&gt;&quot;</span><span class="p">)</span>
+           <span class="nb">str</span><span class="p">(</span><span class="n">html</span><span class="p">(</span><span class="n">t</span><span class="s2">&quot;&lt;body&gt;{[html&quot;</span> <span class="o">&lt;</span> <span class="n">h</span><span class="p">{</span><span class="n">i</span><span class="p">}</span> <span class="o">/</span> <span class="o">&gt;</span> <span class="s2">&quot; for i in range(1, 4)]}&lt;/body&gt;&quot;</span><span class="p">))</span>
        <span class="o">==</span> <span class="s2">&quot;&lt;body&gt;&lt;h1&gt;&lt;/h1&gt;&lt;h2&gt;&lt;/h2&gt;&lt;h3&gt;&lt;/h3&gt;&lt;/body&gt;&quot;</span>
 <span class="p">)</span>
 </pre></div>
@@ -349,7 +349,7 @@ JavaScript commonly used in <a class="reference external" href="https://reactjs.
 More interesting though: this <code class="docutils literal notranslate"><span class="pre">html</span></code> tag will output a structured
 representation of the HTML that can be freely manipulated - a Document Object Model
 (DOM) of sorts for HTML.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="p">:</span> <span class="n">HTML</span> <span class="o">=</span> <span class="n">html</span><span class="s2">&quot;&lt;h1/&gt;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="p">:</span> <span class="n">HTML</span> <span class="o">=</span> <span class="n">html</span><span class="p">(</span><span class="n">t</span><span class="s2">&quot;&lt;h1/&gt;&quot;</span><span class="p">)</span>
 <span class="n">node</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span>
 <span class="n">node</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Hello, world!&quot;</span><span class="p">)</span>
 <span class="k">assert</span> <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;&lt;h1 color=&quot;blue&quot;&gt;Hello, world!&lt;/h1&gt;&#39;</span>
@@ -664,7 +664,7 @@ placeholders.</p>
 <p>Now our demos can use tag strings.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;World&quot;</span>
     <span class="c1"># Manually typing the result since IDE can&#39;t process tag functions yet</span>
-    <span class="n">root_node</span><span class="p">:</span> <span class="n">AstNode</span> <span class="o">=</span> <span class="n">html</span><span class="s2">&quot;&lt;div&gt;Hello </span><span class="si">{name}</span><span class="s2">&lt;/div&gt;&quot;</span>
+    <span class="n">root_node</span><span class="p">:</span> <span class="n">AstNode</span> <span class="o">=</span> <span class="n">html</span><span class="p">(</span><span class="n">t</span><span class="s2">&quot;&lt;div&gt;Hello </span><span class="si">{name}</span><span class="s2">&lt;/div&gt;&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This tag string results in the same <code class="docutils literal notranslate"><span class="pre">AstNode</span></code>.</p>
@@ -737,7 +737,7 @@ placeholders.</p>
 <p>While we’re not filling in the <code class="docutils literal notranslate"><span class="pre">HTML</span></code> with values from the tag string, we are filling them in with fake results. Let’s see it in use:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;World&quot;</span>
     <span class="c1"># Manually typing the result since IDE can&#39;t process tag functions yet</span>
-    <span class="n">root_node</span><span class="p">:</span> <span class="n">HtmlNode</span> <span class="o">=</span> <span class="n">html</span><span class="s2">&quot;&lt;div&gt;Hello </span><span class="si">{name}</span><span class="s2">&lt;/div&gt;&quot;</span>
+    <span class="n">root_node</span><span class="p">:</span> <span class="n">HtmlNode</span> <span class="o">=</span> <span class="n">html</span><span class="p">(</span><span class="n">t</span><span class="s2">&quot;&lt;div&gt;Hello </span><span class="si">{name}</span><span class="s2">&lt;/div&gt;&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>As you can see – <code class="docutils literal notranslate"><span class="pre">I</span> <span class="pre">WAS</span> <span class="pre">FILLED</span></code>.</p>
@@ -784,7 +784,7 @@ placeholders.</p>
 <p>Let’s see our first look at dynamic HTML rendering.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;World&quot;</span>
     <span class="c1"># Manually typing the result since IDE can&#39;t process tag functions yet</span>
-    <span class="n">root_node</span><span class="p">:</span> <span class="n">HtmlNode</span> <span class="o">=</span> <span class="n">html</span><span class="s2">&quot;&lt;div&gt;Hello </span><span class="si">{name}</span><span class="s2">&lt;/div&gt;&quot;</span>
+    <span class="n">root_node</span><span class="p">:</span> <span class="n">HtmlNode</span> <span class="o">=</span> <span class="n">html</span><span class="p">(</span><span class="n">t</span><span class="s2">&quot;&lt;div&gt;Hello </span><span class="si">{name}</span><span class="s2">&lt;/div&gt;&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>We have indeed filled in some values.</p>
@@ -856,7 +856,7 @@ placeholders.</p>
     <span class="n">level</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;The Greeting&quot;</span>
     <span class="c1"># Manually typing the result since IDE can&#39;t process tag functions yet</span>
-    <span class="n">root_node</span><span class="p">:</span> <span class="n">HtmlNode</span> <span class="o">=</span> <span class="n">html</span><span class="s1">&#39;&lt;h</span><span class="si">{level}</span><span class="s1"> title=</span><span class="si">{title}</span><span class="s1">&gt;Hello </span><span class="si">{name}</span><span class="s1">&lt;/h</span><span class="si">{level}</span><span class="s1">&gt;&#39;</span>
+    <span class="n">root_node</span><span class="p">:</span> <span class="n">HtmlNode</span> <span class="o">=</span> <span class="n">html</span><span class="p">(</span><span class="n">t</span><span class="s1">&#39;&lt;h</span><span class="si">{level}</span><span class="s1"> title=</span><span class="si">{title}</span><span class="s1">&gt;Hello </span><span class="si">{name}</span><span class="s1">&lt;/h</span><span class="si">{level}</span><span class="s1">&gt;&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>We now have attriburtes and our heading level matches the integer <code class="docutils literal notranslate"><span class="pre">1</span></code> from the variable.</p>
