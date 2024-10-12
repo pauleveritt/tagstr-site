@@ -26,14 +26,14 @@ def test_ast_basic_placeholder():
 
 def test_basic_tag_usage():
     name = "World"
-    root_node = html"<div>Hello {name}</div>"
+    root_node = html(t"<div>Hello {name}</div>")
     assert "div" == root_node.tag
     assert ["Hello ", "World"] == root_node.children
 
 
 def test_basic_attributes():
     title = "The Greeting"
-    root_node = html'<h1 title={title}>Hello World</h1>'
+    root_node = html(t'<h1 title={title}>Hello World</h1>')
     assert dict(title="The Greeting") == root_node.attrs
     assert ["Hello World"] == root_node.children
 
@@ -41,19 +41,19 @@ def test_basic_attributes():
 def test_basic_stringifying():
     name = "World"
     title = "The Greeting"
-    root_node = html'<div title={title}>Hello {name}</div>'
+    root_node = html(t'<div title={title}>Hello {name}</div>')
     result = str(root_node)
     assert '<div title="The Greeting">Hello World</div>' == result
 
 
 def test_closing_tag_double_slash():
-    root_node = html"<div>123<//>"
+    root_node = html(t"<div>123<//>")
     assert "div" == root_node.tag
 
 
 def test_interpolate_tag_name():
     level = 1
-    root_node = html'<h{level}>Hello</h{level}>'
+    root_node = html(t'<h{level}>Hello</h{level}>')
     assert "h1" == root_node.tag
 
 
@@ -61,23 +61,23 @@ def test_interpolate_tag_name_not_matching():
     level = 1
     wrong_level = 2
     with pytest.raises(RuntimeError) as exc:
-        root_node = html'<h{level}>Hello</h{wrong_level}>'
+        root_node = html(t'<h{level}>Hello</h{wrong_level}>')
     assert "Unexpected </h{wrong_level}>" == str(exc.value)
 
 
 def test_end_tag_must_match_start_tag():
-    root_node = html'<h1>Hello</h1>'
+    root_node = html(t'<h1>Hello</h1>')
     assert "h1" == root_node.tag
 
 
 def test_end_tag_does_not_match_start_tag():
     with pytest.raises(RuntimeError) as e:
-        html"<h1>Hello</h2>"
+        html(t"<h1>Hello</h2>")
     assert "Unexpected </h2>" in str(e.value)
 
 def test_genexp_in_interpolation():
-    items = (html'<li>Item #{i}</li>' for i in range(5))
-    listing = html'<ol>{items}</ol>'
+    items = (html(t'<li>Item #{i}</li>' for i in range(5)))
+    listing = html(t'<ol>{items}</ol>')
     expected = '<ol><li>Item #0</li><li>Item #1</li><li>Item #2</li><li>Item #3</li><li>Item #4</li></ol>'
     assert expected == str(listing)
 
@@ -88,7 +88,7 @@ def test_basic_component():
 
     x = 42
     y = 47
-    result = html"""
+    result = html(t"""
 <html>
   <head><title>Test</title></head>
   <body>
@@ -96,7 +96,7 @@ def test_basic_component():
     <{MyComponent} baz="bar"><p>Extra</p></{MyComponent}>',
   </body>
 </html>    
-    """
+    """)
 
 @pytest.mark.skip(reason="Not implemented yet")
 def test_basic_component_double_slash():
@@ -105,7 +105,7 @@ def test_basic_component_double_slash():
 
     x = 42
     y = 47
-    result = html"""
+    result = html(t"""
 <html>
   <head><title>Test</title></head>
   <body>
@@ -113,7 +113,7 @@ def test_basic_component_double_slash():
     <{MyComponent} baz="bar"><p>Extra</p><//>',
   </body>
 </html>    
-    """
+    """)
 
 # TODO
 # - AST allows <h{level}> (currently complains that placeholder doesn't match)

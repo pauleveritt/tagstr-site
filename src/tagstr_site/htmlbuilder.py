@@ -8,6 +8,7 @@ from html.parser import HTMLParser
 
 from tagstr_site.taglib import decode_raw
 from tagstr_site.tagtyping import Decoded, Interpolation
+from tagstr_site.tstring import Template
 
 DecodedConcrete = str
 AttrsDict = dict[str, str]
@@ -70,11 +71,11 @@ class HTMLBuilder(HTMLParser):
         self.stack[-1].body.append(data)        
 
 # This is the actual 'tag' function: html"<body>blah</body>""
-def html(*args: Decoded | Interpolation) -> HTMLNode:
+def html(template: Template) -> HTMLNode:
     builder = HTMLBuilder()
-    for arg in decode_raw(*args):
+    for arg in decode_raw(*template.args):
         match arg:
-            case DecodedConcrete():
+            case str():
                 builder.feed(arg)
             case getvalue, raw, conv, spec:
                 value = getvalue()
@@ -115,7 +116,7 @@ def html(*args: Decoded | Interpolation) -> HTMLNode:
 def demo():
     x = HTMLNode("foo", {"x": 1, "y": "2"}, ["hohoho"])
 
-    a = html"""
+    a = html(t"""
     <html>
         <body>
             foo
@@ -126,19 +127,19 @@ def demo():
             {x!r}
         </body>
     </html>
-    """
+    """)
     print(a)
 
     print()
 
     s = '"'
-    b = html"""
+    b = html(t"""
     <html>
         <body attr=blah" yo={1}>
-            {[html"<div class=c{i}>haha{i}</div> " for i in range(3)]}
+            {[html(t"<div class=c{i}>haha{i}</div> ") for i in range(3)]}
         </body>
     </html>
-    """
+    """)
     print(b)
 
 
