@@ -154,6 +154,13 @@ def test_basic_component_as_tag_string():
     result = html"<div><{MyComponent}></{MyComponent}></div>"
     assert "<div><span>Hello</span></div>" == str(result)
 
+def test_basic_component_with_prop():
+    def MyComponent():
+        return html"<span>Hello</span>"
+
+    result = html'<div><{MyComponent} title="World"></{MyComponent}></div>'
+    assert "<div><span>Hello</span></div>" == str(result)
+
 
 @pytest.mark.skip(reason="Not implemented yet")
 def test_full_component():
