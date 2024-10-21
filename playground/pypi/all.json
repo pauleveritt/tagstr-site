@@ -5,19 +5,19 @@
         {
           "comment_text": "",
           "digests": {
-            "md5": "40eeba0a020fdad5bda328c4091dd72d",
-            "sha256": "be3928189a6c48369fbf92b80d023beb3f723ff26c94f260f88708eaff258070"
+            "md5": "6989a6f13feb814e1cfc1c425d64c2ef",
+            "sha256": "c36c773bae35e5adf38dcb1ffb82b4e94c66dd4727f660c35d26fd2e25c1bba9"
           },
           "downloads": -1,
           "filename": "tagstr_site-0.0.1-py2.py3-none-any.whl",
           "has_sig": false,
-          "md5_digest": "40eeba0a020fdad5bda328c4091dd72d",
+          "md5_digest": "6989a6f13feb814e1cfc1c425d64c2ef",
           "packagetype": "bdist_wheel",
           "python_version": "py3",
           "requires_python": ">=3.12",
           "size": 36906,
-          "upload_time": "2024-10-21T19:26:45.986271Z",
-          "upload_time_iso_8601": "2024-10-21T19:26:45.986271Z",
+          "upload_time": "2024-10-21T19:27:55.706333Z",
+          "upload_time_iso_8601": "2024-10-21T19:27:55.706333Z",
           "url": "./tagstr_site-0.0.1-py2.py3-none-any.whl",
           "yanked": false,
           "yanked_reason": null
