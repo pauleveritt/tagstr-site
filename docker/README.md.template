@@ -42,31 +42,31 @@ $ make build-all # build all base images
 ## All tags for each base image
 - alpine3.20
   - 3.14.0a1-alpine3.20
-  - 3.14.0a1-tag-strings-rebased-alpine3.20
-  - 3.14.0a1-tag-strings-rebased-${GIT_COMMIT_SHORT_HASH}-alpine3.20
-  - 3.14.0a1-tag-strings-rebased-${GIT_COMMIT_HASH}-alpine3.20
+  - 3.14.0a1-tstrings-alpine3.20
+  - 3.14.0a1-tstrings-${GIT_COMMIT_SHORT_HASH}-alpine3.20
+  - 3.14.0a1-tstrings-${GIT_COMMIT_HASH}-alpine3.20
 - alpine3.19
   - 3.14.0a1-alpine3.19
-  - 3.14.0a1-tag-strings-rebased-alpine3.19
-  - 3.14.0a1-tag-strings-rebased-${GIT_COMMIT_SHORT_HASH}-alpine3.19
-  - 3.14.0a1-tag-strings-rebased-${GIT_COMMIT_HASH}-alpine3.19
+  - 3.14.0a1-tstrings-alpine3.19
+  - 3.14.0a1-tstrings-${GIT_COMMIT_SHORT_HASH}-alpine3.19
+  - 3.14.0a1-tstrings-${GIT_COMMIT_HASH}-alpine3.19
 - bookworm 
   - 3.14.0a1-bookworm
-  - 3.14.0a1-tag-strings-rebased-bookworm
-  - 3.14.0a1-tag-strings-rebased-${GIT_COMMIT_SHORT_HASH}-bookworm
-  - 3.14.0a1-tag-strings-rebased-${GIT_COMMIT_HASH}-bookworm
+  - 3.14.0a1-tstrings-bookworm
+  - 3.14.0a1-tstrings-${GIT_COMMIT_SHORT_HASH}-bookworm
+  - 3.14.0a1-tstrings-${GIT_COMMIT_HASH}-bookworm
 - bullseye
   - 3.14.0a1-bullseye
-  - 3.14.0a1-tag-strings-rebased-bullseye
-  - 3.14.0a1-tag-strings-rebased-${GIT_COMMIT_SHORT_HASH}-bullseye
-  - 3.14.0a1-tag-strings-rebased-${GIT_COMMIT_HASH}-bullseye
+  - 3.14.0a1-tstrings-bullseye
+  - 3.14.0a1-tstrings-${GIT_COMMIT_SHORT_HASH}-bullseye
+  - 3.14.0a1-tstrings-${GIT_COMMIT_HASH}-bullseye
 - slim-bookworm
   - 3.14.0a1-slim-bookworm
-  - 3.14.0a1-tag-strings-rebased-slim-bookworm
-  - 3.14.0a1-tag-strings-rebased-${GIT_COMMIT_SHORT_HASH}-slim-bookworm
-  - 3.14.0a1-tag-strings-rebased-${GIT_COMMIT_HASH}-slim-bookworm
+  - 3.14.0a1-tstrings-slim-bookworm
+  - 3.14.0a1-tstrings-${GIT_COMMIT_SHORT_HASH}-slim-bookworm
+  - 3.14.0a1-tstrings-${GIT_COMMIT_HASH}-slim-bookworm
 - slim-bullseye
   - 3.14.0a1-slim-bullseye
-  - 3.14.0a1-tag-strings-rebased-slim-bullseye
-  - 3.14.0a1-tag-strings-rebased-${GIT_COMMIT_SHORT_HASH}-slim-bullseye
-  - 3.14.0a1-tag-strings-rebased-${GIT_COMMIT_HASH}-slim-bullseye
+  - 3.14.0a1-tstrings-slim-bullseye
+  - 3.14.0a1-tstrings-${GIT_COMMIT_SHORT_HASH}-slim-bullseye
+  - 3.14.0a1-tstrings-${GIT_COMMIT_HASH}-slim-bullseye
