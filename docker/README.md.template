@@ -16,13 +16,15 @@ $ docker pull koxudaxi/python:3.14.0a1-alpine3.20
 ## How to run
 ```shell
 $ docker run -it --rm koxudaxi/python:3.14.0a1-alpine3.20
-Python 3.14.0a1 (heads/tstrings:03af022, Jul 15 2024, 17:12:48) [GCC 13.2.1 20240309] on linux
+Python 3.14.0a1+ (heads/tstrings:499d70c, Oct 21 2024, 19:13:41) [GCC 13.2.1 20240309] on linux
 Type "help", "copyright", "credits" or "license" for more information.
->>> def html(content):
-...     return f"<html>{content}</html>"
-...
->>> html"Hello, world!"
-'<html>Hello, world!</html>'
+>>> from templatelib import Template, Interpolation
+>>> name = "World"
+>>> template = t"Hello {name}"
+>>> assert isinstance(template.args[0], str)
+>>> assert isinstance(template.args[1], Interpolation)
+>>> assert template.args[0] == "Hello "
+>>> assert template.args[1].value == "World"
 ```
 
 ## How to build from Dockerfile
