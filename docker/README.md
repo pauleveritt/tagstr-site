@@ -1,6 +1,6 @@
 # tagstr-docker
 
-This directory contains Dockerfiles for CPython of lysnikolaou's [tag-strings-rebased](https://github.com/lysnikolaou/cpython/tree/tag-strings-rebased) branch.
+This directory contains Dockerfiles for CPython of lysnikolaou's [tstrings](https://github.com/lysnikolaou/cpython/tree/tstrings) branch.
 
 The dockerfile were generated with [a patched version of the official dockerfile code generator](https://github.com/koxudaxi/docker-python/blob/support_tag_strings_rebased/apply-templates.sh).
 The patched code generator and Dockerfiles exist in [Koudai's(@koxudaxi) repository](https://github.com/koxudaxi/docker-python/tree/support_tag_strings_rebased) is fork on the official Python Dockerfile repository.
@@ -10,13 +10,13 @@ These images are built and published on [GitHub Actions](https://github.com/paul
 
 ## How to pull from Docker Hub
 ```shell
-$ docker pull koxudaxi/python:3.14.0a0-alpine3.20
+$ docker pull koxudaxi/python:3.14.0a1-alpine3.20
 ```
 
 ## How to run
 ```shell
-$ docker run -it --rm koxudaxi/python:3.14.0a0-alpine3.20
-Python 3.14.0a0 (heads/tag-strings-rebased:03af022, Jul 15 2024, 17:12:48) [GCC 13.2.1 20240309] on linux
+$ docker run -it --rm koxudaxi/python:3.14.0a1-alpine3.20
+Python 3.14.0a1 (heads/tstrings:03af022, Oct 22 2024, 03:58:00) [GCC 13.2.1 20240309] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> def html(content):
 ...     return f"<html>{content}</html>"

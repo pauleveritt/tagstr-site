@@ -49,7 +49,7 @@ If you have [vscode](https://code.visualstudio.com/) and [Docker](https://www.do
 - [Tutorial documents](https://pauleveritt.github.io/tagstr-site/), including the [HTML tutorial](https://pauleveritt.github.io/tagstr-site/htmlbuilder.html)
 - [Tutorial notebooks](https://pauleveritt.github.io/tagstr-site/playground/lab/index.html?path=greet.ipynb)
 - [WIP PEP](https://github.com/python/peps/pull/3858)
-- [WIP `cpython` implementation based on 3.14](https://github.com/lysnikolaou/cpython/tree/tag-strings-rebased)
+- [WIP `cpython` implementation based on 3.14](https://github.com/lysnikolaou/cpython/tree/tstrings)
 
 ## Related Work
 
@@ -60,5 +60,5 @@ If you have [vscode](https://code.visualstudio.com/) and [Docker](https://www.do
 
 ## cpython docker images
 
-This repo has a `/docker/` submodule that contains dockerfiles used to build [Lysandros](https://github.com/lysnikolaou)' underlying [cpython branch](https://github.com/lysnikolaou/cpython/tree/tag-strings-rebased). [Koudai](https://github.com/koxudaxi) manages the submodule and also has published the images to a registry at https://hub.docker.com/r/koxudaxi/python to make them easier to use.
+This repo has a `/docker/` submodule that contains dockerfiles used to build [Lysandros](https://github.com/lysnikolaou)' underlying [cpython branch](https://github.com/lysnikolaou/cpython/tree/tstrings). [Koudai](https://github.com/koxudaxi) manages the submodule and also has published the images to a registry at https://hub.docker.com/r/koxudaxi/python to make them easier to use.
 
