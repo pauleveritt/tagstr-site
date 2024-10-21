@@ -4,6 +4,9 @@ on:
   schedule:
     # Build and push Docker images every 3 hours
     - cron:  '0 */6 * * *'
+  # Temporary trigger for first run
+  branches:
+    - main
 jobs:
   docker:
     if: ${{ always() && github.event_name == 'schedule' && github.repository_owner == 'pauleveritt' }}
