@@ -43,32 +43,32 @@ $ make build-all # build all base images
 - slim-bullseye
 ## All tags for each base image
 - alpine3.20
-  - 3.14.0a0-alpine3.20
-  - 3.14.0a0-tag-strings-rebased-alpine3.20
-  - 3.14.0a0-tag-strings-rebased-a609ca3-alpine3.20
-  - 3.14.0a0-tag-strings-rebased-a609ca3b6d27cb8526df5a2b6a07e2f2bbbf067f-alpine3.20
+  - 3.14.0a1-alpine3.20
+  - 3.14.0a1-tstrings-alpine3.20
+  - 3.14.0a1-tstrings-499d70c-alpine3.20
+  - 3.14.0a1-tstrings-499d70caaa9ee94a6462a3740fbfe9322c285699-alpine3.20
 - alpine3.19
-  - 3.14.0a0-alpine3.19
-  - 3.14.0a0-tag-strings-rebased-alpine3.19
-  - 3.14.0a0-tag-strings-rebased-a609ca3-alpine3.19
-  - 3.14.0a0-tag-strings-rebased-a609ca3b6d27cb8526df5a2b6a07e2f2bbbf067f-alpine3.19
+  - 3.14.0a1-alpine3.19
+  - 3.14.0a1-tstrings-alpine3.19
+  - 3.14.0a1-tstrings-499d70c-alpine3.19
+  - 3.14.0a1-tstrings-499d70caaa9ee94a6462a3740fbfe9322c285699-alpine3.19
 - bookworm 
-  - 3.14.0a0-bookworm
-  - 3.14.0a0-tag-strings-rebased-bookworm
-  - 3.14.0a0-tag-strings-rebased-a609ca3-bookworm
-  - 3.14.0a0-tag-strings-rebased-a609ca3b6d27cb8526df5a2b6a07e2f2bbbf067f-bookworm
+  - 3.14.0a1-bookworm
+  - 3.14.0a1-tstrings-bookworm
+  - 3.14.0a1-tstrings-499d70c-bookworm
+  - 3.14.0a1-tstrings-499d70caaa9ee94a6462a3740fbfe9322c285699-bookworm
 - bullseye
-  - 3.14.0a0-bullseye
-  - 3.14.0a0-tag-strings-rebased-bullseye
-  - 3.14.0a0-tag-strings-rebased-a609ca3-bullseye
-  - 3.14.0a0-tag-strings-rebased-a609ca3b6d27cb8526df5a2b6a07e2f2bbbf067f-bullseye
+  - 3.14.0a1-bullseye
+  - 3.14.0a1-tstrings-bullseye
+  - 3.14.0a1-tstrings-499d70c-bullseye
+  - 3.14.0a1-tstrings-499d70caaa9ee94a6462a3740fbfe9322c285699-bullseye
 - slim-bookworm
-  - 3.14.0a0-slim-bookworm
-  - 3.14.0a0-tag-strings-rebased-slim-bookworm
-  - 3.14.0a0-tag-strings-rebased-a609ca3-slim-bookworm
-  - 3.14.0a0-tag-strings-rebased-a609ca3b6d27cb8526df5a2b6a07e2f2bbbf067f-slim-bookworm
+  - 3.14.0a1-slim-bookworm
+  - 3.14.0a1-tstrings-slim-bookworm
+  - 3.14.0a1-tstrings-499d70c-slim-bookworm
+  - 3.14.0a1-tstrings-499d70caaa9ee94a6462a3740fbfe9322c285699-slim-bookworm
 - slim-bullseye
-  - 3.14.0a0-slim-bullseye
-  - 3.14.0a0-tag-strings-rebased-slim-bullseye
-  - 3.14.0a0-tag-strings-rebased-a609ca3-slim-bullseye
-  - 3.14.0a0-tag-strings-rebased-a609ca3b6d27cb8526df5a2b6a07e2f2bbbf067f-slim-bullseye
+  - 3.14.0a1-slim-bullseye
+  - 3.14.0a1-tstrings-slim-bullseye
+  - 3.14.0a1-tstrings-499d70c-slim-bullseye
+  - 3.14.0a1-tstrings-499d70caaa9ee94a6462a3740fbfe9322c285699-slim-bullseye
