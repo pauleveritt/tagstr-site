@@ -4,6 +4,9 @@ on:
   schedule:
     # Build and push Docker images every 3 hours
     - cron:  '0 */6 * * *'
+  # Temporary trigger for first run
+  branches:
+    - main
 jobs:
   docker:
     if: ${{ always() && github.event_name == 'schedule' && github.repository_owner == 'pauleveritt' }}
@@ -22,7 +25,7 @@ jobs:
       - name: Get the latest commit hash
         id: get_commit_hash
         run: | 
-          COMMIT_HASH=$(git ls-remote https://github.com/lysnikolaou/cpython.git refs/heads/tag-strings-rebased | awk '{print $1}')
+          COMMIT_HASH=$(git ls-remote https://github.com/lysnikolaou/cpython.git refs/heads/tstrings | awk '{print $1}')
           SHORT_COMMIT_HASH=$(echo $COMMIT_HASH | cut -c 1-7)
           echo "::set-output name=commit_hash::$COMMIT_HASH"
           echo "::set-output name=short_commit_hash::$SHORT_COMMIT_HASH"
@@ -30,7 +33,7 @@ jobs:
         id: check-image
         run: |
           IMAGE="koxudaxi/python"
-          TAG="3.14.0a0-tag-strings-rebased-${{ steps.get_commit_hash.outputs.commit_hash }}-${{ matrix.base_image }}"
+          TAG="3.14.0a1-tstrings-${{ steps.get_commit_hash.outputs.commit_hash }}-${{ matrix.base_image }}"
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "https://hub.docker.com/v2/repositories/${IMAGE}/tags/${TAG}")
           if [ "$RESPONSE" -eq 200 ]; then
             echo "Image exists on Docker Hub."
@@ -49,10 +52,10 @@ jobs:
             koxudaxi/python
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=raw,value=3.14.0a0-${{ matrix.base_image }}
-            type=raw,value=3.14.0a0-tag-strings-rebased-${{ matrix.base_image }}
-            type=raw,value=3.14.0a0-tag-strings-rebased-${{ steps.get_commit_hash.outputs.short_commit_hash }}-${{ matrix.base_image }}
-            type=raw,value=3.14.0a0-tag-strings-rebased-${{ steps.get_commit_hash.outputs.commit_hash }}-${{ matrix.base_image }}
+            type=raw,value=3.14.0a1-${{ matrix.base_image }}
+            type=raw,value=3.14.0a1-tstrings-${{ matrix.base_image }}
+            type=raw,value=3.14.0a1-tstrings-${{ steps.get_commit_hash.outputs.short_commit_hash }}-${{ matrix.base_image }}
+            type=raw,value=3.14.0a1-tstrings-${{ steps.get_commit_hash.outputs.commit_hash }}-${{ matrix.base_image }}
             type=sha
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
