@@ -7,8 +7,7 @@ on:
 
 jobs:
   docker:
-    if: ${{ always() && github.repository_owner == 'pauleveritt' }}
-#    if: ${{ always() && github.event_name == 'schedule' && github.repository_owner == 'pauleveritt' }}
+    if: ${{ always() && github.event_name == 'schedule' && github.repository_owner == 'pauleveritt' }}
     runs-on: ubuntu-latest
     permissions:
       actions: write
