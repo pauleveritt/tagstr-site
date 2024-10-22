@@ -4,6 +4,8 @@ on:
   schedule:
     # Build and push Docker images every 3 hours
     - cron:  '0 */6 * * *'
+  # allow manual trigger
+  workflow_dispatch:
 
 jobs:
   docker:
