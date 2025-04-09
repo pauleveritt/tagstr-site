@@ -45,5 +45,5 @@ docker-python:
 
 generate-dockerfile: docker-python
 	cd docker-python && ./apply-templates.sh
-	test ! -d "docker" && mkdir docker
+	test ! -d "docker" && mkdir docker || echo ''
 	cp -frpv docker-python/3.14.0a1/* docker/
