@@ -36,8 +36,9 @@ ls-base-image:
 	ls docker
 
 update-submodule:
-	git submodule update --init --recursive
-	git submodule foreach git pull origin support_tag_strings_rebased
+	@echo "Updating submodules from repository root..."
+	(cd .. && git submodule update --init --recursive)
+	(cd .. && git submodule foreach git pull origin support_tstrings_2025)
 
 docker-python:
 	 make update-submodule
