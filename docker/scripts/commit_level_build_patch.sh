@@ -6,14 +6,19 @@
 # Exit on error
 set -Eeuo pipefail
 
-REPOSITORY_URL="https://github\.com/lysnikolaou/cpython\.git"
-BUILD_DIR="/usr/src/python"
+REPOSITORY_URL_PATTERN='https:\/\/github\.com\/lysnikolaou\/cpython\.git'
+BUILD_DIR_PATTERN='\/usr\/src\/python'
+
+REPOSITORY_URL_REPLACEMENT='https://github.com/lysnikolaou/cpython.git'
+BUILD_DIR_REPLACEMENT='/usr/src/python'
+
 
 # Set the commit hash
 COMMIT_HASH=$1
 DOCKERFILE=$2
 
-SRC_LINE="git clone -b tstrings --depth 1 ${REPOSITORY_URL} ${BUILD_DIR};"
-DEST_LINE="mkdir -p ${BUILD_DIR} \&\& cd ${BUILD_DIR} \&\& git init \&\& git remote add origin ${REPOSITORY_URL} \&\& git fetch --depth 1 origin ${COMMIT_HASH} \&\& git checkout FETCH_HEAD \&\& cd /;"
+SRC_LINE="git clone -b tstrings --depth 1 ${REPOSITORY_URL_PATTERN} ${BUILD_DIR_PATTERN};"
+DEST_LINE="mkdir -p ${BUILD_DIR_REPLACEMENT} \\&\\& cd ${BUILD_DIR_REPLACEMENT} \\&\\& git init \\&\\& git remote add origin ${REPOSITORY_URL_REPLACEMENT} \\&\\& git fetch --depth 1 origin ${COMMIT_HASH} \\&\\& git checkout FETCH_HEAD \\&\\& cd /;"
+
 SED=$(which gsed || which sed)
-$SED -i "s|${SRC_LINE}|${DEST_LINE}|" "${DOCKERFILE}"
+"$SED" -i '' "s@${SRC_LINE}@${DEST_LINE}@" "${DOCKERFILE}"
