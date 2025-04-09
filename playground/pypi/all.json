@@ -1,0 +1,28 @@
+{
+  "tagstr-site": {
+    "releases": {
+      "0.0.1": [
+        {
+          "comment_text": "",
+          "digests": {
+            "md5": "e0d01b45fe9c4d88ce993c539f64395a",
+            "sha256": "945ec2f08f866a25e87da8f4a1ab1fc56487807e689ca1e8c0d321d1b601751d"
+          },
+          "downloads": -1,
+          "filename": "tagstr_site-0.0.1-py2.py3-none-any.whl",
+          "has_sig": false,
+          "md5_digest": "e0d01b45fe9c4d88ce993c539f64395a",
+          "packagetype": "bdist_wheel",
+          "python_version": "py3",
+          "requires_python": ">=3.12",
+          "size": 36946,
+          "upload_time": "2025-04-09T15:03:45.431937Z",
+          "upload_time_iso_8601": "2025-04-09T15:03:45.431937Z",
+          "url": "./tagstr_site-0.0.1-py2.py3-none-any.whl",
+          "yanked": false,
+          "yanked_reason": null
+        }
+      ]
+    }
+  }
+}
