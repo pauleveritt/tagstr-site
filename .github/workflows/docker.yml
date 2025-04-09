@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        base_image: [ "alpine3.20", "alpine3.19", "bookworm" ,"bullseye" ,"slim-bookworm"  ,"slim-bullseye" ]
+        base_image: [ "alpine3.20", "alpine3.21", "bookworm" ,"bullseye" ,"slim-bookworm"  ,"slim-bullseye" ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,7 +33,7 @@ jobs:
         id: check-image
         run: |
           IMAGE="koxudaxi/python"
-          TAG="3.14.0a1-tstrings-${{ steps.get_commit_hash.outputs.commit_hash }}-${{ matrix.base_image }}"
+          TAG="3.14-rc-tstrings-${{ steps.get_commit_hash.outputs.commit_hash }}-${{ matrix.base_image }}"
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "https://hub.docker.com/v2/repositories/${IMAGE}/tags/${TAG}")
           if [ "$RESPONSE" -eq 200 ]; then
             echo "Image exists on Docker Hub."
@@ -52,10 +52,10 @@ jobs:
             koxudaxi/python
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=raw,value=3.14.0a1-${{ matrix.base_image }}
-            type=raw,value=3.14.0a1-tstrings-${{ matrix.base_image }}
-            type=raw,value=3.14.0a1-tstrings-${{ steps.get_commit_hash.outputs.short_commit_hash }}-${{ matrix.base_image }}
-            type=raw,value=3.14.0a1-tstrings-${{ steps.get_commit_hash.outputs.commit_hash }}-${{ matrix.base_image }}
+            type=raw,value=3.14-rc-${{ matrix.base_image }}
+            type=raw,value=3.14-rc-tstrings-${{ matrix.base_image }}
+            type=raw,value=3.14-rc-tstrings-${{ steps.get_commit_hash.outputs.short_commit_hash }}-${{ matrix.base_image }}
+            type=raw,value=3.14-rc-tstrings-${{ steps.get_commit_hash.outputs.commit_hash }}-${{ matrix.base_image }}
             type=sha
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
