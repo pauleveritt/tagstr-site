@@ -45,30 +45,30 @@ $ make build-all # build all base images
 - alpine3.20
   - 3.14-rc-alpine3.20
   - 3.14-rc-tstrings-alpine3.20
-  - 3.14-rc-tstrings-b07c419-alpine3.20
-  - 3.14-rc-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-alpine3.20
+  - 3.14-rc-tstrings-bb7359a-alpine3.20
+  - 3.14-rc-tstrings-bb7359afed0d0cb19a622e2ed35be48107f6c3f5-alpine3.20
 - alpine3.19
   - 3.14-rc-alpine3.19
   - 3.14-rc-tstrings-alpine3.19
-  - 3.14-rc-tstrings-b07c419-alpine3.19
-  - 3.14-rc-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-alpine3.19
+  - 3.14-rc-tstrings-bb7359a-alpine3.19
+  - 3.14-rc-tstrings-bb7359afed0d0cb19a622e2ed35be48107f6c3f5-alpine3.19
 - bookworm 
   - 3.14-rc-bookworm
   - 3.14-rc-tstrings-bookworm
-  - 3.14-rc-tstrings-b07c419-bookworm
-  - 3.14-rc-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-bookworm
+  - 3.14-rc-tstrings-bb7359a-bookworm
+  - 3.14-rc-tstrings-bb7359afed0d0cb19a622e2ed35be48107f6c3f5-bookworm
 - bullseye
   - 3.14-rc-bullseye
   - 3.14-rc-tstrings-bullseye
-  - 3.14-rc-tstrings-b07c419-bullseye
-  - 3.14-rc-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-bullseye
+  - 3.14-rc-tstrings-bb7359a-bullseye
+  - 3.14-rc-tstrings-bb7359afed0d0cb19a622e2ed35be48107f6c3f5-bullseye
 - slim-bookworm
   - 3.14-rc-slim-bookworm
   - 3.14-rc-tstrings-slim-bookworm
-  - 3.14-rc-tstrings-b07c419-slim-bookworm
-  - 3.14-rc-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-slim-bookworm
+  - 3.14-rc-tstrings-bb7359a-slim-bookworm
+  - 3.14-rc-tstrings-bb7359afed0d0cb19a622e2ed35be48107f6c3f5-slim-bookworm
 - slim-bullseye
   - 3.14-rc-slim-bullseye
   - 3.14-rc-tstrings-slim-bullseye
-  - 3.14-rc-tstrings-b07c419-slim-bullseye
-  - 3.14-rc-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-slim-bullseye
+  - 3.14-rc-tstrings-bb7359a-slim-bullseye
+  - 3.14-rc-tstrings-bb7359afed0d0cb19a622e2ed35be48107f6c3f5-slim-bullseye
