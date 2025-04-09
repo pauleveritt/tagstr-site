@@ -16,7 +16,7 @@ RUN set -eux; \
 		tzdata \
 	;
 
-ENV PYTHON_VERSION 3.14.0a1
+ENV PYTHON_VERSION 3.14-rc
 
 RUN set -eux; \
 	\
@@ -51,7 +51,7 @@ RUN set -eux; \
 		zlib-dev \
 	; \
 	\
-    git clone -b tag-strings-rebased --depth 1 https://github.com/lysnikolaou/cpython.git /usr/src/python; \
+    git clone -b tstrings --depth 1 https://github.com/lysnikolaou/cpython.git /usr/src/python; \
 	\
 	cd /usr/src/python; \
 	gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \

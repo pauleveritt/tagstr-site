@@ -10,12 +10,12 @@ These images are built and published on [GitHub Actions](https://github.com/paul
 
 ## How to pull from Docker Hub
 ```shell
-$ docker pull koxudaxi/python:3.14.0a1-alpine3.20
+$ docker pull koxudaxi/python:3.14-rc-alpine3.20
 ```
 
 ## How to run
 ```shell
-$ docker run -it --rm koxudaxi/python:3.14.0a1-alpine3.20
+$ docker run -it --rm koxudaxi/python:3.14-rc-alpine3.20
 Python 3.14.0a1+ (heads/tstrings:499d70c, Oct 21 2024, 19:13:41) [GCC 13.2.1 20240309] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> from templatelib import Template, Interpolation
@@ -43,32 +43,32 @@ $ make build-all # build all base images
 - slim-bullseye
 ## All tags for each base image
 - alpine3.20
-  - 3.14.0a1-alpine3.20
-  - 3.14.0a1-tstrings-alpine3.20
-  - 3.14.0a1-tstrings-b07c419-alpine3.20
-  - 3.14.0a1-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-alpine3.20
+  - 3.14-rc-alpine3.20
+  - 3.14-rc-tstrings-alpine3.20
+  - 3.14-rc-tstrings-b07c419-alpine3.20
+  - 3.14-rc-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-alpine3.20
 - alpine3.19
-  - 3.14.0a1-alpine3.19
-  - 3.14.0a1-tstrings-alpine3.19
-  - 3.14.0a1-tstrings-b07c419-alpine3.19
-  - 3.14.0a1-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-alpine3.19
+  - 3.14-rc-alpine3.19
+  - 3.14-rc-tstrings-alpine3.19
+  - 3.14-rc-tstrings-b07c419-alpine3.19
+  - 3.14-rc-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-alpine3.19
 - bookworm 
-  - 3.14.0a1-bookworm
-  - 3.14.0a1-tstrings-bookworm
-  - 3.14.0a1-tstrings-b07c419-bookworm
-  - 3.14.0a1-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-bookworm
+  - 3.14-rc-bookworm
+  - 3.14-rc-tstrings-bookworm
+  - 3.14-rc-tstrings-b07c419-bookworm
+  - 3.14-rc-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-bookworm
 - bullseye
-  - 3.14.0a1-bullseye
-  - 3.14.0a1-tstrings-bullseye
-  - 3.14.0a1-tstrings-b07c419-bullseye
-  - 3.14.0a1-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-bullseye
+  - 3.14-rc-bullseye
+  - 3.14-rc-tstrings-bullseye
+  - 3.14-rc-tstrings-b07c419-bullseye
+  - 3.14-rc-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-bullseye
 - slim-bookworm
-  - 3.14.0a1-slim-bookworm
-  - 3.14.0a1-tstrings-slim-bookworm
-  - 3.14.0a1-tstrings-b07c419-slim-bookworm
-  - 3.14.0a1-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-slim-bookworm
+  - 3.14-rc-slim-bookworm
+  - 3.14-rc-tstrings-slim-bookworm
+  - 3.14-rc-tstrings-b07c419-slim-bookworm
+  - 3.14-rc-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-slim-bookworm
 - slim-bullseye
-  - 3.14.0a1-slim-bullseye
-  - 3.14.0a1-tstrings-slim-bullseye
-  - 3.14.0a1-tstrings-b07c419-slim-bullseye
-  - 3.14.0a1-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-slim-bullseye
+  - 3.14-rc-slim-bullseye
+  - 3.14-rc-tstrings-slim-bullseye
+  - 3.14-rc-tstrings-b07c419-slim-bullseye
+  - 3.14-rc-tstrings-b07c4191720e318e25fcba2be93d6b7b0aedc668-slim-bullseye
