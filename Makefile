@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 PYTHON_VERSION := 3.12
 VENV_PATH := .venv
-SITE_PREFIX := $(or $(SITE_PREFIX), /)
+SITE_PREFIX := $(or $(SITE_PREFIX), ./)
 
 .PHONY: setup
 setup:
@@ -25,11 +25,15 @@ build-playground: install-extras wheel
 	source $(VENV_PATH)/bin/activate && $(MAKE) build-playground-without-venv
 
 .PHONY: build-playground-without-venv
-build-playground-without-venv: check-jq
+build-playground-without-venv:
 	cd playground && rm -fr pypi/* && cp -v ../dist/*.whl pypi/ && jupyter lite build && \
 		WHL_FILE=$$(ls pypi | grep .whl) && \
-		jq '.["jupyter-config-data"]["litePluginSettings"]["@jupyterlite/pyodide-kernel-extension:kernel"].pyodideUrl = "https://koxudaxi.github.io/pyodide/tag-strings-rebase/pyodide.js"' dist/jupyter-lite.json | \
-		jq '.["jupyter-config-data"]["litePluginSettings"]["@jupyterlite/pyodide-kernel-extension:kernel"]["loadPyodideOptions"]["packages"] = ["$(SITE_PREFIX)pypi/'$$WHL_FILE'"]' > temp.json && mv temp.json dist/jupyter-lite.json
+		WHL_URL="/pypi/$$WHL_FILE" && \
+		jq '(.["jupyter-config-data"]["litePluginSettings"]["@jupyterlite/pyodide-kernel-extension:kernel"] += {pyodideUrl:"https://koxudaxi.github.io/pyodide/tstrings/pyodide.js"})' dist/jupyter-lite.json | \
+		jq '(.["jupyter-config-data"]["litePluginSettings"]["@jupyterlite/pyodide-kernel-extension:kernel"]["loadPyodideOptions"] //= {}) | \
+		    (.["jupyter-config-data"]["litePluginSettings"]["@jupyterlite/pyodide-kernel-extension:kernel"]["loadPyodideOptions"].indexURL = "https://koxudaxi.github.io/pyodide/tstrings/") | \
+		    (.["jupyter-config-data"]["litePluginSettings"]["@jupyterlite/pyodide-kernel-extension:kernel"]["loadPyodideOptions"].packages = ["'$$WHL_URL'"])' \
+		    > temp.json && mv temp.json dist/jupyter-lite.json
 
 .PHONY: wheel
 wheel: clean-wheel

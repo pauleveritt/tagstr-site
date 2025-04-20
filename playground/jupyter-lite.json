@@ -1,9 +1,9 @@
 {
-  "jupyter-lite-schema-version": 0,
-  "jupyter-config-data": {
-    "litePluginSettings": {
-      "@jupyterlite/pyodide-kernel-extension:kernel": {
-        "pyodideUrl": "https://koxudaxi.github.io/pyodide/tag-strings-rebase/pyodide.js"
+  "litePluginSettings": {
+    "@jupyterlite/pyodide-kernel-extension:kernel": {
+      "pyodideUrl": "https://koxudaxi.github.io/pyodide/tstrings/pyodide.js",
+      "loadPyodideOptions": {
+        "indexURL": "https://koxudaxi.github.io/pyodide/tstrings/"
       }
     }
   }
