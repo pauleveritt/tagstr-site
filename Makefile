@@ -28,7 +28,7 @@ build-playground: install-extras wheel
 build-playground-without-venv: check-jq
 	cd playground && rm -fr pypi/* && cp -v ../dist/*.whl pypi/ && jupyter lite build && \
 		WHL_FILE=$$(ls pypi | grep .whl) && \
-		jq '.["jupyter-config-data"]["litePluginSettings"]["@jupyterlite/pyodide-kernel-extension:kernel"].pyodideUrl = "https://koxudaxi.github.io/pyodide/tag-strings-rebase/pyodide.js"' dist/jupyter-lite.json | \
+		jq '.["jupyter-config-data"]["litePluginSettings"]["@jupyterlite/pyodide-kernel-extension:kernel"].pyodideUrl = "https://koxudaxi.github.io/pyodide/tstrings/pyodide.js"' dist/jupyter-lite.json | \
 		jq '.["jupyter-config-data"]["litePluginSettings"]["@jupyterlite/pyodide-kernel-extension:kernel"]["loadPyodideOptions"]["packages"] = ["$(SITE_PREFIX)pypi/'$$WHL_FILE'"]' > temp.json && mv temp.json dist/jupyter-lite.json
 
 .PHONY: wheel
