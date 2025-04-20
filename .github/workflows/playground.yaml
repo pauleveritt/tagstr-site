@@ -42,7 +42,8 @@ jobs:
       run: python3 -m build
     - name: Build the JupyterLite site
       run: |
-         make setup   
+         make setup
+         jq --version 
          SITE_PREFIX=/tagstr-site/playground/ make build-playground-without-venv
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
