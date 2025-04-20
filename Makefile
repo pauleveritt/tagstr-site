@@ -26,14 +26,27 @@ build-playground: install-extras wheel
 
 .PHONY: build-playground-without-venv
 build-playground-without-venv: check-jq wheel
-	cd playground && rm -fr pypi/* && cp -v ../dist/*.whl pypi/ && jupyter lite build && \
-		WHL_FILE=$$(ls pypi | grep .whl) && \
-		WHL_URL="/pypi/$$WHL_FILE" && \
-		jq '(.["jupyter-config-data"]["litePluginSettings"]["@jupyterlite/pyodide-kernel-extension:kernel"] += {pyodideUrl:"https://koxudaxi.github.io/pyodide/tstrings/pyodide.js"})' dist/jupyter-lite.json | \
-		jq '(.["jupyter-config-data"]["litePluginSettings"]["@jupyterlite/pyodide-kernel-extension:kernel"]["loadPyodideOptions"] //= {}) | \
-		    (.["jupyter-config-data"]["litePluginSettings"]["@jupyterlite/pyodide-kernel-extension:kernel"]["loadPyodideOptions"].indexURL = "https://koxudaxi.github.io/pyodide/tstrings/") | \
-		    (.["jupyter-config-data"]["litePluginSettings"]["@jupyterlite/pyodide-kernel-extension:kernel"]["loadPyodideOptions"].packages = ["'$$WHL_URL'"])' \
-		    > temp.json && mv temp.json dist/jupyter-lite.json
+	cd playground && \
+	rm -rf pypi/* && \
+	cp -v ../dist/*.whl pypi/ && \
+	jupyter lite build && \
+	WHL_FILE=$$(ls pypi | grep .whl) && \
+	WHL_URL="/pypi/$${WHL_FILE}" && \
+	jq --arg w "$${WHL_URL}" \
+	   '(.["jupyter-config-data"]["litePluginSettings"] \
+	      ["@jupyterlite/pyodide-kernel-extension:kernel"] \
+	      += {pyodideUrl:"https://koxudaxi.github.io/pyodide/tstrings/pyodide.js"}) \
+	    | (.["jupyter-config-data"]["litePluginSettings"] \
+	       ["@jupyterlite/pyodide-kernel-extension:kernel"].loadPyodideOptions //= {}) \
+	    | (.["jupyter-config-data"]["litePluginSettings"] \
+	       ["@jupyterlite/pyodide-kernel-extension:kernel"].loadPyodideOptions.indexURL \
+	       = "https://koxudaxi.github.io/pyodide/tstrings/") \
+	    | (.["jupyter-config-data"]["litePluginSettings"] \
+	       ["@jupyterlite/pyodide-kernel-extension:kernel"].loadPyodideOptions.packages \
+	       = [ $w ])' \
+	   dist/jupyter-lite.json > dist/tmp.json && \
+	mv dist/tmp.json dist/jupyter-lite.json
+
 
 .PHONY: wheel
 wheel: clean-wheel
