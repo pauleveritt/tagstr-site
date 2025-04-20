@@ -25,7 +25,7 @@ build-playground: install-extras wheel
 	source $(VENV_PATH)/bin/activate && $(MAKE) build-playground-without-venv
 
 .PHONY: build-playground-without-venv
-build-playground-without-venv:
+build-playground-without-venv: check-jq
 	cd playground && rm -fr pypi/* && cp -v ../dist/*.whl pypi/ && jupyter lite build && \
 		WHL_FILE=$$(ls pypi | grep .whl) && \
 		WHL_URL="/pypi/$$WHL_FILE" && \
