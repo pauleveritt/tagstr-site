@@ -34,7 +34,7 @@ build-playground-without-venv: check-jq
 	WHL_FILE=$$(ls playground/pypi | grep .whl) ;\
 	python tools/patch_jlite_json.py \
 	  playground/dist/jupyter-lite.json \
-	  --whl-url "/pypi/$$WHL_FILE"
+	  --whl-url "$(SITE_PREFIX)pypi/$$WHL_FILE"
 
 
 
