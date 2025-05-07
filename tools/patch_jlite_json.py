@@ -12,14 +12,16 @@ data = json.loads(path.read_text())
 
 kernel_key = "@jupyterlite/pyodide-kernel-extension:kernel"
 plugin = data.setdefault("jupyter-config-data", {}) \
-             .setdefault("litePluginSettings", {}) \
-             .setdefault(kernel_key, {})
+    .setdefault("litePluginSettings", {}) \
+    .setdefault(kernel_key, {})
 
 plugin["pyodideUrl"] = (
-    "https://koxudaxi.github.io/pyodide/tstrings/pyodide.js"
+    # "https://koxudaxi.github.io/pyodide/tstrings/pyodide.js"
+    "https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"
 )
 
-# opt = plugin.setdefault("loadPyodideOptions", {})
+opt = plugin.setdefault("loadPyodideOptions", {})
+opt["indexURL"] = "https://cdn.jsdelivr.net/pyodide/dev/full/"
 # opt["indexURL"] = "https://koxudaxi.github.io/pyodide/tstrings/"
 # opt["packages"] = [args.whl_url]
 

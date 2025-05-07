@@ -27,7 +27,7 @@ build-playground: install-extras wheel
 .PHONY: build-playground-without-venv
 build-playground-without-venv: check-jq
 	cd playground && \
-	  rm -fr pypi/* && \
+# 	  rm -fr pypi/* && \
 # 	  cp -v ../dist/*.whl pypi/ && \
 	  jupyter lite build
 
