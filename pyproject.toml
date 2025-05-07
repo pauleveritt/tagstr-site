@@ -19,12 +19,9 @@ dependencies = [
 
 [project.optional-dependencies]
 jupyterlite = [
-    "jupyterlite-core[all]>=0.5.1,<0.6",
-    "jupyterlite-pyodide-kernel>=0.5.1,<0.6",
-    "ipython~=8.26.0",
-    "executing~=2.1.0",
+    "jupyterlite-core[all]==0.5.1",
+    "jupyterlite-pyodide-kernel==0.5.2",
     "sphinx-autobuild",
-    "attrs==23.2.0", # The version 24.2.0 supports only latest Python 3.14 codebase
 ]
 
 [tool.pytest.ini_options]
