@@ -17,12 +17,14 @@ plugin = data.setdefault("jupyter-config-data", {}) \
 
 plugin["pyodideUrl"] = (
     # "https://koxudaxi.github.io/pyodide/tstrings/pyodide.js"
-    "https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"
+    # "https://cdn.jsdelivr.net/pyodide/dev/full/pyodide.js"
+    "./pyodide/pyodide.js"
 )
 
 opt = plugin.setdefault("loadPyodideOptions", {})
-opt["indexURL"] = "https://cdn.jsdelivr.net/pyodide/dev/full/"
+# opt["indexURL"] = "https://cdn.jsdelivr.net/pyodide/dev/full/"
 # opt["indexURL"] = "https://koxudaxi.github.io/pyodide/tstrings/"
+opt["indexURL"] = "./pyodide/"
 # opt["packages"] = [args.whl_url]
 
 path.write_text(json.dumps(data, indent=2, ensure_ascii=False))
