@@ -27,14 +27,13 @@ build-playground: install-extras wheel
 .PHONY: build-playground-without-venv
 build-playground-without-venv: check-jq
 	cd playground && \
-# 	  rm -fr pypi/* && \
-# 	  cp -v ../dist/*.whl pypi/ && \
 	  jupyter lite build
-
 	WHL_FILE=$$(ls playground/pypi | grep .whl) ;\
 	python tools/patch_jlite_json.py \
 	  playground/dist/jupyter-lite.json \
 	  --whl-url "$(SITE_PREFIX)pypi/$$WHL_FILE"
+	cp -frpv playground/pyodide playground/dist/
+
 
 
 

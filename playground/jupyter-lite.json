@@ -1,9 +1,9 @@
 {
   "litePluginSettings": {
     "@jupyterlite/pyodide-kernel-extension:kernel": {
-      "pyodideUrl": "https://koxudaxi.github.io/pyodide/tstrings/pyodide.js",
+      "pyodideUrl": "./pyodide/pyodide.js",
       "loadPyodideOptions": {
-        "indexURL": "https://koxudaxi.github.io/pyodide/tstrings/"
+        "indexURL": "./pyodide/"
       }
     }
   }
