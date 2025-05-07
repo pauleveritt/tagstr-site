@@ -19,8 +19,8 @@ plugin["pyodideUrl"] = (
     "https://koxudaxi.github.io/pyodide/tstrings/pyodide.js"
 )
 
-opt = plugin.setdefault("loadPyodideOptions", {})
-opt["indexURL"] = "https://koxudaxi.github.io/pyodide/tstrings/"
-opt["packages"] = [args.whl_url]
+# opt = plugin.setdefault("loadPyodideOptions", {})
+# opt["indexURL"] = "https://koxudaxi.github.io/pyodide/tstrings/"
+# opt["packages"] = [args.whl_url]
 
 path.write_text(json.dumps(data, indent=2, ensure_ascii=False))

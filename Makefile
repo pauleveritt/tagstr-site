@@ -28,7 +28,7 @@ build-playground: install-extras wheel
 build-playground-without-venv: check-jq
 	cd playground && \
 	  rm -fr pypi/* && \
-	  cp -v ../dist/*.whl pypi/ && \
+# 	  cp -v ../dist/*.whl pypi/ && \
 	  jupyter lite build
 
 	WHL_FILE=$$(ls playground/pypi | grep .whl) ;\
