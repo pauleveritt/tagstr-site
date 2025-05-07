@@ -19,8 +19,8 @@ dependencies = [
 
 [project.optional-dependencies]
 jupyterlite = [
-    "jupyterlite-core[all]==0.5.1",
-    "jupyterlite-pyodide-kernel==0.5.2",
+    "jupyterlite-core[all]==0.6.0a9",
+    "jupyterlite-pyodide-kernel==0.6.0a5",
     "sphinx-autobuild",
 ]
 
