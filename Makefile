@@ -26,6 +26,8 @@ build-playground: install-extras wheel
 
 .PHONY: build-playground-without-venv
 build-playground-without-venv: check-jq
+	@echo "Building playground..."
+	rm -rf playground/dist
 	cd playground && \
 	  jupyter lite build
 	WHL_FILE=$$(ls playground/pypi | grep .whl) ;\
@@ -33,7 +35,9 @@ build-playground-without-venv: check-jq
 	  playground/dist/jupyter-lite.json \
 	  --whl-url "$(SITE_PREFIX)pypi/$$WHL_FILE"
 	cp -frpv playground/pyodide playground/dist/
-
+	sed -i '' 's|<head>|<head><script src="coi-serviceworker.min.js"></script>|' playground/dist/index.html
+	sed -i '' 's|<head>|<head><script src="coi-serviceworker.min.js"></script>|' playground/dist/lab/index.html
+	cp -frpv playground/coi-serviceworker.min.js playground/dist/
 
 
 
