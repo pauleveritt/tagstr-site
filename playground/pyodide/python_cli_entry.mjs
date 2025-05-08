@@ -9,10 +9,16 @@ import { readdirSync } from "fs";
  * names it is possible this could break. The most surprising one here is tmp, I
  * am not sure why but if we link tmp then the process silently fails.
  */
-function dirsToMount() {
+function rootDirsToMount() {
+  const skipDirs = ["dev", "lib", "proc", "tmp"];
   return readdirSync("/")
-    .filter((dir) => !["dev", "lib", "proc"].includes(dir))
+    .filter((dir) => !skipDirs.includes(dir))
     .map((dir) => "/" + dir);
+}
+
+function dirsToMount() {
+  const extra_mounts = process.env["_PYODIDE_EXTRA_MOUNTS"] || "";
+  return rootDirsToMount().concat(extra_mounts.split(":").filter((s) => s));
 }
 
 const thisProgramFlag = "--this-program=";
@@ -38,7 +44,6 @@ async function main() {
     py = await loadPyodide({
       args,
       _sysExecutable,
-      enableRunUntilComplete: true,
       env: Object.assign(
         {
           PYTHONINSPECT: "",
@@ -132,11 +137,7 @@ async function main() {
 
   let errcode;
   try {
-    if (py._module.jspiSupported) {
-      errcode = await py._module.promisingRunMain();
-    } else {
-      errcode = py._module._run_main();
-    }
+    errcode = py._module._run_main();
   } catch (e) {
     if (e.constructor.name === "ExitStatus") {
       process.exit(e.status);
