@@ -35,8 +35,8 @@ build-playground-without-venv: check-jq
 	  playground/dist/jupyter-lite.json \
 	  --whl-url "$(SITE_PREFIX)pypi/$$WHL_FILE"
 	cp -frpv playground/pyodide playground/dist/
-	sed -i '' 's|<head>|<head><script src="coi-serviceworker.min.js"></script>|' playground/dist/index.html
-	sed -i '' 's|<head>|<head><script src="coi-serviceworker.min.js"></script>|' playground/dist/lab/index.html
+	sed -i.bak 's|<head>|<head><script src="coi-serviceworker.js"></script>|' playground/dist/index.html && rm playground/dist/index.html.bak
+	sed -i.bak 's|<head>|<head><script src="coi-serviceworker.js"></script>|' playground/dist/lab/index.html && rm playground/dist/lab/index.html.bak
 	cp -frpv playground/coi-serviceworker.min.js playground/dist/
 
 
