@@ -97,16 +97,6 @@ interface FSType {
 	findObject(a: string, dontResolveLastLink?: boolean): any;
 	readFile(a: string): Uint8Array;
 }
-type LockfileInfo = {
-	arch: "wasm32" | "wasm64";
-	platform: string;
-	version: string;
-	python: string;
-};
-type Lockfile = {
-	info: LockfileInfo;
-	packages: Record<string, InternalPackageData>;
-};
 type PackageType = "package" | "cpython_module" | "shared_library" | "static_library";
 interface PackageData {
 	name: string;
@@ -116,16 +106,6 @@ interface PackageData {
 	packageType: PackageType;
 }
 type LoadedPackages = Record<string, string>;
-type InternalPackageData = {
-	name: string;
-	version: string;
-	file_name: string;
-	package_type: PackageType;
-	install_dir: string;
-	sha256: string;
-	imports: string[];
-	depends: string[];
-};
 /** @deprecated Use `import type { PyProxy } from "pyodide/ffi"` instead */
 interface PyProxy {
 	[x: string]: any;
@@ -1093,7 +1073,7 @@ declare class PyodideAPI {
 		messageCallback?: (message: string) => void;
 		errorCallback?: (message: string) => void;
 		checkIntegrity?: boolean;
-	}) => Promise<PackageData[]>;
+	}) => Promise<Array<PackageData>>;
 	/** @hidden */
 	static loadedPackages: LoadedPackages;
 	/** @hidden */
@@ -1470,12 +1450,6 @@ declare class PyodideAPI {
 	static makeMemorySnapshot({ serializer, }?: {
 		serializer?: (obj: any) => any;
 	}): Uint8Array;
-	/**
-	 * Returns the pyodide lockfile used to load the current Pyodide instance.
-	 * The format of the lockfile is defined in the `pyodide/pyodide-lock
-	 * <https://github.com/pyodide/pyodide-lock>`_ repository.
-	 */
-	static get lockfile(): Lockfile;
 }
 /** @hidden */
 export type PyodideInterface = typeof PyodideAPI;

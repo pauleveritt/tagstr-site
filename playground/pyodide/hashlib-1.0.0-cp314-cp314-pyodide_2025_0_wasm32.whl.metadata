@@ -1,5 +1,0 @@
-Metadata-Version: 2.4
-Name: hashlib
-Version: 1.0.0
-Summary: Unvendored hashlib for Pyodide
-Author: Pyodide

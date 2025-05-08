@@ -19,7 +19,7 @@ dependencies = [
 
 [project.optional-dependencies]
 jupyterlite = [
-    "jupyterlite-core[all]==0.6.0a9",
+    "jupyterlite-core[all]==0.6.0a10",
     "jupyterlite-pyodide-kernel==0.6.0a6",
     "sphinx-autobuild",
     "attrs==23.2.0", # The version 24.2.0 supports only latest Python 3.14 codebase
